@@ -1,0 +1,27 @@
+# Godot
+.godot/
+*.tmp
+*.import
+
+# Android export
+export_presets.cfg.import
+*.apk
+*.aab
+*.keystore
+keystore/*.keystore
+keystore/*.jks
+
+# Build caches
+.gradle/
+build/
+android/
+
+# Generated runtime data
+data/saves/*
+!data/saves/.gitkeep
+data/seed_archive/*
+!data/seed_archive/.gitkeep
+
+# OS junk
+.DS_Store
+Thumbs.db

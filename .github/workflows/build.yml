@@ -1,0 +1,40 @@
+name: Build Android Debug APK
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Import assets (headless)
+        run: godot --headless --path . --import
+      - name: Run CE smoke test
+        run: godot --headless --path . --script res://scripts/tests/smoke_test.gd
+
+  build-android:
+    runs-on: ubuntu-latest
+    needs: smoke-test
+    container:
+      image: barichello/godot-ci:4.4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Import assets (headless)
+        run: godot --headless --path . --import
+      - name: Export debug APK
+        run: |
+          mkdir -p build
+          godot --headless --path . --export-debug "Android" build/kingdom-eternal-debug.apk
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kingdom-eternal-debug-apk
+          path: build/kingdom-eternal-debug.apk
