@@ -2,7 +2,7 @@ extends Node3D
 ## Main — Phase 0 scene builder. Assembles environment, lighting, camera,
 ## terrain and HUD. Everything is constructed in code for git-friendliness.
 
-var _camera: Camera3D
+var _camera
 
 func _ready() -> void:
 	_restore_or_new_game()
@@ -64,7 +64,7 @@ func _build_camera() -> void:
 	_camera.target = Vector3(0, 0, 0)
 
 func _build_terrain() -> void:
-	var terrain := load("res://scripts/world/terrain.gd").new()
+	var terrain = load("res://scripts/world/terrain.gd").new()
 	terrain.name = "TerrainSource"
 	terrain.world_seed = Game.settings.world_seed
 	add_child(terrain)

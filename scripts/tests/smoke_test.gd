@@ -51,6 +51,6 @@ func _init() -> void:
 		quit(1)
 		return
 
-	print("OK: %d turns, month %d, food %.0f, %,d events, save/load round-trip passed"
+	print("OK: %d turns, month %d, food %.0f, %d events, save/load round-trip passed"
 		% [ce.turn, ce.month, food, ce.events.size()])
 	quit(0)

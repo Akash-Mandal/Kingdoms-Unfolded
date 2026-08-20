@@ -90,7 +90,7 @@ func _on_resources_changed() -> void:
 	for key in Game.RESOURCE_KEYS:
 		var l: Label = _res_labels[key]
 		var stock := Game.get_stock(key)
-		var icon := {
+		var icon: String = {
 			"food": "🌾", "gold": "💰", "wood": "🪵", "stone": "🪨",
 			"iron": "⚙️", "cloth": "🧶", "horses": "🐎", "knowledge": "📜",
 		}.get(key, key)
