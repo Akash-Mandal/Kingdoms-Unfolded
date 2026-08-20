@@ -9,6 +9,7 @@ on:
 jobs:
   smoke-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 4
     container:
       image: barichello/godot-ci:4.4
     steps:
@@ -17,7 +18,7 @@ jobs:
       - name: Import assets (headless)
         run: godot --headless --path . --import
       - name: Run CE smoke test
-        run: godot --headless --path . --script res://scripts/tests/smoke_test.gd
+        run: timeout 90 godot --headless --path . --script res://scripts/tests/smoke_test.gd
 
   build-android:
     runs-on: ubuntu-latest
