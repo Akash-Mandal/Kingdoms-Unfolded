@@ -38,8 +38,10 @@ jobs:
           ls "$HOME/.local/share/godot/export_templates/4.4.stable/" | grep android || echo "TEMPLATES MISSING"
       - name: Install Android build template into project
         run: |
-          unzip -o "$HOME/.local/share/godot/export_templates/4.4.stable/android_source.zip" -d "$PWD"
-          test -f android/build/build.gradle && echo "BUILD TEMPLATE OK" || echo "BUILD TEMPLATE MISSING"
+          mkdir -p android/build
+          unzip -o "$HOME/.local/share/godot/export_templates/4.4.stable/android_source.zip" -d android/build/
+          echo "4.4.stable" > android/.build_version
+          test -f android/build/build.gradle && echo "BUILD TEMPLATE OK" || { echo "BUILD TEMPLATE MISSING"; exit 1; }
       - name: Export debug APK
         run: |
           mkdir -p build
