@@ -20,9 +20,10 @@ Tracked items that consume space on THIS phone:
 |---|---|
 | New Termux packages | 0 MB |
 | Downloaded art assets | 0 MB (none yet) |
+| Project code (all GDScript, shaders, JSON) | ~0.5 MB |
 | Project cache (`.godot/`, git, curl) | ~0 MB |
 | Cloud/PC tooling (NOT on phone) | 0 MB (see table below) |
-| **REMOVABLE TOTAL (phone)** | **~0 MB** |
+| **REMOVABLE TOTAL (phone)** | **~0.5 MB code + 56 MB APK (optional)** |
 
 ---
 
@@ -41,7 +42,8 @@ Anything here lives inside this project folder unless noted.
 
 | # | Date | What | Why | Source | Landed at | Size | Cleanup | Status |
 |---|---|---|---|---|---|---|---|---|
-| 002 | 2026-08-20 | Debug APK artifact (kingdom-eternal-debug.apk) | First playable build | GitHub Actions artifact (page: Actions → run → artifact) | phone Downloads/ (once downloaded) | 54 MB | delete file / uninstall app `kingdom eternal 3d` | announced (download optional) |
+| 002 | 2026-08-20 | Debug APK artifact — Phase 0 (kingdom-eternal-debug.apk) | First playable build | GitHub Actions artifact | phone Downloads/ | 54 MB | delete file / uninstall app | superseded |
+| 003 | 2026-08-20 | Debug APK artifact — Phase 1 (kingdom-eternal-debug.apk) | Living World: day/night, seasons, weather, 4 buildings, economy chain | GitHub Actions artifact | phone Downloads/ | 56 MB | delete file / uninstall app | active |
 
 ## 3. Termux packages installed for this project
 
