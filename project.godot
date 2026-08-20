@@ -10,24 +10,42 @@ config/name="Kingdom Eternal 3D"
 run/main_scene="res://scenes/main.tscn"
 config/features=PackedStringArray("4.4", "Mobile")
 config/icon="res://icon.svg"
+boot_splash/bg_color=Color(0.10196, 0.07059, 0.03137, 1)
+boot_splash/show_image=true
+boot_splash/image="res://assets/splash/splash.png"
+boot_splash/fullsize=true
+boot_splash/use_filter=false
 
 [autoload]
 
 Game="*res://scripts/core/game.gd"
 TimeClock="*res://scripts/core/time_clock.gd"
 Catalog="*res://scripts/core/catalog.gd"
+Tech="*res://scripts/core/tech.gd"
+Events="*res://scripts/core/events.gd"
+Missions="*res://scripts/core/missions.gd"
+Diplomacy="*res://scripts/core/diplomacy.gd"
+Military="*res://scripts/core/military.gd"
+SideStories="*res://scripts/core/side_stories.gd"
+Scenarios="*res://scripts/core/scenarios.gd"
+Succession="*res://scripts/core/succession.gd"
+KeyVault="*res://scripts/net/key_vault.gd"
+Chronicle="*res://scripts/net/chronicle.gd"
+NarrativeProvider="*res://scripts/net/narrative_provider.gd"
+GraphicsSettings="*res://scripts/core/graphics_settings.gd"
+SaveSlots="*res://scripts/core/save_slots.gd"
 
 [display]
 
-window/size/viewport_width=1440
-window/size/viewport_height=800
+window/size/viewport_width=1280
+window/size/viewport_height=720
 window/stretch/mode="canvas_items"
-window/stretch/aspect="expand"
-window/handheld/orientation=1
+window/stretch/aspect="keep"
+window/handheld/orientation=0
 
 [input_devices]
 
-pointing/emulate_touch_from_mouse=true
+pointing/emulate_touch_from_mouse=false
 
 [input]
 ui_accept={
@@ -53,3 +71,11 @@ renderer/rendering_method.mobile="mobile"
 environment/defaults/default_clear_color=Color(0.55, 0.62, 0.7, 1)
 anti_aliasing/quality/msaa_3d=1
 textures/vram_compression/import_etc2_astc=true
+
+[boot_splash]
+
+bg_color=Color(0.10196, 0.07059, 0.03137, 1)
+show_image=true
+image="res://assets/splash/splash.png"
+fullsize=true
+use_filter=false

@@ -1,22 +1,25 @@
 shader_type spatial;
-// Terrain shader: biome vertex color + seasonal snow + season tint.
-// Vertex Y (local) is used as elevation so snow settles on high ground.
+render_mode cull_back, diffuse_lambert, specular_disabled;
 
-uniform vec3 snow_color = vec3(0.95, 0.96, 0.98);
-uniform float snow_amount = 0.0;          // 0..1
-uniform vec3 season_tint = vec3(1.0);    // per-season ground tint
-uniform float snow_max_height = 14.0;    // elevation at which snow is full
+uniform vec3 snow_color : source_color = vec3(0.95, 0.96, 0.98);
+uniform lowp float snow_amount : hint_range(0.0,1.0) = 0.0;
+uniform lowp vec3 season_tint : source_color = vec3(1.0);
+uniform float snow_max_height = 14.0;
 
-varying float v_height;
+varying lowp float v_height;
+varying flat lowp float v_snow_factor;
 
 void vertex() {
 	v_height = VERTEX.y;
+	float h = clamp(v_height / snow_max_height, 0.0, 1.0);
+	float t = clamp((h - 0.55) * 2.222222, 0.0, 1.0);
+	t = t * t * (3.0 - 2.0 * t);
+	v_snow_factor = t;
 }
 
 void fragment() {
-	vec3 base = COLOR.rgb * season_tint;
-	float h = clamp(v_height / snow_max_height, 0.0, 1.0);
-	float snow = clamp(snow_amount * (0.25 + h * 1.25), 0.0, 1.0);
+	lowp vec3 base = COLOR.rgb * season_tint;
+	lowp float snow = snow_amount * v_snow_factor;
 	ALBEDO = mix(base, snow_color, snow);
 	ROUGHNESS = 0.92;
 }

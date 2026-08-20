@@ -1,0 +1,269 @@
+[
+  {
+    "id": "political_corrupt_noble",
+    "category": "political",
+    "name": "The Corrupt Reeve",
+    "description": "Reeve Aldric skims grain taxes. Peasants whisper, nobles look away.",
+    "weight": 10,
+    "conditions": [
+      {"kind": "resource", "key": "food", "op": ">", "value": 25, "weight_mult": 1.4},
+      {"kind": "happiness", "op": "<", "value": 0.55, "weight_mult": 1.5}
+    ],
+    "objectives": [
+      {"id": "knowledge_20", "label": "Gather evidence (20 knowledge)", "track": "resource_knowledge", "op": ">=", "value": 20},
+      {"id": "gold_40", "label": "Hold 40 gold for trial", "track": "resource_gold", "op": ">=", "value": 40}
+    ],
+    "choices": [
+      {"id": "expose", "label": "Expose publicly", "hint": "Justice, happiness up", "effects": {"happiness": 0.1, "gold": -10, "knowledge": 5}, "follow_up": null},
+      {"id": "blackmail", "label": "Blackmail the reeve", "hint": "Gold gain, moral cost", "effects": {"gold": 35, "happiness": -0.06}, "follow_up": null}
+    ],
+    "rewards": {"gold": 20, "happiness": 0.06},
+    "expiry_turns": 14,
+    "repeatable": true
+  },
+  {
+    "id": "political_royal_marriage",
+    "category": "political",
+    "name": "A Marriage of State",
+    "description": "A rival house offers a daughter with a dowry and a claim. Love or leverage?",
+    "weight": 8,
+    "conditions": [
+      {"kind": "happiness", "op": ">", "value": 0.5, "weight_mult": 1.5},
+      {"kind": "turn", "op": ">", "value": 10, "weight_mult": 1.3}
+    ],
+    "objectives": [
+      {"id": "gold_60", "label": "Secure dowry (60 gold)", "track": "resource_gold", "op": ">=", "value": 60},
+      {"id": "happiness_55", "label": "Keep happiness above 0.55", "track": "happiness", "op": ">=", "value": 0.55}
+    ],
+    "choices": [
+      {"id": "accept", "label": "Accept the marriage", "hint": "Alliance and happiness", "effects": {"happiness": 0.12, "gold": 30}, "follow_up": null},
+      {"id": "decline", "label": "Decline with gifts", "hint": "Knowledge, slight happiness loss", "effects": {"happiness": -0.04, "knowledge": 8, "gold": -10}, "follow_up": null}
+    ],
+    "rewards": {"happiness": 0.07, "knowledge": 6},
+    "expiry_turns": 18,
+    "repeatable": false
+  },
+  {
+    "id": "military_defend_village",
+    "category": "military",
+    "name": "Defend Greenhollow",
+    "description": "Raiders probe the border village. The militia begs for aid before next moon.",
+    "weight": 10,
+    "conditions": [
+      {"kind": "pop", "op": ">", "value": 65, "weight_mult": 1.4},
+      {"kind": "resource", "key": "food", "op": ">", "value": 30, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "gold_30", "label": "Fund militia (30 gold)", "track": "resource_gold", "op": ">=", "value": 30},
+      {"id": "iron_8", "label": "Arm them (8 iron)", "track": "resource_iron", "op": ">=", "value": 8}
+    ],
+    "choices": [
+      {"id": "send_aid", "label": "Send aid", "hint": "Happiness and security", "effects": {"gold": -20, "iron": -8, "happiness": 0.09}, "follow_up": null},
+      {"id": "recall", "label": "Abandon Greenhollow", "hint": "Save resources, lose heart", "effects": {"happiness": -0.12, "food": -10}, "follow_up": null}
+    ],
+    "rewards": {"happiness": 0.08, "knowledge": 4},
+    "expiry_turns": 6,
+    "repeatable": true
+  },
+  {
+    "id": "military_train_elite",
+    "category": "military",
+    "name": "The Elite Guard",
+    "description": "A veteran offers to forge peasants into an elite guard — for a price in coin and horses.",
+    "weight": 7,
+    "conditions": [
+      {"kind": "resource", "key": "gold", "op": ">", "value": 80, "weight_mult": 1.5},
+      {"kind": "resource", "key": "horses", "op": ">", "value": 4, "weight_mult": 1.6}
+    ],
+    "objectives": [
+      {"id": "gold_90", "label": "Fund training (90 gold)", "track": "resource_gold", "op": ">=", "value": 90},
+      {"id": "knowledge_25", "label": "Develop tactics (25 knowledge)", "track": "resource_knowledge", "op": ">=", "value": 25}
+    ],
+    "choices": [
+      {"id": "commission", "label": "Commission the guard", "hint": "Strong military, costs", "effects": {"gold": -40, "horses": -2, "happiness": 0.06, "knowledge": 5}, "follow_up": "military_first_campaign"},
+      {"id": "defer", "label": "Defer the project", "hint": "Save resources", "effects": {"happiness": -0.03}, "follow_up": null}
+    ],
+    "rewards": {"horses": 3, "happiness": 0.05},
+    "expiry_turns": 20,
+    "repeatable": false
+  },
+  {
+    "id": "economic_trade_route",
+    "category": "economic",
+    "name": "The Salt Road",
+    "description": "Merchants propose a salt road through your lands. Tolls or free passage?",
+    "weight": 9,
+    "conditions": [
+      {"kind": "resource", "key": "gold", "op": ">", "value": 40, "weight_mult": 1.3},
+      {"kind": "happiness", "op": ">", "value": 0.5, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "wood_25", "label": "Clear road (25 wood)", "track": "resource_wood", "op": ">=", "value": 25},
+      {"id": "cloth_15", "label": "Supply merchants (15 cloth)", "track": "resource_cloth", "op": ">=", "value": 15}
+    ],
+    "choices": [
+      {"id": "toll", "label": "Impose tolls", "hint": "Gold income", "effects": {"gold": 40, "happiness": -0.05, "cloth": 5}, "follow_up": null},
+      {"id": "free", "label": "Allow free passage", "hint": "Happiness and growth", "effects": {"happiness": 0.1, "gold": 15, "knowledge": 4}, "follow_up": null}
+    ],
+    "rewards": {"gold": 25, "cloth": 8},
+    "expiry_turns": 16,
+    "repeatable": true
+  },
+  {
+    "id": "economic_famine_recovery",
+    "category": "economic",
+    "name": "Famine Recovery",
+    "description": "Last season's hunger lingers. Granaries need refilling before winter returns.",
+    "weight": 11,
+    "conditions": [
+      {"kind": "resource", "key": "food", "op": "<", "value": 35, "weight_mult": 2.5},
+      {"kind": "happiness", "op": "<", "value": 0.5, "weight_mult": 1.6}
+    ],
+    "objectives": [
+      {"id": "food_60", "label": "Stockpile 60 food", "track": "resource_food", "op": ">=", "value": 60},
+      {"id": "grain_20", "label": "Store 20 grain", "track": "resource_grain", "op": ">=", "value": 20}
+    ],
+    "choices": [
+      {"id": "import", "label": "Import grain", "hint": "Spend gold, save people", "effects": {"gold": -30, "food": 20, "happiness": 0.07}, "follow_up": null},
+      {"id": "ration", "label": "Ration strictly", "hint": "Save gold, risk morale", "effects": {"food": -5, "happiness": -0.06, "gold": 10}, "follow_up": null}
+    ],
+    "rewards": {"food": 15, "happiness": 0.09},
+    "expiry_turns": 10,
+    "repeatable": true
+  },
+  {
+    "id": "cultural_great_work",
+    "category": "cultural",
+    "name": "A Great Work",
+    "description": "Artisans dream of a monument that will outlast crowns. Will you fund it?",
+    "weight": 7,
+    "conditions": [
+      {"kind": "resource", "key": "stone", "op": ">", "value": 35, "weight_mult": 1.5},
+      {"kind": "resource", "key": "knowledge", "op": ">", "value": 30, "weight_mult": 1.4}
+    ],
+    "objectives": [
+      {"id": "stone_45", "label": "Quarry 45 stone", "track": "resource_stone", "op": ">=", "value": 45},
+      {"id": "knowledge_40", "label": "Commission designs (40 knowledge)", "track": "resource_knowledge", "op": ">=", "value": 40}
+    ],
+    "choices": [
+      {"id": "build", "label": "Build it grand", "hint": "Happiness and prestige", "effects": {"stone": -25, "gold": -20, "happiness": 0.15, "knowledge": 8}, "follow_up": null},
+      {"id": "modest", "label": "Build modest shrine", "hint": "Balanced cost", "effects": {"stone": -12, "gold": -10, "happiness": 0.07}, "follow_up": null}
+    ],
+    "rewards": {"happiness": 0.1, "knowledge": 6},
+    "expiry_turns": 24,
+    "repeatable": false
+  },
+  {
+    "id": "cultural_heresy",
+    "category": "cultural",
+    "name": "The Heresy",
+    "description": "A preacher declares the old gods dead. Crowds gather, some with stones.",
+    "weight": 8,
+    "conditions": [
+      {"kind": "happiness", "op": "<", "value": 0.55, "weight_mult": 1.4},
+      {"kind": "resource", "key": "knowledge", "op": ">", "value": 20, "weight_mult": 1.3}
+    ],
+    "objectives": [
+      {"id": "happiness_50", "label": "Restore order (happiness 0.5)", "track": "happiness", "op": ">=", "value": 0.5},
+      {"id": "gold_35", "label": "Fund discourse (35 gold)", "track": "resource_gold", "op": ">=", "value": 35}
+    ],
+    "choices": [
+      {"id": "suppress", "label": "Suppress the heresy", "hint": "Order, happiness loss", "effects": {"happiness": -0.08, "gold": -10}},
+      {"id": "debate", "label": "Host public debate", "hint": "Knowledge gain", "effects": {"knowledge": 10, "happiness": 0.06, "gold": -15}},
+      {"id": "embrace", "label": "Embrace new faith", "hint": "Big happiness swing", "effects": {"happiness": 0.12, "knowledge": 5, "gold": -5}}
+    ],
+    "rewards": {"knowledge": 8, "happiness": 0.06},
+    "expiry_turns": 12,
+    "repeatable": true
+  },
+  {
+    "id": "espionage_assassinate",
+    "category": "espionage",
+    "name": "The Rival's General",
+    "description": "A whisper: the enemy general camps poorly guarded. A knife could end a war before it starts.",
+    "weight": 7,
+    "conditions": [
+      {"kind": "turn", "op": ">", "value": 14, "weight_mult": 1.4},
+      {"kind": "resource", "key": "gold", "op": ">", "value": 70, "weight_mult": 1.3}
+    ],
+    "objectives": [
+      {"id": "gold_75", "label": "Fund operation (75 gold)", "track": "resource_gold", "op": ">=", "value": 75},
+      {"id": "knowledge_30", "label": "Plan meticulously (30 knowledge)", "track": "resource_knowledge", "op": ">=", "value": 30}
+    ],
+    "choices": [
+      {"id": "strike", "label": "Strike now", "hint": "Risky, high reward", "effects": {"gold": -30, "happiness": 0.04, "knowledge": -5}, "follow_up": null},
+      {"id": "abandon", "label": "Abandon plot", "hint": "Safe, no gain", "effects": {"happiness": 0.02}, "follow_up": null}
+    ],
+    "rewards": {"gold": 15, "knowledge": 6},
+    "expiry_turns": 10,
+    "repeatable": true
+  },
+  {
+    "id": "espionage_steal_secrets",
+    "category": "espionage",
+    "name": "Steal the Codex",
+    "description": "A rival keeps a codex of irrigation secrets. Your scholars covet it.",
+    "weight": 8,
+    "conditions": [
+      {"kind": "resource", "key": "knowledge", "op": "<", "value": 50, "weight_mult": 1.6},
+      {"kind": "happiness", "op": ">", "value": 0.45, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "gold_50", "label": "Bribe a scribe (50 gold)", "track": "resource_gold", "op": ">=", "value": 50},
+      {"id": "knowledge_35", "label": "Decode it (35 knowledge)", "track": "resource_knowledge", "op": ">=", "value": 35}
+    ],
+    "choices": [
+      {"id": "copy", "label": "Copy quietly", "hint": "Knowledge gain", "effects": {"knowledge": 15, "gold": -20, "happiness": 0.03}, "follow_up": null},
+      {"id": "steal", "label": "Steal original", "hint": "Bigger gain, discovery risk", "effects": {"knowledge": 22, "gold": -15, "happiness": -0.04}, "follow_up": null}
+    ],
+    "rewards": {"knowledge": 12, "food": 10},
+    "expiry_turns": 14,
+    "repeatable": true
+  },
+  {
+    "id": "personal_family_legacy",
+    "category": "personal",
+    "name": "Heir's Tutelage",
+    "description": "Your heir comes of age. How will you shape their heart?",
+    "weight": 9,
+    "conditions": [
+      {"kind": "turn", "op": ">", "value": 18, "weight_mult": 1.5},
+      {"kind": "happiness", "op": ">", "value": 0.5, "weight_mult": 1.3}
+    ],
+    "objectives": [
+      {"id": "knowledge_45", "label": "Tutor heir (45 knowledge)", "track": "resource_knowledge", "op": ">=", "value": 45},
+      {"id": "happiness_60", "label": "Keep realm content (0.6 happiness)", "track": "happiness", "op": ">=", "value": 0.6}
+    ],
+    "choices": [
+      {"id": "scholar", "label": "Scholar's path", "hint": "Knowledge legacy", "effects": {"knowledge": 12, "happiness": 0.05}, "follow_up": null},
+      {"id": "warrior", "label": "Warrior's path", "hint": "Horses and morale", "effects": {"horses": 4, "happiness": 0.07, "gold": -10}, "follow_up": null},
+      {"id": "diplomat", "label": "Diplomat's path", "hint": "Stable realm", "effects": {"happiness": 0.12, "gold": 10}, "follow_up": null}
+    ],
+    "rewards": {"knowledge": 10, "happiness": 0.08},
+    "expiry_turns": 30,
+    "repeatable": false
+  },
+  {
+    "id": "personal_ruler_ambition",
+    "category": "personal",
+    "name": "The Ruler's Ambition",
+    "description": "Late at night you stare at maps. Will you be builder, conqueror, or sage?",
+    "weight": 8,
+    "conditions": [
+      {"kind": "turn", "op": ">", "value": 8, "weight_mult": 1.3},
+      {"kind": "pop", "op": ">", "value": 70, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "choose_path", "label": "Reach 80 gold or 50 knowledge", "track": "resource_gold", "op": ">=", "value": 80},
+      {"id": "pop_80", "label": "Hold 80 souls", "track": "pop_count", "op": ">=", "value": 80}
+    ],
+    "choices": [
+      {"id": "builder", "label": "Builder's ambition", "hint": "Stone and wood", "effects": {"stone": 20, "wood": 20, "happiness": 0.06}, "follow_up": null},
+      {"id": "conqueror", "label": "Conqueror's ambition", "hint": "Horses and iron", "effects": {"horses": 3, "iron": 15, "happiness": -0.02}, "follow_up": null},
+      {"id": "sage", "label": "Sage's ambition", "hint": "Knowledge bloom", "effects": {"knowledge": 18, "happiness": 0.05}, "follow_up": null}
+    ],
+    "rewards": {"happiness": 0.07, "gold": 15},
+    "expiry_turns": 20,
+    "repeatable": false
+  }
+]

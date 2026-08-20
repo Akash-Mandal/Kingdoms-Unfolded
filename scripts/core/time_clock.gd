@@ -16,11 +16,24 @@ const SPEEDS: Array[int] = [0, 1, 4, 12]
 var sim_hour := 6.0    # dawn
 var sim_day := 1
 var speed := 1         # 0 paused, 1×, 4×, 12×
+var _slow_mode := false
+var _slow_factor := 0.5
+
+func set_slow_mode(enabled: bool) -> void:
+	_slow_mode = enabled
+
+func is_slow_mode() -> bool:
+	return _slow_mode
+
+func _effective_speed() -> float:
+	if _slow_mode and speed != 0:
+		return float(speed) * _slow_factor
+	return float(speed)
 
 func _process(delta: float) -> void:
 	if speed == 0:
 		return
-	var hours_per_sec := (HOURS_PER_DAY / SECONDS_PER_DAY_AT_1X) * float(speed)
+	var hours_per_sec := (HOURS_PER_DAY / SECONDS_PER_DAY_AT_1X) * _effective_speed()
 	var prev := int(sim_hour)
 	sim_hour += hours_per_sec * delta
 	if int(sim_hour) != prev:

@@ -1,0 +1,391 @@
+[
+  {
+    "id": "drought",
+    "name": "Summer Drought",
+    "category": "disaster",
+    "weight": 12,
+    "base_prob": 0.05,
+    "severity": 2,
+    "conditions": [
+      {"kind": "season", "value": "summer", "weight_mult": 2.5},
+      {"kind": "resource", "key": "food", "op": "<", "value": 40, "weight_mult": 1.8},
+      {"kind": "resource", "key": "grain", "op": "<", "value": 15, "weight_mult": 2.0}
+    ],
+    "cooldown": 6,
+    "text": "The sun hangs pitiless. Rivers thin to mud and grain curls brown. A drought grips the realm.",
+    "choices": [
+      {"id": "ration", "label": "Ration water and grain", "hint": "Saves food but angers peasants", "effects": {"food": 10, "gold": -10, "happiness": -0.05}},
+      {"id": "pray", "label": "Pray for rain and dig wells", "hint": "Costs gold, chance of relief", "effects": {"gold": -25, "food": 15, "happiness": 0.03}},
+      {"id": "ignore", "label": "Push through without action", "hint": "Saves gold, risks famine", "effects": {"food": -25, "happiness": -0.12}}
+    ]
+  },
+  {
+    "id": "great_flood",
+    "name": "Great Flood",
+    "category": "disaster",
+    "weight": 10,
+    "base_prob": 0.04,
+    "severity": 2,
+    "conditions": [
+      {"kind": "season", "value": "spring", "weight_mult": 2.2},
+      {"kind": "resource", "key": "food", "op": ">", "value": 60, "weight_mult": 1.4},
+      {"kind": "turn", "op": ">", "value": 8, "weight_mult": 1.3}
+    ],
+    "cooldown": 8,
+    "text": "Spring thaw bursts the riverbanks. Fields drown and roads wash away under churning water.",
+    "choices": [
+      {"id": "evacuate", "label": "Evacuate lowland villages", "hint": "Saves lives, loses grain", "effects": {"food": -15, "gold": -15, "happiness": 0.06}},
+      {"id": "dam", "label": "Reinforce dams with conscripts", "hint": "Costs wood and gold", "effects": {"wood": -20, "gold": -10, "food": 5}},
+      {"id": "accept", "label": "Accept the losses", "hint": "No cost, morale suffers", "effects": {"food": -20, "happiness": -0.08}}
+    ]
+  },
+  {
+    "id": "earthquake",
+    "name": "Earth Tremor",
+    "category": "disaster",
+    "weight": 6,
+    "base_prob": 0.025,
+    "severity": 3,
+    "conditions": [
+      {"kind": "resource", "key": "stone", "op": ">", "value": 30, "weight_mult": 1.3},
+      {"kind": "pop", "op": ">", "value": 70, "weight_mult": 1.4}
+    ],
+    "cooldown": 12,
+    "text": "The earth heaves. Stone walls crack and a low roar rolls through the valley. Homes shudder.",
+    "choices": [
+      {"id": "rebuild", "label": "Rebuild immediately", "hint": "Costs stone and gold", "effects": {"stone": -25, "gold": -20, "happiness": 0.07}},
+      {"id": "salvage", "label": "Salvage what remains", "hint": "Gain stone, lose happiness", "effects": {"stone": 15, "happiness": -0.06}},
+      {"id": "omens", "label": "Declare it an omen", "hint": "Clergy appeased", "effects": {"happiness": -0.02, "knowledge": 5}}
+    ]
+  },
+  {
+    "id": "wildfire",
+    "name": "Wildfire",
+    "category": "disaster",
+    "weight": 9,
+    "base_prob": 0.035,
+    "severity": 2,
+    "conditions": [
+      {"kind": "season", "value": "summer", "weight_mult": 2.8},
+      {"kind": "resource", "key": "wood", "op": ">", "value": 50, "weight_mult": 1.6},
+      {"kind": "happiness", "op": ">", "value": 0.5, "weight_mult": 1.2}
+    ],
+    "cooldown": 7,
+    "text": "A spark in dry timber becomes a wall of flame. Smoke blots the sun as forests burn.",
+    "choices": [
+      {"id": "firebreak", "label": "Cut firebreaks", "hint": "Lose wood, save villages", "effects": {"wood": -30, "food": -10, "happiness": 0.04}},
+      {"id": "let_burn", "label": "Let it burn and reseed", "hint": "Wood loss, future fertility", "effects": {"wood": -40, "food": 10, "happiness": -0.05}},
+      {"id": "pray_rain", "label": "Pray and wait for rain", "hint": "No cost, risky", "effects": {"happiness": -0.04, "wood": -15}}
+    ]
+  },
+  {
+    "id": "rat_plague",
+    "name": "Rat Plague",
+    "category": "plague",
+    "weight": 11,
+    "base_prob": 0.045,
+    "severity": 2,
+    "conditions": [
+      {"kind": "resource", "key": "food", "op": "<", "value": 20, "weight_mult": 3.0},
+      {"kind": "resource", "key": "grain", "op": "<", "value": 10, "weight_mult": 2.5},
+      {"kind": "happiness", "op": "<", "value": 0.45, "weight_mult": 1.6}
+    ],
+    "cooldown": 6,
+    "text": "Rats swarm the granaries, their chittering a chorus of hunger. Grain sacks empty overnight.",
+    "choices": [
+      {"id": "quarantine", "label": "Quarantine granaries", "hint": "Spend gold, save food", "effects": {"gold": -15, "food": 10, "happiness": 0.02}},
+      {"id": "bounty", "label": "Post rat-catcher bounty", "hint": "Costs gold, gains happiness", "effects": {"gold": -20, "happiness": 0.08, "food": 5}},
+      {"id": "ignore", "label": "Ignore the warnings", "hint": "Saves gold, risks famine", "effects": {"food": -25, "happiness": -0.1}}
+    ]
+  },
+  {
+    "id": "fever_outbreak",
+    "name": "Fever Outbreak",
+    "category": "plague",
+    "weight": 10,
+    "base_prob": 0.04,
+    "severity": 3,
+    "conditions": [
+      {"kind": "pop", "op": ">", "value": 80, "weight_mult": 2.0},
+      {"kind": "happiness", "op": "<", "value": 0.5, "weight_mult": 1.8},
+      {"kind": "resource", "key": "food", "op": "<", "value": 35, "weight_mult": 1.5}
+    ],
+    "cooldown": 8,
+    "text": "A burning fever spreads hut to hut. Healers work by candlelight as coughs echo at night.",
+    "choices": [
+      {"id": "healers", "label": "Fund healers and herbs", "hint": "Costs gold, saves lives", "effects": {"gold": -30, "happiness": 0.07, "knowledge": 3}},
+      {"id": "isolate", "label": "Isolate the sick", "hint": "Lose pop happiness, contain spread", "effects": {"happiness": -0.06, "food": -5}},
+      {"id": "festival", "label": "Hold cleansing festival", "hint": "Boost morale, risk spread", "effects": {"gold": -10, "happiness": 0.05, "food": -8}}
+    ]
+  },
+  {
+    "id": "blight",
+    "name": "Crop Blight",
+    "category": "plague",
+    "weight": 12,
+    "base_prob": 0.05,
+    "severity": 2,
+    "conditions": [
+      {"kind": "resource", "key": "food", "op": "<", "value": 30, "weight_mult": 2.2},
+      {"kind": "resource", "key": "grain", "op": "<", "value": 12, "weight_mult": 2.5},
+      {"kind": "season", "value": "autumn", "weight_mult": 1.8}
+    ],
+    "cooldown": 5,
+    "text": "Black spots spread across wheat heads. What looked like bounty rots in the field.",
+    "choices": [
+      {"id": "burn_fields", "label": "Burn blighted fields", "hint": "Lose grain, prevent spread", "effects": {"grain": -15, "food": -10, "happiness": -0.03}},
+      {"id": "import", "label": "Import grain at cost", "hint": "Spend gold to replace food", "effects": {"gold": -35, "food": 20, "happiness": 0.04}},
+      {"id": "ration2", "label": "Ration and hope", "hint": "No gold cost, hunger risk", "effects": {"food": -18, "happiness": -0.09}}
+    ]
+  },
+  {
+    "id": "murrain",
+    "name": "Livestock Murrain",
+    "category": "plague",
+    "weight": 8,
+    "base_prob": 0.03,
+    "severity": 2,
+    "conditions": [
+      {"kind": "resource", "key": "food", "op": "<", "value": 35, "weight_mult": 1.7},
+      {"kind": "resource", "key": "horses", "op": ">", "value": 5, "weight_mult": 2.0},
+      {"kind": "happiness", "op": "<", "value": 0.5, "weight_mult": 1.4}
+    ],
+    "cooldown": 7,
+    "text": "Cattle drop in pastures, horses stagger. Herders whisper of cursed water.",
+    "choices": [
+      {"id": "cull", "label": "Cull sick herds", "hint": "Lose horses, save others", "effects": {"horses": -3, "food": -12, "happiness": -0.04}},
+      {"id": "heal", "label": "Hire beast-healers", "hint": "Spend gold and knowledge", "effects": {"gold": -20, "knowledge": -2, "horses": 1, "happiness": 0.05}},
+      {"id": "feast", "label": "Slaughter and feast before loss", "hint": "Gain food, lose horses", "effects": {"horses": -4, "food": 18, "happiness": 0.06}}
+    ]
+  },
+  {
+    "id": "tax_revolt",
+    "name": "Tax Revolt",
+    "category": "revolt",
+    "weight": 10,
+    "base_prob": 0.04,
+    "severity": 2,
+    "conditions": [
+      {"kind": "happiness", "op": "<", "value": 0.35, "weight_mult": 3.0},
+      {"kind": "resource", "key": "gold", "op": "<", "value": 30, "weight_mult": 1.5},
+      {"kind": "pop", "op": ">", "value": 60, "weight_mult": 1.4}
+    ],
+    "cooldown": 6,
+    "text": "Collectors return bruised. 'No more!' is chalked on granary doors. The commons refuse the levy.",
+    "choices": [
+      {"id": "lower_taxes", "label": "Lower taxes", "hint": "Lose gold income, gain loyalty", "effects": {"gold": -20, "happiness": 0.12}},
+      {"id": "enforce", "label": "Send guards to enforce", "hint": "Keep gold, crush dissent", "effects": {"gold": 15, "happiness": -0.15}},
+      {"id": "negotiate", "label": "Negotiate new compact", "hint": "Balanced cost", "effects": {"gold": -10, "happiness": 0.06, "knowledge": 2}}
+    ]
+  },
+  {
+    "id": "peasant_uprising",
+    "name": "Peasant Uprising",
+    "category": "revolt",
+    "weight": 9,
+    "base_prob": 0.035,
+    "severity": 3,
+    "conditions": [
+      {"kind": "resource", "key": "food", "op": "<", "value": 15, "weight_mult": 3.5},
+      {"kind": "happiness", "op": "<", "value": 0.4, "weight_mult": 2.2},
+      {"kind": "pop", "op": ">", "value": 60, "weight_mult": 1.3}
+    ],
+    "cooldown": 8,
+    "text": "Pitchforks catch torchlight. Hungry peasants march on the keep, chanting for bread and justice.",
+    "choices": [
+      {"id": "bread", "label": "Open granaries", "hint": "Give food, restore order", "effects": {"food": -25, "happiness": 0.15}},
+      {"id": "crush", "label": "Crush the uprising", "hint": "Keep food, lose happiness", "effects": {"food": 5, "happiness": -0.18, "gold": -10}},
+      {"id": "reform", "label": "Promise land reform", "hint": "Future cost, immediate calm", "effects": {"happiness": 0.08, "gold": -15, "knowledge": 4}}
+    ]
+  },
+  {
+    "id": "noble_conspiracy",
+    "name": "Noble Conspiracy",
+    "category": "revolt",
+    "weight": 7,
+    "base_prob": 0.03,
+    "severity": 3,
+    "conditions": [
+      {"kind": "resource", "key": "gold", "op": ">", "value": 100, "weight_mult": 1.5},
+      {"kind": "happiness", "op": "<", "value": 0.5, "weight_mult": 1.8},
+      {"kind": "pop", "op": ">", "value": 75, "weight_mult": 1.2}
+    ],
+    "cooldown": 10,
+    "text": "Sealed letters pass between manors. Your nobles meet without you, toasting 'a stronger crown'.",
+    "choices": [
+      {"id": "spy", "label": "Infiltrate with spies", "hint": "Spend gold and knowledge", "effects": {"gold": -25, "knowledge": -5, "happiness": 0.04}},
+      {"id": "purge", "label": "Purge the conspirators", "hint": "Gold gain, loyalty risk", "effects": {"gold": 20, "happiness": -0.12}},
+      {"id": "appease", "label": "Appease with titles", "hint": "Gold cost, stability", "effects": {"gold": -30, "happiness": 0.09}}
+    ]
+  },
+  {
+    "id": "clergy_schism",
+    "name": "Clergy Schism",
+    "category": "revolt",
+    "weight": 7,
+    "base_prob": 0.03,
+    "severity": 2,
+    "conditions": [
+      {"kind": "resource", "key": "knowledge", "op": "<", "value": 15, "weight_mult": 1.6},
+      {"kind": "happiness", "op": "<", "value": 0.55, "weight_mult": 1.4},
+      {"kind": "turn", "op": ">", "value": 12, "weight_mult": 1.3}
+    ],
+    "cooldown": 9,
+    "text": "Priests preach rival doctrines. Streets divide between old rites and new fervor.",
+    "choices": [
+      {"id": "orthodox", "label": "Back orthodoxy", "hint": "Stability, clergy favor", "effects": {"happiness": 0.05, "knowledge": -3}},
+      {"id": "tolerate", "label": "Tolerate both faiths", "hint": "Knowledge gain, weak control", "effects": {"happiness": 0.08, "knowledge": 6}},
+      {"id": "suppress", "label": "Suppress dissent", "hint": "Happiness loss, order", "effects": {"happiness": -0.07, "gold": 10}}
+    ]
+  },
+  {
+    "id": "fertile_vein",
+    "name": "Fertile Vein Discovered",
+    "category": "discovery",
+    "weight": 8,
+    "base_prob": 0.04,
+    "severity": 1,
+    "conditions": [
+      {"kind": "resource", "key": "food", "op": ">", "value": 50, "weight_mult": 1.6},
+      {"kind": "happiness", "op": ">", "value": 0.6, "weight_mult": 1.5},
+      {"kind": "pop", "op": ">", "value": 55, "weight_mult": 1.2}
+    ],
+    "cooldown": 8,
+    "text": "Surveyors find dark, rich soil beneath scrubland. 'This land will feed generations,' they say.",
+    "choices": [
+      {"id": "settle", "label": "Settle the vein", "hint": "Gain food and grain", "effects": {"food": 25, "grain": 15, "gold": -10}},
+      {"id": "reserve", "label": "Reserve for the crown", "hint": "Gold cost, future yield", "effects": {"gold": -15, "food": 10, "happiness": 0.04}},
+      {"id": "grant", "label": "Grant to peasants", "hint": "Happiness surge", "effects": {"happiness": 0.12, "food": 15, "gold": -5}}
+    ]
+  },
+  {
+    "id": "ancient_ruins",
+    "name": "Ancient Ruins Unearthed",
+    "category": "discovery",
+    "weight": 7,
+    "base_prob": 0.03,
+    "severity": 1,
+    "conditions": [
+      {"kind": "resource", "key": "knowledge", "op": ">", "value": 20, "weight_mult": 1.8},
+      {"kind": "resource", "key": "stone", "op": "<", "value": 40, "weight_mult": 1.4}
+    ],
+    "cooldown": 10,
+    "text": "Ploughs strike dressed stone. A buried vault, its lintel carved with forgotten kings, yawns open.",
+    "choices": [
+      {"id": "excavate", "label": "Excavate carefully", "hint": "Gain knowledge and stone", "effects": {"knowledge": 12, "stone": 15, "gold": -10}},
+      {"id": "loot", "label": "Loot quickly", "hint": "Gold now, knowledge lost", "effects": {"gold": 30, "knowledge": -2, "happiness": -0.03}},
+      {"id": "seal", "label": "Seal it as sacred", "hint": "Happiness, clergy favor", "effects": {"happiness": 0.1, "knowledge": 4}}
+    ]
+  },
+  {
+    "id": "bumper_harvest",
+    "name": "Bumper Harvest",
+    "category": "discovery",
+    "weight": 9,
+    "base_prob": 0.045,
+    "severity": 1,
+    "conditions": [
+      {"kind": "season", "value": "autumn", "weight_mult": 2.4},
+      {"kind": "resource", "key": "food", "op": ">", "value": 45, "weight_mult": 1.5},
+      {"kind": "happiness", "op": ">", "value": 0.55, "weight_mult": 1.3}
+    ],
+    "cooldown": 6,
+    "text": "Fields bow heavy with golden heads. Even the oldest farmers call it a harvest for the songs.",
+    "choices": [
+      {"id": "store", "label": "Store surplus", "hint": "Bank food for winter", "effects": {"food": 30, "grain": 10, "happiness": 0.05}},
+      {"id": "feast", "label": "Hold harvest feast", "hint": "Happiness boom", "effects": {"food": 15, "happiness": 0.15, "gold": -10}},
+      {"id": "sell", "label": "Sell surplus", "hint": "Convert to gold", "effects": {"food": 10, "gold": 35, "happiness": 0.02}}
+    ]
+  },
+  {
+    "id": "master_craftsman",
+    "name": "Master Craftsman Arrives",
+    "category": "discovery",
+    "weight": 7,
+    "base_prob": 0.03,
+    "severity": 1,
+    "conditions": [
+      {"kind": "resource", "key": "gold", "op": ">", "value": 60, "weight_mult": 1.7},
+      {"kind": "resource", "key": "wood", "op": ">", "value": 30, "weight_mult": 1.3}
+    ],
+    "cooldown": 9,
+    "text": "A master smith, tools on his back, asks leave to settle. 'Give me a forge and I give you wonders.'",
+    "choices": [
+      {"id": "hire", "label": "Hire and build forge", "hint": "Costs gold, gains iron and knowledge", "effects": {"gold": -20, "iron": 15, "knowledge": 6, "happiness": 0.04}},
+      {"id": "decline", "label": "Decline politely", "hint": "No change", "effects": {}},
+      {"id": "patron", "label": "Make him court artisan", "hint": "Prestige cost", "effects": {"gold": -35, "happiness": 0.08, "knowledge": 10}}
+    ]
+  },
+  {
+    "id": "traveling_merchant",
+    "name": "Traveling Merchant",
+    "category": "random",
+    "weight": 10,
+    "base_prob": 0.05,
+    "severity": 1,
+    "conditions": [
+      {"kind": "resource", "key": "gold", "op": ">", "value": 20, "weight_mult": 1.2}
+    ],
+    "cooldown": 4,
+    "text": "Bells jingle on a caravan. A merchant from distant markets offers exotic goods and news.",
+    "choices": [
+      {"id": "trade", "label": "Trade generously", "hint": "Gold to goods conversion", "effects": {"gold": -20, "cloth": 12, "food": 8, "happiness": 0.03}},
+      {"id": "tax", "label": "Tax the caravan", "hint": "Gold gain, merchant anger", "effects": {"gold": 18, "happiness": -0.04}},
+      {"id": "invite", "label": "Invite to settle", "hint": "Knowledge and cloth", "effects": {"gold": -10, "knowledge": 5, "cloth": 6}}
+    ]
+  },
+  {
+    "id": "royal_marriage_offer",
+    "name": "Royal Marriage Offer",
+    "category": "random",
+    "weight": 6,
+    "base_prob": 0.025,
+    "severity": 1,
+    "conditions": [
+      {"kind": "happiness", "op": ">", "value": 0.5, "weight_mult": 1.5},
+      {"kind": "turn", "op": ">", "value": 6, "weight_mult": 1.4}
+    ],
+    "cooldown": 12,
+    "text": "A courier bears a silk-sealed letter: a neighboring house seeks union through marriage.",
+    "choices": [
+      {"id": "accept", "label": "Accept the union", "hint": "Diplomacy and happiness", "effects": {"happiness": 0.1, "gold": -15, "knowledge": 3}},
+      {"id": "refuse", "label": "Refuse with honor", "hint": "Gold saved, slight happiness loss", "effects": {"happiness": -0.05, "gold": 5}},
+      {"id": "delay", "label": "Delay for better terms", "hint": "Knowledge gain", "effects": {"knowledge": 6, "happiness": 0.02}}
+    ]
+  },
+  {
+    "id": "mysterious_stranger",
+    "name": "Mysterious Stranger",
+    "category": "random",
+    "weight": 7,
+    "base_prob": 0.03,
+    "severity": 1,
+    "conditions": [],
+    "cooldown": 5,
+    "text": "A cloaked stranger at the gate claims to know where 'the earth bleeds iron'. Test or trust them?",
+    "choices": [
+      {"id": "trust", "label": "Trust the stranger", "hint": "Risk gold for iron", "effects": {"gold": -15, "iron": 20, "happiness": 0.02}},
+      {"id": "test", "label": "Test their claim first", "hint": "Spend knowledge", "effects": {"knowledge": -3, "iron": 10, "gold": -5}},
+      {"id": "turn_away", "label": "Turn them away", "hint": "No change, safe", "effects": {"happiness": -0.02}}
+    ]
+  },
+  {
+    "id": "festival_opportunity",
+    "name": "Festival Opportunity",
+    "category": "random",
+    "weight": 9,
+    "base_prob": 0.045,
+    "severity": 1,
+    "conditions": [
+      {"kind": "happiness", "op": ">", "value": 0.45, "weight_mult": 1.6},
+      {"kind": "resource", "key": "food", "op": ">", "value": 35, "weight_mult": 1.4}
+    ],
+    "cooldown": 5,
+    "text": "The square is ripe for revelry. Musicians gather, asking the crown to bless a festival.",
+    "choices": [
+      {"id": "grand", "label": "Grand festival", "hint": "Big happiness, gold cost", "effects": {"gold": -25, "food": -10, "happiness": 0.18}},
+      {"id": "modest", "label": "Modest gathering", "hint": "Small cost, small joy", "effects": {"gold": -10, "food": -5, "happiness": 0.08}},
+      {"id": "forbid", "label": "Forbid merriment", "hint": "Save resources, lose heart", "effects": {"happiness": -0.08, "gold": 5}}
+    ]
+  }
+]

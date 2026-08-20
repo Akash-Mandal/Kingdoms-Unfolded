@@ -1,0 +1,92 @@
+[
+	{
+		"id": "non_aggression_pact",
+		"name": "Non-Aggression Pact",
+		"aliases": ["nap"],
+		"icon": "🤝",
+		"description": "Both kingdoms pledge not to attack for the duration. Breach is seen as dishonourable.",
+		"duration_months": 12,
+		"effects": { "score_bonus": 8, "trust_bonus": 0.08, "trade_mult": 1.0, "prevents_war": true, "tribute_gold": 0 },
+		"requirements": { "min_score": -20, "min_trust": -0.3 },
+		"break_penalty": { "score_delta": -25, "trust_delta": -0.35, "memory_tag": "betrayal" },
+		"scenarios": [
+			{ "id": "nap_border_friction", "trigger": "border incident resolved peacefully", "score_delta": 5 },
+			{ "id": "nap_expired", "trigger": "pact expires without incident", "trust_delta": 0.05 }
+		]
+	},
+	{
+		"id": "trade_agreement",
+		"name": "Trade Agreement",
+		"aliases": ["trade"],
+		"icon": "⚖️",
+		"description": "Preferential tariffs and caravan rights. Boosts gold and resource flow.",
+		"duration_months": 18,
+		"effects": { "score_bonus": 10, "trust_bonus": 0.06, "trade_mult": 1.25, "prevents_war": false, "tribute_gold": 0 },
+		"requirements": { "min_score": 5, "min_trust": 0.0 },
+		"break_penalty": { "score_delta": -15, "trust_delta": -0.2, "memory_tag": "trade_break" },
+		"scenarios": [
+			{ "id": "trade_prosperity", "trigger": "both markets prosper for 6 months", "score_delta": 8, "gold_bonus": 15 },
+			{ "id": "trade_embargo", "trigger": "one side imposes embargo", "score_delta": -18 }
+		]
+	},
+	{
+		"id": "royal_marriage",
+		"name": "Royal Marriage",
+		"aliases": ["marriage"],
+		"icon": "💍",
+		"description": "Dynastic union. Great prestige, shared legitimacy, hard to break without scandal.",
+		"duration_months": -1,
+		"effects": { "score_bonus": 28, "trust_bonus": 0.22, "trade_mult": 1.1, "prevents_war": true, "tribute_gold": 0 },
+		"requirements": { "min_score": 35, "min_trust": 0.3, "max_power_ratio": 2.0 },
+		"break_penalty": { "score_delta": -45, "trust_delta": -0.5, "memory_tag": "betrayal" },
+		"scenarios": [
+			{ "id": "marriage_heir", "trigger": "union produces an heir", "score_delta": 12, "trust_delta": 0.1 },
+			{ "id": "marriage_succession_crisis", "trigger": "spouse dies without heir", "score_delta": -20 }
+		]
+	},
+	{
+		"id": "alliance",
+		"name": "Military Alliance",
+		"aliases": ["alliance"],
+		"icon": "🛡️",
+		"description": "Mutual defence pact. Call to arms when either is attacked.",
+		"duration_months": 24,
+		"effects": { "score_bonus": 22, "trust_bonus": 0.15, "trade_mult": 1.05, "prevents_war": true, "tribute_gold": 0 },
+		"requirements": { "min_score": 20, "min_trust": 0.15 },
+		"break_penalty": { "score_delta": -30, "trust_delta": -0.4, "memory_tag": "betrayal" },
+		"scenarios": [
+			{ "id": "alliance_honoured", "trigger": "ally answers call to arms", "score_delta": 15, "trust_delta": 0.12 },
+			{ "id": "alliance_abandoned", "trigger": "ally refuses aid", "score_delta": -28, "trust_delta": -0.3 }
+		]
+	},
+	{
+		"id": "vassalage",
+		"name": "Vassalage",
+		"aliases": ["vassal"],
+		"icon": "👑",
+		"description": "Subordinate pays tribute for protection. Power imbalance required.",
+		"duration_months": 36,
+		"effects": { "score_bonus": 12, "trust_bonus": -0.05, "trade_mult": 1.15, "prevents_war": true, "tribute_gold": 6 },
+		"requirements": { "min_score": 10, "min_trust": -0.2, "min_power_ratio": 1.6 },
+		"break_penalty": { "score_delta": -35, "trust_delta": -0.45, "memory_tag": "rebellion" },
+		"scenarios": [
+			{ "id": "vassal_tribute_paid", "trigger": "vassal pays on time", "score_delta": 4, "gold_bonus": 12 },
+			{ "id": "vassal_revolt", "trigger": "vassal withholds tribute and rebels", "score_delta": -25, "war_trigger": true }
+		]
+	},
+	{
+		"id": "confederation",
+		"name": "Confederation",
+		"aliases": ["confederation"],
+		"icon": "🏰",
+		"description": "Loose union of crowns sharing laws and roads. Permanent until crisis.",
+		"duration_months": -1,
+		"effects": { "score_bonus": 18, "trust_bonus": 0.18, "trade_mult": 1.2, "prevents_war": true, "tribute_gold": 0 },
+		"requirements": { "min_score": 45, "min_trust": 0.35 },
+		"break_penalty": { "score_delta": -40, "trust_delta": -0.5, "memory_tag": "betrayal" },
+		"scenarios": [
+			{ "id": "confederation_council", "trigger": "joint council resolves dispute", "score_delta": 10, "trust_delta": 0.08 },
+			{ "id": "confederation_schism", "trigger": "doctrinal split over succession", "score_delta": -30 }
+		]
+	}
+]

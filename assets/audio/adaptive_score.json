@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "note": "Placeholder for GRAND_PLAN §12 adaptive layered score. No binary OGGs committed — keep APK <80MB.",
+    "bpm": 80,
+    "bus_layout": "Master/Music/Base,Master/Music/Tension,Master/Music/Mourning,Master/Music/Stinger,Master/SFX,Master/SFX3D",
+    "driven_by": "CE mood (happiness, war_fatigue, revolt_risk, diplomacy, event_occurred)"
+  },
+  "layers": {
+    "base": {
+      "file": "res://assets/audio/base.ogg",
+      "placeholder": "assets/audio/base.ogg.placeholder",
+      "loop": true,
+      "volume_db": -6,
+      "always_on": true,
+      "fade_in_s": 1.5
+    },
+    "tension": {
+      "file": "res://assets/audio/tension.ogg",
+      "placeholder": "assets/audio/tension.ogg.placeholder",
+      "loop": true,
+      "volume_db": -6,
+      "volume_db_silent": -80,
+      "crossfade_s": 2.0,
+      "curve": "linear",
+      "driven_by": ["war_fatigue", "revolt_risk", "diplomacy.score"],
+      "threshold": 0.35
+    },
+    "triumph": {
+      "file": "res://assets/audio/triumph.ogg",
+      "placeholder": "assets/audio/triumph.ogg.placeholder",
+      "loop": false,
+      "volume_db": 0,
+      "one_shot": true,
+      "duration_s": 5,
+      "duck_base_db": -3,
+      "trigger": ["battle_victory", "prestige_milestone"]
+    },
+    "mourning": {
+      "file": "res://assets/audio/mourning.ogg",
+      "placeholder": "assets/audio/mourning.ogg.placeholder",
+      "loop": true,
+      "volume_db": -4,
+      "lowpass_hz": 800,
+      "crossfade_s": 2.5,
+      "trigger": ["ruler_death", "succession_crisis", "plague_severity>0.7"]
+    }
+  },
+  "sfx": {
+    "ui_click": "res://assets/audio/sfx/ui_click.ogg",
+    "battle_clang": "res://assets/audio/sfx/battle_clang.ogg"
+  }
+}

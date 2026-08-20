@@ -1,0 +1,86 @@
+[
+  {
+    "id": "battle_simulator",
+    "name": "Battle Simulator",
+    "icon": "⚔️",
+    "description": "Set up custom armies, simulate battles with AI narration and terrain modifiers.",
+    "category": "military",
+    "gemini_role": "Narrates clash blow-by-blow from CE battle result",
+    "rules": ["Pick attacker/defender compositions", "Choose terrain: plains/hills/forest/desert", "CE auto_resolve + gemini prose"],
+    "config": {"terrain_opts": ["plains","hills","forest","desert","river"], "max_units_per_side": 200},
+    "rewards_preview": {"knowledge": 2, "xp": 1},
+    "stub_action": "call Game.auto_resolve(attackers, defenders, terrain)"
+  },
+  {
+    "id": "trade_floor",
+    "name": "Trade Floor",
+    "icon": "🏪",
+    "description": "Real-time supply/demand mini market. Buy low, sell high, corner the market.",
+    "category": "economic",
+    "gemini_role": "Generates market events and merchant banter",
+    "rules": ["8 resources with drifting prices", "Demand spikes from CE shortage", "Timed ticks with price curves"],
+    "config": {"tick_seconds": 3, "starting_gold": 50, "price_volatility": 0.18},
+    "rewards_preview": {"gold": "variable"},
+    "stub_action": "simulate via Game.resources stock deltas"
+  },
+  {
+    "id": "trial_of_kings",
+    "name": "Trial of Kings",
+    "icon": "👑",
+    "description": "Judgement scenarios — make rulings, see consequences on happiness and law.",
+    "category": "political",
+    "gemini_role": "Generates cases + litigant voices + consequence hints",
+    "rules": ["Hear 3 cases per session", "Choices shift happiness/gold/knowledge", "Precedents remembered in chronicle"],
+    "config": {"cases_per_session": 3},
+    "rewards_preview": {"happiness": 0.05},
+    "stub_action": "Game.apply_event_choice on synthetic event"
+  },
+  {
+    "id": "duel",
+    "name": "Duel",
+    "icon": "🗡️",
+    "description": "Your champion vs rival's — dice + stats, AI narrated honor bout.",
+    "category": "military",
+    "gemini_role": "Narrates duel with trait-aware flair",
+    "rules": ["Pick champion trait-weighted stats", "Best of 3 rolls with modifiers", "Upset chance from CE morale"],
+    "config": {"rounds": 3, "stat_keys": ["strength","honor","cunning"]},
+    "rewards_preview": {"prestige": 1},
+    "stub_action": "rng roll + Catalog.get_unit strength factor"
+  },
+  {
+    "id": "noble_cards",
+    "name": "Noble Cards",
+    "icon": "🃏",
+    "description": "Card-based political intrigue using your court — bluff, ally, betray.",
+    "category": "political",
+    "gemini_role": "Invents card lore and court gossip",
+    "rules": ["Hand built from court advisors", "Play intrigue cards against AI houses", "Win by prestige or purge"],
+    "config": {"hand_size": 5, "ai_opponents": 2},
+    "rewards_preview": {"knowledge": 3},
+    "stub_action": "uses scripts/world/court.gd advisor pool"
+  },
+  {
+    "id": "tournament",
+    "name": "Tournament",
+    "icon": "🏹",
+    "description": "Host a tournament, bet on outcomes, gain prestige. Jousts, melees, archery.",
+    "category": "cultural",
+    "gemini_role": "Color commentary and crowd reactions",
+    "rules": ["Fund purse from treasury", "Seed brackets, simulate with CE power", "Betting odds drift with form"],
+    "config": {"events": ["joust","melee","archery"], "entry_fee_gold": 10},
+    "rewards_preview": {"happiness": 0.08, "gold": "variable"},
+    "stub_action": "Military.calc_power for contender strength"
+  },
+  {
+    "id": "royal_puzzle",
+    "name": "Royal Puzzle",
+    "icon": "🧩",
+    "description": "Resource allocation puzzle with timed CE simulation — balance flows under pressure.",
+    "category": "economic",
+    "gemini_role": "Riddle setter for puzzle premise",
+    "rules": ["Allocate wood/stone/iron to targets", "CE tick checks surplus/decay", "Solve before famine clock"],
+    "config": {"time_limit_seconds": 90, "resources": ["food","wood","stone","iron"]},
+    "rewards_preview": {"knowledge": 4},
+    "stub_action": "validate via Game._apply_flows snapshot"
+  }
+]

@@ -1,0 +1,87 @@
+[
+  {
+    "id": "beggar_king",
+    "title": "The Beggar King",
+    "icon": "👑",
+    "description": "A dethroned rival tells his fall from throne to gutter — seen through your kingdom's rise.",
+    "era_hint": "any",
+    "gemini_role": "POV antagonist memoir, reactive to kingdom name and ruler traits",
+    "chapters": [
+      {"id": "bk_ch1", "title": "The Night of Knives", "synopsis": "The palace coup that stole his crown.", "prompt_hint": "Generate betrayal scene with your kingdom as beneficiary.", "choices": [{"id": "pity", "label": "Offer pity"}, {"id": "scorn", "label": "Scorn his weakness"}]},
+      {"id": "bk_ch2", "title": "Ashen Streets", "synopsis": "Life among beggars, learning the commons' true voice.", "prompt_hint": "Street-level portrait of your capital under current happiness.", "choices": [{"id": "listen", "label": "Listen to whispers"}, {"id": "ignore", "label": "Dismiss as fable"}]},
+      {"id": "bk_ch3", "title": "A Borrowed Blade", "synopsis": "He finds a patron who promises restoration.", "prompt_hint": "Introduce rival kingdom as patron based on diplomacy state.", "choices": [{"id": "watch", "label": "Shadow him"}, {"id": "recruit", "label": "Offer quiet employment"}]},
+      {"id": "bk_ch4", "title": "The Last Petition", "synopsis": "He stands at your gate asking audience or vengeance.", "prompt_hint": "Climax: redemption or final confrontation, player kingdom decides.", "choices": [{"id": "mercy", "label": "Grant mercy and land"}, {"id": "exile", "label": "Exile for good"}]}
+    ]
+  },
+  {
+    "id": "merchant_daughter",
+    "title": "The Merchant's Daughter",
+    "icon": "⚖️",
+    "description": "A trade family navigates your tariffs, roads, and wars — prosperity hangs by a ledger line.",
+    "era_hint": "medieval",
+    "gemini_role": "Domestic economics drama, personalized to gold/cloth policy",
+    "chapters": [
+      {"id": "md_ch1", "title": "The Salt Ledger", "synopsis": "Father entrusts daughter with the first caravan.", "prompt_hint": "Trade route through your territory, reflect current gold/food.", "choices": [{"id": "fund", "label": "Fund her caravan"}, {"id": "tax", "label": "Raise toll"}]},
+      {"id": "md_ch2", "title": "Rain and Rot", "synopsis": "Grain spoils on blocked roads; debts mount.", "prompt_hint": "Mirror current resource shortage or surplus.", "choices": [{"id": "waive", "label": "Waive duties"}, {"id": "enforce", "label": "Enforce dues"}]},
+      {"id": "md_ch3", "title": "A Rival's Offer", "synopsis": "A foreign house courts her with better terms.", "prompt_hint": "Diplomacy-driven temptation from highest relation rival.", "choices": [{"id": "match", "label": "Match the offer"}, {"id": "release", "label": "Let her go"}]},
+      {"id": "md_ch4", "title": "The Guild Seat", "synopsis": "She bids for a guild charter — your seal decides her house's fate.", "prompt_hint": "Resolution tied to commerce tech and treasury.", "choices": [{"id": "charter", "label": "Grant charter"}, {"id": "deny", "label": "Deny quietly"}]}
+    ]
+  },
+  {
+    "id": "plague_year",
+    "title": "Plague Year",
+    "icon": "🩺",
+    "description": "A physician's journal through epidemic — faith, quarantine, and rotting streets.",
+    "era_hint": "any",
+    "gemini_role": "Epistolary plague journal, synced to current happiness/pop",
+    "chapters": [
+      {"id": "py_ch1", "title": "First Coughs", "synopsis": "Early cases in the lower quarter.", "prompt_hint": "Fever outbreak intro, reference recent plague events.", "choices": [{"id": "isolate", "label": "Order isolation"}, {"id": "prayer", "label": "Call for prayer"}]},
+      {"id": "py_ch2", "title": "The Red Door", "synopsis": "Houses marked, priests quarrel, panic spreads.", "prompt_hint": "Moral split between clergy and crown.", "choices": [{"id": "support_priests", "label": "Back the priests"}, {"id": "back_physician", "label": "Back the physician"}]},
+      {"id": "py_ch3", "title": "No Cure, Only Care", "synopsis": "Herb shortages and barricaded markets.", "prompt_hint": "Resource choice under food/knowledge strain.", "choices": [{"id": "requisition", "label": "Requisition herbs"}, {"id": "trade_herbs", "label": "Buy at high cost"}]},
+      {"id": "py_ch4", "title": "After the Fever Breaks", "synopsis": "Counting dead and assigning blame.", "prompt_hint": "Elegy or indictment of ruler decisions.", "choices": [{"id": "honor", "label": "Honor the dead"}, {"id": "blame", "label": "Blame scapegoats"}]},
+      {"id": "py_ch5", "title": "Epilogue: A New Oath", "synopsis": "Physician founds a hospice in your name — or curses it.", "prompt_hint": "Legacy hook into chronicle.", "choices": [{"id": "endow", "label": "Endow hospice"}, {"id": "forget", "label": "Let memory fade"}]}
+    ]
+  },
+  {
+    "id": "last_general",
+    "title": "The Last General",
+    "icon": "⚔️",
+    "description": "An aging warlord rides his final campaign along your frontiers.",
+    "era_hint": "medieval",
+    "gemini_role": "Military memoir, terrain and morale aware",
+    "chapters": [
+      {"id": "lg_ch1", "title": "The Summoning", "synopsis": "The crown recalls him from retirement.", "prompt_hint": "Ruler traits colour the summons tone.", "choices": [{"id": "honor_call", "label": "Honor the vet"}, {"id": "doubt", "label": "Doubt his age"}]},
+      {"id": "lg_ch2", "title": "Mud and Orders", "synopsis": "Commissariat fails; men march hungry.", "prompt_hint": "Reflect seasonal upkeep and supply state.", "choices": [{"id": "force_march", "label": "Force march"}, {"id": "resupply", "label": "Halt to resupply"}]},
+      {"id": "lg_ch3", "title": "The Pass", "synopsis": "Ambush in a narrow pass.", "prompt_hint": "Terrain-weighted battle snapshot.", "choices": [{"id": "hold", "label": "Hold the line"}, {"id": "flank", "label": "Attempt flanking"}]},
+      {"id": "lg_ch4", "title": "Ashes of Banners", "synopsis": "Victory or rout — and a letter home.", "prompt_hint": "Aftermath narrated, ties to military power.", "choices": [{"id": "triumph", "label": "Stage triumph"}, {"id": "quiet", "label": "Quiet burial"}]}
+    ]
+  },
+  {
+    "id": "spy_confession",
+    "title": "The Spy's Confession",
+    "icon": "🕵️",
+    "description": "An captured spy unspools years of double-dealing between you and your rivals.",
+    "era_hint": "renaissance",
+    "gemini_role": "Espionage thriller, draws on diplomacy memory",
+    "chapters": [
+      {"id": "sc_ch1", "title": "The Cipher Box", "synopsis": "A coded box seized at the border.", "prompt_hint": "Cipher references treaty memory betrayals.", "choices": [{"id": "break_code", "label": "Break code"}, {"id": "torture", "label": "Press the spy"}]},
+      {"id": "sc_ch2", "title": "Two Masters", "synopsis": "He served both you and Albion — or did he?", "prompt_hint": "Reveal entanglement with random rival.", "choices": [{"id": "believe", "label": "Believe confession"}, {"id": "doubt_conf", "label": "Doubt every word"}]},
+      {"id": "sc_ch3", "title": "The Dead Letter", "synopsis": "A letter that never arrived would have averted a war.", "prompt_hint": "What-if war threat from diplomacy score.", "choices": [{"id": "publish", "label": "Publish the truth"}, {"id": "burn", "label": "Burn the letter"}]},
+      {"id": "sc_ch4", "title": "Choice of Noose", "synopsis": "You decide his end — and whose secrets die with him.", "prompt_hint": "Final moral trade, gemini supplies epilogue.", "choices": [{"id": "pardon", "label": "Pardon into service"}, {"id": "execute", "label": "Execute publicly"}]}
+    ]
+  },
+  {
+    "id": "hollow_crown",
+    "title": "The Hollow Crown",
+    "icon": "💀",
+    "description": "The heir's shadow — a child watches the throne and wonders if it will ever fit.",
+    "era_hint": "any",
+    "gemini_role": "Succession coming-of-age, tied to ruler age and traits",
+    "chapters": [
+      {"id": "hc_ch1", "title": "The Lesson", "synopsis": "Tutors quarrel over what a ruler should be.", "prompt_hint": "Show court advisors debating heir's path.", "choices": [{"id": "sword", "label": "Sword lesson"}, {"id": "book", "label": "Book lesson"}]},
+      {"id": "hc_ch2", "title": "First Judgement", "synopsis": "The heir judges a petty case in your place.", "prompt_hint": "Trial_of_kings vignette scaled to child.", "choices": [{"id": "mercy_heir", "label": "Counsel mercy"}, {"id": "law_heir", "label": "Counsel strict law"}]},
+      {"id": "hc_ch3", "title": "Whispers in the Gallery", "synopsis": "Nobles test loyalty to the future crown.", "prompt_hint": "Succession tension with regency undertones.", "choices": [{"id": "expose_whispers", "label": "Expose plotters"}, {"id": "play_along", "label": "Play along"}]},
+      {"id": "hc_ch4", "title": "The Fitting", "synopsis": "A crown too large, a vow too heavy.", "prompt_hint": "Ruler mortality foreshadowed, tie to court.", "choices": [{"id": "promise", "label": "Make them promise"}, {"id": "warn", "label": "Warn of weight"}]}
+    ]
+  }
+]

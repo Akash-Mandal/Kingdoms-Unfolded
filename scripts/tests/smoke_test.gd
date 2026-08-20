@@ -6,6 +6,25 @@ func _init() -> void:
 	var ce = load("res://scripts/core/game.gd").new()
 	ce.reset()
 	ce._rng.seed = 42
+	var cfg: Dictionary = {
+		"world_seed": 12345, "era": "medieval", "difficulty": "peaceful",
+		"kingdom_name": "Testia", "banner_color": "#ff0000", "sigil": "lion",
+		"gov": "feudal", "religion": "old_gods", "culture": "highland",
+		"ruler_name": "Test", "ruler_age": 30, "ruler_gender": "male",
+		"traits": ["Brave"], "legacy_path": "builder", "territory_size": "medium",
+		"rivals": 3, "scenario": "default", "starting_season": "spring",
+		"resources": {"food": 120, "gold": 80, "wood": 90, "stone": 90, "iron": 50, "cloth": 50, "horses": 20, "knowledge": 20},
+	}
+	ce.apply_start_config(cfg)
+	if ce.month != 3:
+		printerr("FAIL: start season spring should be month 3 got %d" % ce.month)
+		quit(1)
+		return
+	if ce.get_stock("food") != 120:
+		printerr("FAIL: custom food stock")
+		quit(1)
+		return
+	ce._rng.seed = 42
 
 	var took := 20
 	for i in took:
@@ -51,6 +70,41 @@ func _init() -> void:
 		quit(1)
 		return
 
-	print("OK: %d turns, month %d, food %.0f, %d events, save/load round-trip passed"
-		% [ce.turn, ce.month, food, ce.events.size()])
+	var cat := load("res://scripts/core/catalog.gd").new()
+	cat._load_all()
+	if cat.units.is_empty():
+		printerr("FAIL: units catalog empty")
+		quit(1)
+		return
+	if cat.units.size() < 18:
+		printerr("FAIL: units %d < 18" % cat.units.size())
+		quit(1)
+		return
+	if cat.tech.is_empty() or cat.tech.size() < 36:
+		printerr("FAIL: tech %d < 36" % cat.tech.size())
+		quit(1)
+		return
+	if cat.events.is_empty() or cat.events.size() < 20:
+		printerr("FAIL: events %d < 20" % cat.events.size())
+		quit(1)
+		return
+	var bal_path := "res://data/catalog/balance.json"
+	if not FileAccess.file_exists(bal_path):
+		printerr("FAIL: balance.json missing")
+		quit(1)
+		return
+	var bf := FileAccess.open(bal_path, FileAccess.READ)
+	if bf == null:
+		printerr("FAIL: balance.json unreadable")
+		quit(1)
+		return
+	var bparsed: Variant = JSON.parse_string(bf.get_as_text())
+	bf.close()
+	if typeof(bparsed) != TYPE_DICTIONARY or (bparsed as Dictionary).is_empty():
+		printerr("FAIL: balance.json malformed")
+		quit(1)
+		return
+
+	print("OK: %d turns, month %d, food %.0f, %d events, save/load round-trip passed — catalogs: units %d tech %d events %d balance ok"
+		% [ce.turn, ce.month, food, ce.events.size(), cat.units.size(), cat.tech.size(), cat.events.size()])
 	quit(0)

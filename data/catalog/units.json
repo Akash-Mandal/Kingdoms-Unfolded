@@ -1,0 +1,20 @@
+[
+  {"id":"infantry_t1","name":"Militia","icon":"🗡️","type":"infantry","tier":1,"cost":{"gold":8,"wood":4},"strength":5,"speed":1.0,"upkeep":{"gold":1},"desc":"Levy spearmen"},
+  {"id":"infantry_t2","name":"Swordsmen","icon":"⚔️","type":"infantry","tier":2,"cost":{"gold":14,"iron":2,"cloth":1},"strength":9,"speed":1.0,"upkeep":{"gold":2},"desc":"Trained foot"},
+  {"id":"infantry_t3","name":"Halberdiers","icon":"🪓","type":"infantry","tier":3,"cost":{"gold":22,"iron":4,"cloth":2},"strength":14,"speed":0.9,"upkeep":{"gold":3},"desc":"Elite polearms"},
+  {"id":"archers_t1","name":"Bowmen","icon":"🏹","type":"archers","tier":1,"cost":{"gold":10,"wood":6},"strength":6,"speed":1.1,"upkeep":{"gold":1},"desc":"Volley levy"},
+  {"id":"archers_t2","name":"Longbows","icon":"🎯","type":"archers","tier":2,"cost":{"gold":16,"wood":8,"cloth":1},"strength":10,"speed":1.1,"upkeep":{"gold":2},"desc":"Piercing range"},
+  {"id":"archers_t3","name":"Crossbow Elite","icon":"🏹","type":"archers","tier":3,"cost":{"gold":24,"iron":3,"wood":4},"strength":15,"speed":1.0,"upkeep":{"gold":3},"desc":"Armor-piercing"},
+  {"id":"cavalry_t1","name":"Scouts","icon":"🐎","type":"cavalry","tier":1,"cost":{"gold":18,"horses":2,"cloth":1},"strength":10,"speed":2.0,"upkeep":{"gold":3,"food":1},"desc":"Light horse"},
+  {"id":"cavalry_t2","name":"Knights","icon":"🐴","type":"cavalry","tier":2,"cost":{"gold":28,"horses":3,"iron":3},"strength":16,"speed":1.8,"upkeep":{"gold":5,"food":2},"desc":"Heavy charge"},
+  {"id":"cavalry_t3","name":"Cataphracts","icon":"♞","type":"cavalry","tier":3,"cost":{"gold":40,"horses":4,"iron":6,"cloth":2},"strength":22,"speed":1.6,"upkeep":{"gold":7,"food":2},"desc":"Shock elite"},
+  {"id":"siege_t1","name":"Rams","icon":"🔨","type":"siege","tier":1,"cost":{"gold":20,"wood":12,"iron":2},"strength":12,"speed":0.5,"upkeep":{"gold":4},"desc":"Battering ram"},
+  {"id":"siege_t2","name":"Catapults","icon":"💣","type":"siege","tier":2,"cost":{"gold":32,"wood":14,"iron":4,"stone":6},"strength":18,"speed":0.45,"upkeep":{"gold":6},"desc":"Stone thrower"},
+  {"id":"siege_t3","name":"Trebuchets","icon":"🏰","type":"siege","tier":3,"cost":{"gold":48,"wood":16,"iron":8,"stone":10},"strength":26,"speed":0.4,"upkeep":{"gold":8},"desc":"Wall-breaker"},
+  {"id":"navy_t1","name":"Skiffs","icon":"⛵","type":"navy","tier":1,"cost":{"gold":14,"wood":10},"strength":7,"speed":1.4,"upkeep":{"gold":2},"desc":"Coastal boats"},
+  {"id":"navy_t2","name":"War Galleys","icon":"🚢","type":"navy","tier":2,"cost":{"gold":30,"wood":18,"iron":4},"strength":15,"speed":1.3,"upkeep":{"gold":5},"desc":"Oared warships"},
+  {"id":"navy_t3","name":"Flagships","icon":"⚓","type":"navy","tier":3,"cost":{"gold":50,"wood":22,"iron":8,"cloth":4},"strength":24,"speed":1.2,"upkeep":{"gold":8},"desc":"Fleet command"},
+  {"id":"elite_t1","name":"Guardsmen","icon":"🛡️","type":"elite","tier":1,"cost":{"gold":24,"iron":3,"cloth":2},"strength":13,"speed":1.0,"upkeep":{"gold":4},"desc":"Palace guard"},
+  {"id":"elite_t2","name":"Sentinels","icon":"👑","type":"elite","tier":2,"cost":{"gold":36,"iron":5,"cloth":3,"horses":1},"strength":19,"speed":1.0,"upkeep":{"gold":6},"desc":"Royal sentinels"},
+  {"id":"elite_t3","name":"Immortals","icon":"✨","type":"elite","tier":3,"cost":{"gold":60,"iron":8,"cloth":5,"horses":2,"knowledge":2},"strength":28,"speed":1.0,"upkeep":{"gold":10},"desc":"Legendary guard"}
+]

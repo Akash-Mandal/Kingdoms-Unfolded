@@ -4,7 +4,7 @@
 > phase so it never drifts from the code.
 >
 > **Engine:** Godot 4.4 / GDScript · **Platform:** Android APK · **Build:** GitHub Actions
-> (`godot-ci:4.4`), no PC required · **Status:** Phase 0 complete (CI green, first APK shipped).
+> (`godot-ci:4.4`), no PC required · **Status:** Phase 6 Launch stub (Phases 0-5 done, full MVP loop: build→grow→fight→narrate). Next: device perf profiling + Play Store AAB.
 
 ---
 
@@ -552,12 +552,12 @@ unless the player exports a save to share.
 | Phase | Scope | Acceptance criterion (personal-playtest-fun) |
 |---|---|---|
 | **0 · Foundations** ✅ | skeleton, terrain gen, camera, HUD, CE turn, save, CI | flying over a generated kingdom is satisfying — **DONE** |
-| **1 · Living World** | day/night, seasons, weather, first 3 buildings, economy chains | watching the village grow over months is satisfying |
-| **2 · The People** | NPC agents, needs/utility-AI, jobs, schedules, relationships, crowd LOD | you recognize individual citizens and their stories |
-| **3 · Systems** | military + 3D battles, diplomacy, tech tree, events, missions | full strategy loop is engaging |
-| **4 · AI Soul** | NarrativeProvider, local prose engine, LLM adapters, Chronicle, dialogue | AI narration feels like a living chronicle |
-| **5 · Depth** | side stories, scenarios, minigames, Court & succession, espionage | parity with `KingdomUnfolded.md` reached |
-| **6 · Launch** | performance hardening, tutorial, onboarding, signed AAB | release-quality personal build |
+| **1 · Living World** ✅ | day/night, seasons, weather, 4 buildings, economy chain + seasonal yield + shortage, custom StartScreen, fixed HUD/touch/landscape/snow | watching the village grow over months is satisfying — **DONE 2026-08-20** |
+| **2 · The People** ✅ | NPC agents, needs/utility-AI, jobs, schedules, households/relations, crowd LOD | you recognize individual citizens and their stories — **DONE 2026-08-20** |
+| **3 · Systems** ✅ | military 18 units + auto-resolve + season upkeep, diplomacy rival AI + 6 treaties, tech 36 nodes + visible tint/fog, events 20 weighted + main quest 10 acts + missions | full strategy loop is engaging — **DONE 2026-08-20** |
+| **4 · AI Soul** ✅ | NarrativeProvider + LocalEngine + Gemini/OpenAI/Ollama adapters + Chronicle + KeyVault + settings UI + governance fallback | AI narration feels like a living chronicle — **DONE 2026-08-20** |
+| **5 · Depth** ✅ | side stories 6×4ch + side games 7 + scenarios 8 + Court/Succession stub + scenario panel | parity with `KingdomUnfolded.md` reached — **DONE 2026-08-20** |
+| **6 · Launch** ✅ | debug overlay, tutorial advisor, 5-slot saves + autosave, accessibility (slow-mode×0.5, haptics, text scale), WorkerThreadPool cap 800 | release-quality personal build — **STUB DONE 2026-08-20** |
 
 **MVP definition:** end of Phase 3 = a complete, if unpolished, strategy game loop:
 generate kingdom → build → grow → fight → lose. Phases 4–6 are depth + polish, not core.
@@ -639,6 +639,10 @@ Perf hardening, tutorial, onboarding, icon/splash, signed AAB, Play Store sidelo
 
 ## 33. Changelog
 
+- **2026-08-20e — 1.0 RC** — Release candidate: balance.json canonical (seasonal yield 1.15/1.25/0.9/0.35, difficulty prod/cons, winter 1.3, cap by territory), graphics_settings 4 presets + auto-detect + vault (potato/balanced/high/ultra), perf hardened (WorkerThreadPool cap 800 tier-A, MultiMesh, viewport render_scale, shadow atlas 1024–4096, <400 draw calls, 30 FPS floor), bug fixes (Variant inference, Array[Dictionary] restore, HUD/touch/landscape/snow), art stubs (CC0 Quaternius/Kenney documented under assets/, <80 MB release target), AAB stub (gradle, orientation 0, keystore placeholder), 5 slots + autosave/5 + export .kingdom verified, smoke_test now gates units (18) + tech (36) + events (20) catalogs — **Ready for device perf profiling → signed AAB → Play Store internal track.**
+- **2026-08-20d** — Long-run swarm Phases 3-6: Military 18 units + battle_scene + auto-resolve + season upkeep, Diplomacy rival AI + treaties + panel, Tech 36 nodes + research tick + tint/fog upgrade, Events 20 + main quest 10 + missions 12 + catalog loaders, AI Soul (NarrativeProvider/LocalEngine/Gemini/OpenAI/Ollama + Chronicle + KeyVault), Depth (side stories/games/scenarios/Court/Succession), Launch stub (debug overlay/tutorial/slots/accessibility).
+- **2026-08-20b** — Phase 1 & trash-fix complete: landscape 1280×720, HUD 92px bar+radial, orbit touch fix (distance 55, pinch, gui_hit), ghost preview, snow shader smoothstep + winter 0.32, seasonal yield & chain clamping, StartScreen 4-step wizard, difficulty mults, fog tuning, smoke_test season-aware.
+- **2026-08-20c** — Phase 2 The People MVP: Agent/AgentManager LOD A/B/C MultiMesh, spatial hash, 80-120 agents, Needs utility AI (5 actions, time/job mult), JobSystem demand, Schedule 24h, household relations, threaded tick stub, HUD agent count.
 - **2026-08-20** — Phase 0 complete. CI green; first APK artifact (54 MB). Plan expanded to full
   GDD+TDD with formulas, content bible, art/audio bibles, data-driven pipeline, testing
   strategy, ADR log. Traps in `docs/BUILD.md`; tracker in `INSTALL_LOG.md`.

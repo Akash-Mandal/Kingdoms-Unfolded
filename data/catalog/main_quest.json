@@ -1,0 +1,146 @@
+{
+  "version": 1,
+  "acts": [
+    {
+      "id": "act_01_foundations",
+      "title": "Foundations",
+      "narrative": "A small village looks to you. Lay its foundations before winter tests your claim.",
+      "era": "any",
+      "objectives": [
+        {"id": "pop_60", "label": "Reach 60 souls", "track": "pop_count", "op": ">=", "value": 60},
+        {"id": "food_50", "label": "Stockpile 50 food", "track": "resource_food", "op": ">=", "value": 50},
+        {"id": "house_2", "label": "Build 2 Houses", "track": "building_house", "op": ">=", "value": 2}
+      ],
+      "rewards": {"gold": 25, "happiness": 0.05, "knowledge": 5},
+      "branch": {"success": "act_02_first_harvest", "fail": null},
+      "on_complete_text": "Foundations hold. Hearth smoke rises over Eterna."
+    },
+    {
+      "id": "act_02_first_harvest",
+      "title": "First Harvest",
+      "narrative": "Grain must become bread. Prove the chain from field to oven.",
+      "era": "any",
+      "objectives": [
+        {"id": "farm_1", "label": "Build a Farm", "track": "building_farm", "op": ">=", "value": 1},
+        {"id": "mill_1", "label": "Build a Mill", "track": "building_mill", "op": ">=", "value": 1},
+        {"id": "bakery_1", "label": "Build a Bakery", "track": "building_bakery", "op": ">=", "value": 1},
+        {"id": "grain_20", "label": "Store 20 grain", "track": "resource_grain", "op": ">=", "value": 20}
+      ],
+      "rewards": {"food": 20, "happiness": 0.06, "knowledge": 4},
+      "branch": {"success": "act_03_neighbors", "fail": null},
+      "on_complete_text": "The first loaves are shared. The chain is proven."
+    },
+    {
+      "id": "act_03_neighbors",
+      "title": "Neighbors and Rivals",
+      "narrative": "You are not alone. Rivals watch from beyond the hills. Grow enough to be noticed — or ignored.",
+      "era": "any",
+      "objectives": [
+        {"id": "pop_75", "label": "Reach 75 souls", "track": "pop_count", "op": ">=", "value": 75},
+        {"id": "gold_80", "label": "Amass 80 gold", "track": "resource_gold", "op": ">=", "value": 80},
+        {"id": "turn_12", "label": "Survive to turn 12", "track": "turn", "op": ">=", "value": 12}
+      ],
+      "rewards": {"gold": 20, "happiness": 0.04, "knowledge": 8},
+      "branch": {"success": "act_04_hard_winter", "fail": null},
+      "on_complete_text": "Couriers come and go. The world knows Eterna now."
+    },
+    {
+      "id": "act_04_hard_winter",
+      "title": "Hard Winter",
+      "narrative": "The first true winter descends. Granaries and hearts will be tested.",
+      "era": "any",
+      "objectives": [
+        {"id": "survive_winter", "label": "End a winter month with food > 0", "track": "season_survive_winter", "op": "==", "value": 1},
+        {"id": "happiness_hold", "label": "Keep happiness above 0.35", "track": "happiness", "op": ">=", "value": 0.35},
+        {"id": "food_30_winter", "label": "Hold 30 food at winter's end", "track": "resource_food", "op": ">=", "value": 30}
+      ],
+      "rewards": {"food": 15, "happiness": 0.08, "knowledge": 6},
+      "branch": {"success": "act_05_growth", "fail": null},
+      "on_complete_text": "Winter breaks. You endured."
+    },
+    {
+      "id": "act_05_growth",
+      "title": "Growth and Prosperity",
+      "narrative": "Survival is not enough. Let the town swell into a thriving market.",
+      "era": "any",
+      "objectives": [
+        {"id": "pop_90", "label": "Reach 90 souls", "track": "pop_count", "op": ">=", "value": 90},
+        {"id": "housing_cap", "label": "Build housing for 80 capacity", "track": "capacity_housing", "op": ">=", "value": 80},
+        {"id": "wood_60", "label": "Stockpile 60 wood", "track": "resource_wood", "op": ">=", "value": 60}
+      ],
+      "rewards": {"gold": 30, "wood": 20, "happiness": 0.07},
+      "branch": {"success": "act_06_commerce", "fail": null},
+      "on_complete_text": "Streets fill. The market never truly sleeps."
+    },
+    {
+      "id": "act_06_commerce",
+      "title": "Commerce and Coin",
+      "narrative": "Coin is power. Open coffers and trade routes to fund ambition.",
+      "era": "any",
+      "objectives": [
+        {"id": "gold_150", "label": "Amass 150 gold", "track": "resource_gold", "op": ">=", "value": 150},
+        {"id": "cloth_30", "label": "Stockpile 30 cloth", "track": "resource_cloth", "op": ">=", "value": 30},
+        {"id": "knowledge_30", "label": "Reach 30 knowledge", "track": "resource_knowledge", "op": ">=", "value": 30}
+      ],
+      "rewards": {"gold": 15, "cloth": 10, "knowledge": 8},
+      "branch": {"success": "act_07_knowledge", "fail": null},
+      "on_complete_text": "Ledgers balance and chests fill. Trade flows through Eterna."
+    },
+    {
+      "id": "act_07_knowledge",
+      "title": "Knowledge Ascendant",
+      "narrative": "Scholars gather. What you learn now will outlive any wall.",
+      "era": "any",
+      "objectives": [
+        {"id": "knowledge_60", "label": "Reach 60 knowledge", "track": "resource_knowledge", "op": ">=", "value": 60},
+        {"id": "stone_40", "label": "Stockpile 40 stone", "track": "resource_stone", "op": ">=", "value": 40},
+        {"id": "happiness_06", "label": "Raise happiness to 0.6", "track": "happiness", "op": ">=", "value": 0.6}
+      ],
+      "rewards": {"knowledge": 15, "stone": 15, "happiness": 0.05},
+      "branch": {"success": "act_08_trial", "fail": null},
+      "on_complete_text": "Ink and chisel record your reign. The scholars nod approval."
+    },
+    {
+      "id": "act_08_trial",
+      "title": "Trial by Fire",
+      "narrative": "Every realm is tested. Plague, revolt, or disaster — endure one and emerge harder.",
+      "era": "any",
+      "objectives": [
+        {"id": "survive_crisis", "label": "Survive 2 crisis events (plague/revolt/disaster)", "track": "events_crisis_survived", "op": ">=", "value": 2},
+        {"id": "pop_hold_80", "label": "Keep 80 souls after crisis", "track": "pop_count", "op": ">=", "value": 80},
+        {"id": "year_2", "label": "Reach year 2", "track": "year", "op": ">=", "value": 2}
+      ],
+      "rewards": {"gold": 40, "happiness": 0.1, "knowledge": 10},
+      "branch": {"success": "act_09_dominion", "fail": null},
+      "on_complete_text": "Fire did not take you. It tempered you."
+    },
+    {
+      "id": "act_09_dominion",
+      "title": "Dominion",
+      "narrative": "Power gathers. Command the respect of neighbors or the love of your people — preferably both.",
+      "era": "any",
+      "objectives": [
+        {"id": "pop_110", "label": "Reach 110 souls", "track": "pop_count", "op": ">=", "value": 110},
+        {"id": "gold_200", "label": "Hold 200 gold or 80 knowledge", "track": "resource_gold", "op": ">=", "value": 200},
+        {"id": "alt_knowledge_80", "label": "Or reach 80 knowledge", "track": "resource_knowledge", "op": ">=", "value": 80, "optional": true}
+      ],
+      "rewards": {"gold": 50, "horses": 5, "happiness": 0.08},
+      "branch": {"success": "act_10_legacy", "fail": null},
+      "on_complete_text": "Banners rise higher. Your word carries weight far beyond the valley."
+    },
+    {
+      "id": "act_10_legacy",
+      "title": "Legacy",
+      "narrative": "Dynasties are not declared. They are endured. Seal yours.",
+      "era": "any",
+      "objectives": [
+        {"id": "year_5", "label": "Reach year 5", "track": "year", "op": ">=", "value": 5},
+        {"id": "happiness_legend", "label": "Sustain happiness above 0.65", "track": "happiness", "op": ">=", "value": 0.65},
+        {"id": "pop_120", "label": "Reach 120 souls", "track": "pop_count", "op": ">=", "value": 120}
+      ],
+      "rewards": {"gold": 100, "knowledge": 20, "happiness": 0.15},
+      "branch": {"success": null, "fail": null},
+      "on_complete_text": "Chroniclers set down your name. The dynasty will remember."
+    }
+  ]
+}
