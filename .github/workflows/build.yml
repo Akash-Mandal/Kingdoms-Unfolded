@@ -29,6 +29,12 @@ jobs:
         uses: actions/checkout@v4
       - name: Import assets (headless)
         run: godot --headless --path . --import
+      - name: Point Godot at image templates & SDK settings
+        run: |
+          mkdir -p "$HOME/.local/share/godot/export_templates"
+          cp -r /root/.local/share/godot/export_templates/4.4.stable "$HOME/.local/share/godot/export_templates/" 2>/dev/null || true
+          mkdir -p "$HOME/.config/godot"
+          cp /root/.config/godot/editor_settings-4.4.tres "$HOME/.config/godot/" 2>/dev/null || true
       - name: Export debug APK
         run: |
           mkdir -p build
