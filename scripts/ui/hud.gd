@@ -82,7 +82,7 @@ func _build_hud() -> void:
 
 	var bottom_h := HBoxContainer.new()
 	bottom_h.set_anchors_preset(Control.PRESET_FULL_RECT)
-	bottom_h.alignment = BoxContainer.ALIGNMENT_SPACE_BETWEEN
+	bottom_h.alignment = BoxContainer.ALIGNMENT_BEGIN
 	bottom.add_child(bottom_h)
 
 	var left := HBoxContainer.new()

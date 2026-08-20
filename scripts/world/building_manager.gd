@@ -27,7 +27,11 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not (event is InputEventScreenTouch and event.pressed):
 		if not (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT):
 			return
-	var pos: Vector2 = event.position if event is InputEventScreenTouch else (event as InputEventMouseButton).position
+	var pos: Vector2 = Vector2.ZERO
+	if event is InputEventScreenTouch:
+		pos = (event as InputEventScreenTouch).position
+	else:
+		pos = (event as InputEventMouseButton).position
 	var world_pos: Variant = _ray_to_terrain(pos)
 	if world_pos == null:
 		return
@@ -68,7 +72,7 @@ func try_place(id: String, pos: Vector3) -> bool:
 
 func _spawn(id: String, pos: Vector3, record: bool, recompute: bool) -> void:
 	var mesh: ArrayMesh = _make_building_mesh(id)
-	var node := load("res://scripts/world/building.gd").new()
+	var node = load("res://scripts/world/building.gd").new()
 	node.name = "Building_%s_%d" % [id, _placed.size()]
 	add_child(node)
 	node.setup(id, mesh)
@@ -167,8 +171,9 @@ func _mill_mesh() -> ArrayMesh:
 	stone.albedo_color = Color(0.68, 0.66, 0.62)
 	body.material = stone
 	m.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, body.get_mesh_arrays())
-	var roof := ConeMesh.new()
-	roof.radius = 2.8
+	var roof := CylinderMesh.new()
+	roof.top_radius = 0.0
+	roof.bottom_radius = 2.8
 	roof.height = 2.5
 	var roof_mat := StandardMaterial3D.new()
 	roof_mat.albedo_color = Color(0.45, 0.28, 0.22)

@@ -118,7 +118,7 @@ func _apply_population() -> void:
 	var ratio: float = food_cons / 100.0
 	var surplus: float = food_stock - food_cons
 	pop_happiness = clampf(0.4 + 0.4 * (surplus / 50.0 + 0.5), 0.0, 1.0)
-	var cap := pop_capacity_base + building_cap.get("housing", 0.0)
+	var cap: float = pop_capacity_base + float(building_cap.get("housing", 0.0))
 	if surplus < 0.0:
 		pop_count = maxf(0.0, pop_count + surplus * 0.2)   # famine deaths
 	elif pop_count < cap:
