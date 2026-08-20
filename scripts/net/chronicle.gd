@@ -10,7 +10,10 @@ func _ready() -> void:
 	var np: Node = get_node_or_null("/root/NarrativeProvider")
 	if np != null and np.has_signal("narrative_ready"):
 		np.narrative_ready.connect(_on_narrative)
-	Game.turned.connect(_on_turn_backup)
+	var g: Node = get_node_or_null("/root/Game")
+	if g != null and g.has_signal("turned"):
+		if not g.turned.is_connected(_on_turn_backup):
+			g.turned.connect(_on_turn_backup)
 func _on_narrative(event: Dictionary, result: Dictionary) -> void:
 	append(event, result)
 func append(event: Dictionary, result: Dictionary) -> void:

@@ -155,7 +155,9 @@ func _check_cache(prompt: Dictionary) -> Dictionary:
 func _cache_store(prompt: Dictionary, result: Dictionary) -> void:
 	var ck := _cache_key(prompt)
 	if _cache.has(ck):
-		_cache_order.erase(ck)
+		var idx: int = _cache_order.find(ck)
+		if idx != -1:
+			_cache_order.remove_at(idx)
 	_cache[ck] = result.duplicate(true)
 	_cache[ck]["_prompt_full"] = str(prompt.get("task", ""))
 	_cache_order.append(ck)

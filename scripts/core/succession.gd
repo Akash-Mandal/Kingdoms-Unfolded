@@ -16,8 +16,8 @@ func _ready() -> void:
 	_init_from_game()
 
 func _init_from_game() -> void:
-	if has_node("/root/Game"):
-		var g: Node = get_node("/root/Game")
+	var g: Node = get_node_or_null("/root/Game")
+	if g != null:
 		var s: Dictionary = g.get("settings") if "settings" in g else {}
 		ruler = {
 			"name": str(s.get("ruler_name", "Aurelia")),
@@ -53,7 +53,7 @@ func tick() -> void:
 	if ruler.is_empty():
 		_init_from_game()
 	ruler["age"] = int(ruler.get("age", 28)) + 0
-	if has_node("/root/Game") and int(get_node("/root/Game").get("turn")) % 12 == 0 and not ruler.is_empty():
+	if _turn() % 12 == 0 and not ruler.is_empty():
 		ruler["age"] = int(ruler.get("age", 28)) + 1
 		heir["age"] = int(heir.get("age", 0)) + 1
 		if is_regency and int(heir.get("age", 0)) >= 16:
@@ -105,17 +105,17 @@ func force_succession(new_name: String = "") -> void:
 	trigger_death("abdication")
 
 func _sync_to_game() -> void:
-	if has_node("/root/Game") and "settings" in get_node("/root/Game"):
-		var g: Node = get_node("/root/Game")
+	var g: Node = get_node_or_null("/root/Game")
+	if g != null and "settings" in g:
 		g.settings["ruler_name"] = String(ruler.get("name", ""))
 		g.settings["ruler_age"] = int(ruler.get("age", 28))
 		g.settings["ruler_gender"] = String(ruler.get("gender", "male"))
 		g.settings["traits"] = ruler.get("traits", [])
 
 func _push_event(text: String) -> void:
-	if not has_node("/root/Game"):
+	var g: Node = get_node_or_null("/root/Game")
+	if g == null:
 		return
-	var g: Node = get_node("/root/Game")
 	var ev := {"id": g.events.size() if "events" in g else 0, "turn": _turn(), "type": "succession", "severity": 3, "text": text}
 	if "events" in g and g.events is Array:
 		g.events.push_front(ev)
@@ -123,8 +123,9 @@ func _push_event(text: String) -> void:
 		g.event_occurred.emit(ev)
 
 func _turn() -> int:
-	if has_node("/root/Game"):
-		return int(get_node("/root/Game").get("turn"))
+	var g: Node = get_node_or_null("/root/Game")
+	if g != null:
+		return int(g.get("turn")) if g.has_method("get") else 0
 	return 0
 
 func serialize() -> Dictionary:

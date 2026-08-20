@@ -556,8 +556,9 @@ func _init_military_defaults() -> void:
 		_tn.call("reset_state")
 	military.clear()
 	var ids: Array = []
-	if Catalog != null and Catalog.has_method("unit_ids"):
-		ids = Catalog.unit_ids()
+	var cat: Node = get_node_or_null("/root/Catalog")
+	if cat != null and cat.has_method("unit_ids"):
+		ids = cat.unit_ids()
 	if ids.is_empty():
 		ids = ["infantry_t1","archers_t1","cavalry_t1","siege_t1","navy_t1","elite_t1"]
 	for id in ids:
@@ -578,8 +579,9 @@ func military_train(type: String, n: int) -> bool:
 	if not military.has(type):
 		military[type] = {"count": 0, "morale": 0.7, "supply": 1.0, "experience": 0.0, "commander": "none"}
 	var def: Dictionary = {}
-	if Catalog != null and Catalog.has_method("get_unit"):
-		def = Catalog.get_unit(type)
+	var cat: Node = get_node_or_null("/root/Catalog")
+	if cat != null and cat.has_method("get_unit"):
+		def = cat.get_unit(type)
 	if def.is_empty():
 		return false
 	var cost: Dictionary = def.get("cost", {})
@@ -605,8 +607,9 @@ func military_power(terrain: String = "plains") -> float:
 	for id in military.keys():
 		var c: int = int(military[id].get("count", 0))
 		var def: Dictionary = {}
-		if Catalog != null and Catalog.has_method("get_unit"):
-			def = Catalog.get_unit(id)
+		var cat: Node = get_node_or_null("/root/Catalog")
+		if cat != null and cat.has_method("get_unit"):
+			def = cat.get_unit(id)
 		var st: float = float(def.get("strength", 5.0))
 		s += float(c) * st * float(military[id].get("morale", 0.7))
 	return s
@@ -654,8 +657,9 @@ func _apply_military_upkeep() -> void:
 		if cnt <= 0:
 			continue
 		var def: Dictionary = {}
-		if Catalog != null and Catalog.has_method("get_unit"):
-			def = Catalog.get_unit(id)
+		var cat: Node = get_node_or_null("/root/Catalog")
+		if cat != null and cat.has_method("get_unit"):
+			def = cat.get_unit(id)
 		var up: Dictionary = def.get("upkeep", {})
 		for k in up:
 			upkeep[k] = float(upkeep.get(k, 0.0)) + float(up[k]) * float(cnt) * mult

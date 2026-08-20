@@ -11,9 +11,10 @@ signal exported(path: String)
 func _ready() -> void:
 	DirAccess.make_dir_recursive_absolute(SAVE_DIR)
 	DirAccess.make_dir_recursive_absolute(EXPORT_DIR)
-	if Game.has_signal("turned"):
-		if not Game.turned.is_connected(_on_turned):
-			Game.turned.connect(_on_turned)
+	var g: Node = get_node_or_null("/root/Game")
+	if g != null and g.has_signal("turned"):
+		if not g.turned.is_connected(_on_turned):
+			g.turned.connect(_on_turned)
 
 func slot_path(idx: int) -> String:
 	return "%s/slot_%d.json" % [SAVE_DIR, clampi(idx, 0, MAX_SLOTS - 1)]

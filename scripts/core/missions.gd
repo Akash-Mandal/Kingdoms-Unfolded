@@ -107,7 +107,9 @@ func _snapshot_state() -> Dictionary:
 			for bid in counts.keys():
 				s["building_" + str(bid)] = int(counts[bid])
 		s["events_crisis_survived"] = crisis_survived
-		s["difficulty"] = str(g.get("settings", {}).get("difficulty", "peaceful"))
+		var _settings_v: Variant = g.get("settings")
+		var _diff: String = str((_settings_v as Dictionary).get("difficulty", "peaceful")) if typeof(_settings_v) == TYPE_DICTIONARY else "peaceful"
+		s["difficulty"] = _diff
 	return s
 
 func _compare(a: float, op: String, b: float) -> bool:

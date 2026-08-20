@@ -275,8 +275,9 @@ func _memory_weight(r: Dictionary, tag: String) -> int:
 	return cnt * (1 + recency)
 
 func _current_turn() -> int:
-	if has_node("/root/Game") and "turn" in get_node("/root/Game"):
-		return int(get_node("/root/Game").turn)
+	var g: Node = get_node_or_null("/root/Game")
+	if g != null and "turn" in g:
+		return int(g.get("turn")) if g.has_method("get") else _turn_cache
 	return _turn_cache
 
 func ai_utility(kingdom_id: String) -> Dictionary:
@@ -363,10 +364,10 @@ func decide(kingdom_id: String) -> String:
 	return best if best_v > -6.0 else "none"
 
 func _deferred_bind_game() -> void:
-	if has_node("/root/Game"):
-		var g: Node = get_node("/root/Game")
-		if g.has_signal("turned"):
-			g.turned.connect(func() -> void: tick())
+	var g: Node = get_node_or_null("/root/Game")
+	if g != null and g.has_signal("turned"):
+		if not g.turned.is_connected(tick):
+			g.turned.connect(tick)
 
 func tick() -> void:
 	_turn_cache = _current_turn()
