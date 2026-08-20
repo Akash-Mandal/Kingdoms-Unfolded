@@ -41,7 +41,7 @@ Anything here lives inside this project folder unless noted.
 
 | # | Date | What | Why | Source | Landed at | Size | Cleanup | Status |
 |---|---|---|---|---|---|---|---|---|
-| — | 2026-08-20 | *none yet* | — | — | — | — | — | — |
+| 002 | 2026-08-20 | Debug APK artifact (kingdom-eternal-debug.apk) | First playable build | GitHub Actions artifact (page: Actions → run → artifact) | phone Downloads/ (once downloaded) | 54 MB | delete file / uninstall app `kingdom eternal 3d` | announced (download optional) |
 
 ## 3. Termux packages installed for this project
 
