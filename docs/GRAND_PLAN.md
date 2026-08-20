@@ -1,60 +1,256 @@
-# Kingdom Eternal 3D — Grand Plan
+# Kingdom Eternal 3D — Grand Plan (GDD + TDD)
 
-> Living engineering plan for a deep medieval kingdom simulation on Android.
-> Built in **Godot 4.4 / GDScript**, code on phone (Termux), APKs built in the cloud.
-> Status: **Phase 0 complete** — the foundation, save system, and CI build pipeline are live.
-
----
-
-## 1. North Star
-
-A living 3D medieval world on a phone where **every number is visible** and **every citizen is
-simulated**. Two simulation clocks breathe together:
-
-- **Macro CE (The State)** — kingdoms, resources, diplomacy, tech, events (the original
-  `KingdomUnfolded.md` design, fully preserved).
-- **Micro WC (The People)** — thousands of individuals with needs, jobs, schedules,
-  relationships, and memory, visibly living in the 3D world.
-
-AI narrates; the simulation is the referee. The game is fully playable offline; cloud LLMs are
-optional polish.
+> The single source of truth for design and engineering. A living document — update it per
+> phase so it never drifts from the code.
+>
+> **Engine:** Godot 4.4 / GDScript · **Platform:** Android APK · **Build:** GitHub Actions
+> (`godot-ci:4.4`), no PC required · **Status:** Phase 0 complete (CI green, first APK shipped).
 
 ---
 
-## 2. Locked Decisions
+# PART I — GAME DESIGN DOCUMENT
 
-| Area | Decision | Why |
+## 1. Vision & Pillars
+
+A deeply immersive medieval kingdom simulation where every decision ripples through a living
+3D world. The macro state (resources, diplomacy, tech) and the micro world (individual
+citizens with lives) are *the same* simulation seen at two zoom levels.
+
+**Four pillars**
+1. **Visible causality** — if the CE says "unrest +12%", a crowd is forming somewhere the
+   player can fly to and watch.
+2. **Dual-clock depth** — monthly strategy turn *and* real-time lives, battles, and crises.
+3. **AI as narrator, CE as referee** — prose from LLMs, rules from the engine; never blocks.
+4. **Every kingdom is unique** — seeded worldgen + CE state + AI personalization = no two
+   reigns tell the same story.
+
+## 2. Core Game Loop
+
+```
+        ┌───────────────────────────────────────────┐
+        │   OBSERVE   world · stats · events · map  │
+        └─────────────────────┬─────────────────────┘
+                              ▼
+        ┌───────────────────────────────────────────┐
+        │   DECIDE    policy · build · decree · war │
+        └─────────────────────┬─────────────────────┘
+                              ▼
+        ┌───────────────────────────────────────────┐
+        │   COMMIT    spend resources + willpower   │
+        └─────────────────────┬─────────────────────┘
+                              ▼
+        ┌───────────────────────────────────────────┐
+        │   ADVANCE   month → CE resolves cascades  │◄── real-time interludes
+        └─────────────────────┬─────────────────────┘    (battles, court, crises)
+                              ▼
+        ┌───────────────────────────────────────────┐
+        │   REACT     events · missions · letters   │
+        └─────────────────────┬─────────────────────┘
+                              ▼
+                       (narrative moment)
+```
+
+Loop cadence: **one turn = one month**. A typical session interleates several turns with
+real-time interludes (a border skirmish, a court judgment, a festival). The player may pause
+at any moment.
+
+## 3. Player Verbs (action taxonomy)
+
+| Domain | Verbs |
+|---|---|
+| Economic | set tax rate · allocate budget · commission building · zone land use · open/close trade route · embargo · mint coinage |
+| Military | raise levies · train units · appoint commander · march army · fortify · raid · declare war · sue peace |
+| Diplomatic | send envoy · gift · propose alliance/marriage · sign treaty · break pact · spy · assassinate |
+| Civic | decree policy · host festival · suppress heresy · appoint official · judge court cases |
+| Technological | fund research branch · assign scholars · adopt unlocked reform |
+| Personal | rest · tour realm · hold court · pursue ambition · educate heir · choose marriage |
+| Temporal | pause · ×1 · ×4 · ×12 · advance month · skip-to-event |
+
+**Two resources of intent:** *resources* (gold/food/etc., finite) and **willpower** (a per-turn
+action-point budget scaling with ruler age & health — prevents turn-bloat, models attention).
+
+## 4. Win / Lose & End States
+
+The game is **dynastic endurance**, not a single win condition.
+
+| State | Trigger | Outcome |
 |---|---|---|
-| Platform | Android APK (sideload → later Play Store) | target device |
-| Engine | Godot 4.4+, GDScript, **Mobile renderer** (Vulkan) | mobile-first 3D, text-friendly dev |
-| Renderer toggle | high-end devices get optional Forward+ | graphics quality knob |
-| Art style | stylized low-poly + premium lighting | "great graphics" without asset cost |
-| Assets | CC0 packs (Quaternius, Kenney) + procedural | downloadable on phone, free |
-| Dev flow | code on phone (Termux); **never run editor locally** | no PC available |
-| Build backend | GitHub Actions CI (godot-ci:4.4) primary; Manus fallback | proven working 2026-08-20 |
-| Sim clocks | real-time micro world + monthly macro turn | coherent dual-clock rule |
-| AI narrative | `NarrativeProvider`: Local templates (offline) + Gemini + OpenAI-compatible + Ollama | hybrid, multi-provider, configurable |
-| Monetization | deferred; personal-polished project first | no billing code |
-| Phone footprint | ~150–450 MB, all inside one folder, tracked in `INSTALL_LOG.md` | reversible |
+| **Dynastic milestone** | surviving N generations OR prestige ≥ Legendary | "triumph" ending (narrated) |
+| **Total collapse** | revolt deposes ruler *and* no heir, OR capital conquered | game over |
+| **Fragmentation** | realm splits into vassal states | soft-lose; play on diminished |
+| **Cultural victory** | Renaissance scenario: knowledge + culture thresholds | triumph |
+| **Early death** | ruler dies with no successor | succession crisis mini-arc |
+
+There is no "you win" screen mid-campaign — milestones unlock narrated chronicle chapters;
+the player continues until collapse or chooses to retire the dynasty.
+
+## 5. Session & Reign Structure
+
+- **A turn** = 1 month. **A year** = 12 turns. **A reign** = one ruler's lifetime (≈ 30–60
+  years). **A dynasty** = a chain of reigns via succession.
+- **Campaign target:** reach a dynastic milestone (default: 5 generations or 200 years).
+- New ruler on succession is **generated from upbringing** (heir's education, mentor traits,
+  childhood events) → emergent personality, not random.
+
+## 6. Difficulty Model
+
+| Difficulty | Event severity | Rival aggression | Start resources | Plague freq | Willpower |
+|---|---|---|---|---|---|
+| Peaceful Ruler | ×0.6 | ×0.5 | +30% | ×0.5 | +1 |
+| Iron Fist | ×1.0 | ×1.0 | baseline | ×1.0 | baseline |
+| Chaos | ×1.4 | ×1.3 | −10% | ×1.5 | −1 |
+| Legendary | ×1.8 | ×1.5 | −20% | ×2.0 | −1 |
+
+Difficulty is set at kingdom creation and locked per save (respecced only on New Game).
+
+## 7. Economy & Balance (formulas)
+
+**Production (per resource, per turn)**
+```
+prod[key] = Σ(workers_on_chain × productivity × tech_mult × land_quality) − decay
+```
+**Consumption**
+```
+cons_food = population × 0.25 × (1 + army_ratio × 0.5) × (winter ? 1.3 : 1.0)
+cons_gold = upkeep(military) + civil_services + court
+```
+**Happiness** (0..1, class-weighted)
+```
+happiness = clamp(
+    0.45
+  + 0.30 × food_ratio                          # food_stock / cons_food
+  + 0.15 × (1 − tax_rate)
+  + 0.10 × safety_index                        # walls, garrison, peace
+  − 0.25 × war_fatigue                         # months at war / 24
+  − 0.20 × (1 − liberty_index)                 # oppressive decrees
+  + 0.10 × festival_recency_bonus
+, 0, 1)
+```
+**Population growth** (logistic, per class)
+```
+K = carrying_capacity(food_supply, housing, jobs)   # ceiling
+dP = P × r × (1 − P/K) − deaths(plague, war) ± net_migration(loyalty, neighbors)
+r = base_birth_rate × (happiness − 0.4)            # unhappy → negative growth
+```
+**Revolt risk** (rolled per turn)
+```
+P(revolt) = clamp((1 − happiness − loyalty) × 0.5 + tax_excess + famine_turns × 0.1, 0, 0.9)
+```
+**Battle power** (per side)
+```
+power = Σ(units × count × type_strength × morale × terrain_mult × commander_trait)
+result = weighted_random(power_a : power_b) × flanking_bonus × supply_factor
+```
+
+Tuning lives in `data/catalog/balance.json` so designers can iterate without code changes.
+
+## 8. Content Bible (scope & counts)
+
+| Category | Count | Catalog file |
+|---|---|---|
+| Buildings | 40 (8 econ · 10 military · 8 civic · 6 religious · 8 special) | `buildings.json` |
+| Unit types | 6 × 3 tiers = 18 | `units.json` |
+| Tech nodes | 6 branches × ~10 = 60 | `tech.json` |
+| Event templates | ~120 (weighted, state-conditional) | `events.json` |
+| Main-quest acts | 10 | `main_quest.json` |
+| Side mission templates | 6 categories × 8 = 48 | `missions.json` |
+| Side stories | 6 (multi-chapter, AI-personalized) | `side_stories.json` |
+| Side games | 7 | `side_games.json` |
+| Scenarios | 7 presets + custom prompt | `scenarios.json` |
+| Ruler traits | 24 (16 positive, 8 negative) | `traits.json` |
+| NPC names | procedural per culture pool | `names/<culture>.json` |
+| Diplomatic treaties | 6 | `treaties.json` |
+
+All catalogs are **data-driven JSON** loaded at runtime; the CE reads them, the WC visualizes
+their effects. This makes the game moddable and balances code-vs-content.
+
+## 9. World Generation Spec
+
+**Pipeline** (seeded, reproducible — `scripts/world/terrain.gd` today):
+1. Domain-warped fBm heightmap → elevation [-1, 1].
+2. Second noise → moisture; combined with elevation & latitude → **biome**
+   (deep water / shallow / sand / plains / forest / hills / rock / snow).
+3. **Springs** at high-moisture high-elevation points; trace downhill to sea → carve rivers
+   (width by flow accumulation).
+4. **Habitable mask** = non-water, slope < threshold → candidate settlement cells.
+5. Place player capital at best habitable cell; place N rival capitals with min-spacing
+   constraint (Poisson-disc on habitable mask).
+6. **Resource nodes**: ore in mountains, timber in forests, fish on coasts, fertile soil in
+   plains — density from biome.
+7. **Roads**: A* on habitable mask between cities, weighted by slope; major vs minor.
+8. **Climate bands** by latitude → temperature → seasons severity (snow vs mild winter).
+
+## 10. UI/UX & Information Architecture
+
+**Primary surface:** full-screen 3D world. Everything else is layered.
+
+| Layer | Purpose | Mobile ergonomics |
+|---|---|---|
+| 3D world | the simulation you can fly through | orbit/pinch/pan |
+| Top status bar | kingdom, turn, 8 resources (current `hud.gd`) | glanceable |
+| Bottom action bar | context actions (build radial, next turn) | **right-thumb zone** |
+| Bottom sheet | contextual detail panel (selected building/NPC/battle) | one-hand reach |
+| Event modal | narrative card + choices | dismissible |
+| Minimap toggle | strategic 2D overlay (borders, armies, routes) | top-right |
+| Hamburger menu | deep screens (Court, Diplomacy, Tech, Stats, Chronicle) | secondary |
+
+**One-hand rule:** every core verb reachable with the right thumb at default hold. Deep
+management screens are optional detours, never gates.
+
+**Information hierarchy:** world shows *state*; sheets show *detail*; menus show *depth*.
+Never duplicate the same number in three places.
+
+## 11. Art Direction Bible
+
+- **Style:** stylized low-poly, warm directional key + cool sky fill, soft shadows, fog,
+  filmic tonemap, subtle glow. "Great graphics" via direction, not asset cost.
+- **Palette:** earth tones base; kingdom banner = player accent; hostile = desaturated red;
+  neutral NPC = muted; quest NPC = warm gold rim.
+- **Silhouette > detail:** readable shapes at 10m, 50m, 200m (ties to LOD tiers).
+- **Scale:** 1 grid unit = 4 m (matches `terrain.gd` SPACING). Human ≈ 1.8 m. City block ≈ 40 m.
+- **Materials:** toon-ish albedo + rim light; water additive transparent; foliage billboards.
+- **Animation set:** idle (breathing), walk, work-cycle per job, fight, cheer, mourn. Blend
+  spaces; ~6 anims reused via retarget.
+- **Asset sources:** CC0 (Quaternius medieval UltraPack, Kenney) + procedural assembly;
+  recorded in `INSTALL_LOG.md`.
+
+## 12. Audio Direction
+
+- **Adaptive layered score:** calm base bed → tension layer fades in at war → triumph stinger
+  on victory; mourning layer on ruler death. Layers driven by CE mood signals.
+- **Diegetic:** market chatter, smith hammering, battle clangs, festival music — emitted by
+  in-world sources (positional `AudioStreamPlayer3D`).
+- **UI SFX:** pooled, non-positional; distinct timbre per verb family.
+- **Accessibility:** master/music/sfx/sfx-3d sliders; subtitles for all diegetic speech.
+
+## 13. Onboarding & Progressive Disclosure
+
+- **First 5 minutes:** you inherit a small village. An advisor overlays contextual hints:
+  place a farm → advance a month → resolve your first event. Then hints fade.
+- **Progressive unlock:** tabs unlock as systems become relevant (Research appears when a
+  scholar arrives; Diplomacy when first rival is met). Prevents front-loaded overwhelm.
+- **Advisor density slider:** off / hint / hand-hold — player-tunable.
+
+## 14. Accessibility
+
+- Text size scaling (×0.8 / ×1 / ×1.3 / ×1.6).
+- Colorblind palettes (deutan/protan/tritan).
+- Slow-mode (×0.5 sim speed) + full pause.
+- Autoplay-combat toggle (skip real-time battles → auto-resolve).
+- Haptics for events, taps, danger.
+- Subtitles for all AI narration and diegetic speech.
+
+## 15. Localization
+
+- Godot's `res/values-*` already scaffolded by the Android build template.
+- All player-facing strings via `tr()` + CSV translation tables.
+- Ship with English; community translations via CSV PRs.
 
 ---
 
-## 3. Design Principles
+# PART II — TECHNICAL DESIGN DOCUMENT
 
-1. **Realism over simplicity** — every number cascades into others (food shortage → empty market
-   → hungry faces → crowd → revolt).
-2. **AI as narrator, CE as referee** — Gemini makes it feel alive; the CE makes it accurate.
-   AI never blocks gameplay — every call has a local fallback.
-3. **No dead screens** — every tab has dynamic content, charts, and at least one AI element.
-4. **Visible causality** — if the CE says "unrest +12%", a crowd must be forming somewhere
-   the player can fly to and see.
-5. **Respect the player's time** — pausable at any turn; nothing expires without warning.
-6. **Vertical slices** — the game stays buildable and fun at every phase milestone.
-7. **Reversibility** — `INSTALL_LOG.md` lets the whole venture be torn down to zero footprint.
-
----
-
-## 4. Architecture — Three Layers + Persistence
+## 16. Architecture — Three Layers + Persistence
 
 ```
 ┌──────────────────────────────────────────────────────────┐
@@ -75,12 +271,12 @@ optional polish.
 │  LocalEngine │ Gemini │ OpenAI-compat │ Ollama            │
 └────────────────────────────┬─────────────────────────────┘
 ┌────────────────────────────▼─────────────────────────────┐
-│  PERSISTENCE   save system · settings vault · telemetry  │
+│  PERSISTENCE   save system · settings vault · telemetry   │
 └──────────────────────────────────────────────────────────┘
 ```
 
-**Dual-clock rule (canonical):** the micro world runs continuously in real time; at the end of
-each in-game month the CE snapshots world state, rolls events, and produces the turn. Real-time
+**Dual-clock rule (canonical):** the micro world runs continuously in real time; at each
+in-game month-end the CE snapshots world state, rolls events, and produces the turn. Real-time
 battles happen in-world; outcomes feed the CE military module. Nothing ever blocks on the
 network — every AI call resolves to local prose on timeout/failure.
 
@@ -88,164 +284,149 @@ network — every AI call resolves to local prose on timeout/failure.
 - food produced by farmers (WC) → `resources.food.stock` (CE)
 - population counts per class (WC headcount) → `population.<class>.count` (CE)
 - battle outcome (WC) → `military.units_lost` + `diplomacy.relation` delta (CE)
-- mood of citizens (WC avg happiness) → `population.happiness` (CE)
-- CE policy changes (tax↑) → WC job demand + mood delta next tick
+- mean citizen mood (WC happiness) → `population.happiness` (CE)
+- CE policy (tax↑) → WC job demand + mood delta next tick
 
----
+## 17. Coordination Engine (CE) — macro simulation
 
-## 5. Coordination Engine (CE) — Macro Simulation
+Pure GDScript, fully unit-testable headless (`scripts/tests/smoke_test.gd` gates CI today).
+Autoload `Game` (`scripts/core/game.gd`).
 
-The offline referee. Currently skeleton in `scripts/core/game.gd`. Each module below is a
-phase deliverable; all are pure GDScript, fully unit-testable headless (`smoke_test.gd` runs
-in CI today).
+### 17.1 Tick Engine
+`turn, year, month`; `advance()` → `_apply_flows()` → `_roll_events()` → emit `turned`,
+`resources_changed`, `event_occurred`.
 
-### 5.1 Tick Engine
-- `turn: int` (1 turn = 1 month), `year`, `month` (1–12).
-- `advance()` → applies flows → rolls events → emits `turned`.
-- Real-time micro tick runs separately; month boundary triggers CE snapshot.
-
-### 5.2 Resource record (data contract)
+### 17.2 Resource record (data contract)
 ```gdscript
 resources[key] = {
-    "stock":   float,   # current amount
-    "prod":    float,   # per-turn production (from WC production chains)
-    "cons":    float,   # per-turn consumption
-    "capacity":float,   # storage cap; overflow decays
-    "trade":   float,   # net per-turn trade balance
+    "stock":   float, "prod":  float, "cons":  float,
+    "capacity":float, "trade": float,
 }
 # keys: food, gold, wood, stone, iron, cloth, horses, knowledge
 ```
-Shortage cascade: `food stock ≤ 0 → population.happiness -= 5 → revolt chance += 0.2 →
-army.morale -= 10 (desertion)`. Each step emits a CE event the WC visualizes.
+Shortage cascade: `food ≤ 0 → happiness −0.05 → revolt_risk +0.2 → army morale −10
+(desertion)`. Each step emits a CE event the WC visualizes.
 
-### 5.3 Population engine (macro classes)
+### 17.3 Population (macro classes)
 ```gdscript
 population[class] = {
-    "count":     int,    # headcount (authoritative = WC census)
-    "happiness": float, 0..1
-    "loyalty":   float, 0..1
-    "productivity": float, 0..1
-    "birth_rate":  float, per turn
-    "death_rate":  float, per turn
+    "count": int, "happiness": float, "loyalty": float,
+    "productivity": float, "birth_rate": float, "death_rate": float,
 }
 # classes: peasants, merchants, clergy, nobles, soldiers, scholars
 ```
 
-### 5.4 Military engine
-- Unit types: infantry, archers, cavalry, siege, navy, elite_guards.
-- Per unit: `count, morale, supply, experience, commander_id`.
-- Battle resolution: weighted probability + terrain modifiers; **real-time 3D battle scene**
-  (Phase 3) with optional auto-resolve.
-
-### 5.5 Diplomacy engine
-- AI kingdoms with **memory** (betrayals, alliances, gifts → opinion deltas).
-- `relations[kingdom_id] = { score: int, treaty: String, trust: float, last_event: turn }`.
-- Treaties: non-aggression, alliance, vassalage, confederation, royal marriage.
-
-### 5.6 Technology tree
-- Branches: agriculture, military, commerce, architecture, arcane, governance.
-- Research unlock → cascades new game options + stat bonuses + **visible world upgrades**
-  (e.g., agriculture tech → field tileset change + yield).
-
-### 5.7 Event probability engine
-- Every tick rolls: disasters, plagues, revolts, discoveries, random events.
-- Probability weighted by current state (`food < 20 → plague chance ×3`).
-- Passes `{type, severity, context, history}` to NarrativeProvider for prose.
-
-### 5.8 CE → Narrative handoff protocol
+### 17.4 Military — unit record & battle resolution
+```gdscript
+units[type] = { "count": int, "morale": float, "supply": float,
+                 "experience": float, "commander_id": int }
 ```
-CE detects: {event_type, severity, kingdom_context, last_5_events, ruler_traits, hooks}
-   → NarrativeProvider.generate(prompt) → {narrative_text, choices[], story_hooks[]}
-   → CE applies player choice → updates state → emits event_occurred
+Battle: `power = Σ(count × strength × morale × terrain × commander)`; outcome via
+`weighted_random(power_a : power_b)` with flanking/supply modifiers. Real-time 3D scene in
+Phase 3; auto-resolve always available.
+
+### 17.5 Diplomacy — memory-driven AI
+```gdscript
+relations[kingdom_id] = {
+    "score": int,          # opinion, signed-ish
+    "trust": float,        # decays toward 0
+    "treaty": String,      # none|nap|alliance|vassalage|confederation|marriage
+    "memory": RingBuffer, # betrayals, gifts, slights (weighted by recency)
+    "last_event": int,     # turn
+}
+```
+AI decision: utility over {war, trade, marry, betray, gift} scored from `score`, `trust`,
+relative power, ambition trait.
+
+### 17.6 Technology tree — 6 branches × ~10 nodes
+Each unlock: stat bonuses + new game options + **visible world upgrade** (e.g., agriculture
+node → field tileset change + yield ×1.1).
+
+### 17.7 Event probability engine
+Per turn: roll disasters/plagues/revolts/discoveries/random; probability weighted by state
+(`food < 20 → plague ×3`). Emits `{type, severity, context, last_5_events}` to
+NarrativeProvider.
+
+### 17.8 CE → Narrative handoff
+```
+CE → {event_type, severity, kingdom_context, last_5_events, traits, hooks}
+NarrativeProvider.generate(prompt) → {narrative_text, choices[], hooks[]}
+CE applies player choice → state update → emit event_occurred
 ```
 
----
+## 18. World Simulation (WC) — micro / NPC
 
-## 6. World Simulation (WC) — Micro / NPC
+Lives in `scripts/npc/` and `scripts/world/`.
 
-The flagship "realistic simulation" layer (Phase 2+). Lives in `scripts/npc/` and
-`scripts/world/`.
-
-### 6.1 Agent model (the NPC)
+### 18.1 Agent model
 ```gdscript
 agent = {
-    "id":         int,
-    "name":       String,
-    "class":      String,         # one of the 6 population classes
-    "pos":        Vector3,        # world position (LOD-managed)
-    "needs":      {hunger, rest, safety, social, faith, wealth},  # 0..1
-    "traits":     [String, ...],  # personality tags
-    "skills":     {String: float},
-    "schedule":   Array[{hour, action, target}],
-    "job":        String,         # assigned by labor demand system
-    "household":  int,            # household id
-    "relations":  {agent_id: opinion},  # bounded graph
-    "memory":     RingBuffer,     # last N salient events
-    "age":        float,
-    "lifecycle":  String,        # child | worker | elder
-    "goals":      Queue,
+    "id": int, "name": String, "class": String, "pos": Vector3,
+    "needs":   {hunger, rest, safety, social, faith, wealth},  # 0..1
+    "traits":  [String, ...], "skills": {String: float},
+    "schedule":Array[{hour, action, target}], "job": String,
+    "household": int, "relations": {agent_id: opinion},
+    "memory":  RingBuffer, "age": float, "lifecycle": String, "goals": Queue,
 }
 ```
 
-### 6.2 Decision system
-- **Utility AI**: score candidate actions against needs + job + world context each tick;
-  pick highest; re-evaluate on interrupt (event, danger).
-- **Job assignment**: labor demand from buildings/economy → NPCs bid by skill → assigned;
-  idle NPCs drift to taverns/plazas (visible unemployment).
+### 18.2 Decision — utility AI
+```
+score(action) = Σ(weight_k × need_satisfaction_k) × job_affinity × context_mult
+pick argmax; re-evaluate on interrupt (event, danger, new job).
+```
 
-### 6.3 Production chains (WC → CE)
+### 18.3 Production chains (WC → CE)
 ```
 field(farmer) → grain → mill → flour → bakery → bread → market → food stock
-mine(miner) → ore → smelter → iron bar → smithy → tools
-forest(lumberjack) → log → sawmill → plank → construction
+mine(miner)   → ore   → smelter → iron → smithy → tools → productivity+
+forest        → log   → sawmill → plank → construction
 ```
-Each link is a 3D building with worker slots and throughput; disruptions physically appear
+Each link = a 3D building with worker slots + throughput; disruptions physically appear
 (mill burnt → no flour → empty bakery → bread shortage → CE food drop → hunger).
 
-### 6.4 Daily schedule system
-- Hour grid (0–23): sleep (22–6), breakfast, work shift (6–18 w/ breaks), leisure/tavern,
-  supper, sleep. Festivals when morale high; mourning after disasters.
+### 18.4 Daily schedule — hour grid 0–23
+sleep (22–6) · breakfast · work shift (6–18 w/ breaks) · leisure/tavern · supper · sleep.
+Festivals when morale high; mourning after disasters; conscription pulls men from work.
 
-### 6.5 Relationships & dynasties
-- Per-agent bounded memory (ring buffer, ~32 events).
-- Opinion graph → families, feuds, loves, betrayals → feeds Court, Espionage, Succession.
-- Ruler is an NPC with court, guards, heir; death (disease/assassination/old age) triggers
-  real-time succession → CE ruler swap + narrative scene.
+### 18.5 Relationships & dynasties
+Per-agent bounded memory (ring buffer ~32). Opinion graph → families, feuds, loves, betrayals
+→ feeds Court, Espionage, Succession. Ruler is an NPC with court, guards, heir; death
+(disease/assassination/old age) triggers real-time succession → CE ruler swap + narrative scene.
 
-### 6.6 Crowd LOD (performance)
+### 18.6 Crowd LOD (performance)
+
 | tier | distance | render | sim |
 |---|---|---|---|
-| A | near (<30m) | full skeletal animation | full utility AI + needs |
-| B | mid (30–120m) | baked billboard / imposter | lite AI (job only) |
-| C | far (>120m) | none / crowd texture | aggregate stat only |
-- Cap ~800 tier-A agents; remainder aggregate. `MultiMeshInstance3D` for repeated meshes.
+| A | near (<30 m) | full skeletal anim | full utility AI + needs |
+| B | mid (30–120 m) | baked billboard / imposter | lite AI (job only) |
+| C | far (>120 m) | none / crowd texture | aggregate stat |
 
----
+Cap ~800 tier-A agents; remainder aggregate. `MultiMeshInstance3D` for repeated meshes.
 
-## 7. Rendering & Performance Budget
-
-**Art direction:** stylized low-poly with warm directional lighting, soft shadows, fog,
-filmic tonemap, subtle glow — "great graphics" via art direction, not asset cost.
+## 19. Rendering & Performance Budget
 
 | Target | Budget |
 |---|---|
 | Mid-range Android | 30 FPS floor, 60 target |
-| Draw calls | < 400/frame |
+| Draw calls | < 400 / frame |
 | Tier-A agents | ≤ 800 |
-| Sim tick | ≤ 4 ms (threaded via `WorkerThreadPool`) |
+| Sim tick | ≤ 4 ms (threaded `WorkerThreadPool`) |
 | Memory | < 1 GB resident |
 | APK (debug) | ~55 MB today; release target < 80 MB |
 
 **Techniques:** `MultiMeshInstance3D` for crowds/trees, object pooling, spatial-hash agent
 queries, baked GI on static geometry, texture atlases, `Mobile` renderer default (Forward+
-toggle for high-end in Settings). Day/night, seasons, weather driven by shaders; terrain by
-seeded heightmap + biome splat (`scripts/world/terrain.gd` today).
+toggle for high-end). Day/night, seasons, weather shader-driven; terrain by seeded heightmap
++ biome splat (`terrain.gd`).
 
----
+**Profiling methodology (per-phase gate):**
+1. Capture `--render-thread` frame time on a reference mid-range device profile.
+2. Record draw-call count, agent count, sim ms via an in-game `DebugOverlay` (F1 toggle).
+3. Regression gate: APK must hold 30 FPS on the Phase-N scenario before advancing.
+4. `WorkerThreadPool` for NPC updates; main thread only reads results.
 
-## 8. AI Narrative Layer (Multi-Provider)
-
-Single interface, pluggable adapters, configured in Settings:
+## 20. AI Narrative Layer (multi-provider)
 
 | Adapter | Endpoint | Use |
 |---|---|---|
@@ -254,33 +435,49 @@ Single interface, pluggable adapters, configured in Settings:
 | `OpenAI-compatible` | any base URL (OpenRouter, DeepSeek, Moonshot…) | broadest compat |
 | `Ollama` | LAN server on PC/Manus | fully private, offline |
 
-**Governance:** request queue, timeout + retry w/ backoff, token-budget meter, response cache
-(similarity), JSON-schema-forced outputs. **API keys stored encrypted on-device, never in
-save files or git.** Every call must resolve to `LocalEngine` on failure → game never blocks.
+**Governance:** request queue · timeout + retry w/ backoff · token-budget meter · response
+cache (similarity) · JSON-schema-forced outputs. **Keys encrypted on-device, never in saves or
+git.** Every call falls back to `LocalEngine` on failure → game never blocks.
 
-Powers: event narratives, character dialogue, Chronicle, mission briefs, side stories,
-death/succession scenes, diplomacy letters, battle narration.
+Powers: event narratives, dialogue, Chronicle, mission briefs, side stories, death/succession
+scenes, diplomacy letters, battle narration.
 
-Prompt architecture (from `KingdomUnfolded.md`):
+Prompt architecture:
 ```
 [SYSTEM CONTEXT] kingdom, era, turn, pop, gold, mil, last 5 events, traits, hooks
 [TASK] specific generation request
 [FORMAT] structured output (JSON or prose schema)
 ```
 
----
+## 21. Data-Driven Content Pipeline
 
-## 9. Systems cross-reference (original doc → 3D implementation)
+All content lives as JSON under `data/catalog/`:
+```
+data/catalog/
+├── buildings.json    units.json    tech.json    events.json
+├── traits.json      treaties.json scenarios.json
+├── balance.json     main_quest.json  missions.json
+├── side_stories.json  side_games.json
+└── names/{northern,southern,eastern,desert,island}.json
+```
+Loaded once at startup into typed dictionaries; CE reads rules, WC reads visuals mapping.
+**Benefit:** balance/content iterate without code changes; moddable; CI smoke test can load
+catalogs to validate JSON schema.
 
-All 20 original tabs survive, reorganized as: **3D world (main)** → **HUD/contextual menus**
-(build radial, event cards, battle view) → **strategy screens** (Kingdom/Diplomacy/Tech/
-Statistics, custom-drawn charts in Godot) → **narrative screens** (Chronicle, Stories, Codex).
-Side games (tournament, duel) render in-world. Statistics dashboard (6 sub-tabs) ported as
-custom chart widgets.
+## 22. Save System & Migration
 
----
+Format (JSON; see `KingdomUnfolded.md`):
+```json
+{ "meta": {…}, "gameState": {…}, "eventHistory": […], "missionLog": […],
+  "storyProgress": {…}, "chronicle": […], "settings": {…}, "ceState": {…} }
+```
+- `SAVE_VERSION` constant in `game.gd`; `_restore()` calls `migrate(from, data)` chain when
+  version bumps (each migration is a pure function).
+- 5 named slots + autosave every 5 turns.
+- Export/import `.kingdom` JSON for portability.
+- API keys live in an encrypted settings vault, **never** serialized into saves.
 
-## 10. Build & Dev Pipeline (proven working)
+## 23. Build & Dev Pipeline (proven working)
 
 ```
 Termux phone:  write .gd code → git push
@@ -293,16 +490,24 @@ GitHub Actions (godot-ci:4.4 Docker):
 Phone browser: download artifact → install → playtest
 Manus AI: manual/interactive exports as fallback
 ```
+- Workflow `.github/workflows/build.yml`; triggers: push to `main`, `v*` tags, manual.
+- `scripts/tests/smoke_test.gd` gates the APK build on every push.
+- **CI traps fixed & documented in `docs/BUILD.md`** (silent `etc2_astc` failure, HOME
+  mismatch, android_source.zip layout, keystore preset fields).
+- Signing: debug today; release keystore as GitHub secret when Play Store targeted.
 
-- Workflow: `.github/workflows/build.yml`. Triggers: push to `main`, `v*` tags, manual.
-- Smoke test (`scripts/tests/smoke_test.gd`) gates the APK build on every push.
-- **CI traps fixed and documented in `docs/BUILD.md`** — the silent `etc2_astc` failure,
-  HOME mismatch, android_source.zip layout, keystore preset fields.
-- Signing: debug today; release keystore as GitHub secret when Play Store is targeted.
+## 24. Testing Strategy
 
----
+| Layer | Tool | Coverage |
+|---|---|---|
+| CE pure functions | GUT (GDScript unit) | economy math, event rolls, save round-trip |
+| Catalogs | JSON-schema validator | all `data/catalog/*.json` load cleanly |
+| WC agent logic | property-based tests | needs converge, no degenerate schedules |
+| Smoke (headless) | `smoke_test.gd` (CI today) | CE turn advance + save/load |
+| Visual playtest | per-phase checklist | fun + perf gate |
+| Regression | per-phase FPS capture | hold 30 FPS on reference device |
 
-## 11. Project Structure
+## 25. Project Structure & Conventions
 
 ```
 ├── project.godot            config (Mobile renderer, etc2_astc, autoloads)
@@ -315,20 +520,38 @@ Manus AI: manual/interactive exports as fallback
 │   ├── npc/                 agent sim (Phase 2)
 │   ├── net/                 NarrativeProvider + adapters (Phase 4)
 │   └── tests/smoke_test.gd  headless CE test (CI-gated)
+├── data/catalog/            data-driven JSON content
 ├── assets/                  CC0 art packs (tracked in INSTALL_LOG.md)
-├── data/saves/              save files
-├── .github/workflows/      CI
+├── .github/workflows/       CI
 ├── docs/                    BUILD.md, this plan, changelog
 └── INSTALL_LOG.md           download/install ledger (reversible)
 ```
+**Conventions:** GDScript `snake_case`; signals past-tense (`turned`, `event_occurred`);
+typed where cheap; `:=` only for non-Variant inference; warnings-as-errors for
+`INFERENCE_ON_VARIANT` (CI enforces). No comments unless asked.
+
+## 26. Telemetry (opt-in)
+
+Local-only first; exportable. Per-session: turns survived, collapse cause, resource curves,
+time-in-tab. Used for balance hotspots. Off by default; explicit consent; never networked
+unless the player exports a save to share.
+
+## 27. Versioning & Release Strategy
+
+- `0.x` during development (we are at `0.1.0`).
+- `1.0.0` at Phase 6 launch (Play Store sideload build for self/friends).
+- Semver after 1.0; each release ships a `v*` tag → triggers CI → signed AAB.
+- Personal-polished first; monetization revisited only post-1.0.
 
 ---
 
-## 12. Roadmap — playable every phase
+# PART III — DELIVERY
+
+## 28. Roadmap (playable every phase)
 
 | Phase | Scope | Acceptance criterion (personal-playtest-fun) |
 |---|---|---|
-| **0 · Foundations** ✅ | skeleton, terrain gen, camera, HUD, CE turn, save, CI | flying over a generated kingdom is satisfying — DONE |
+| **0 · Foundations** ✅ | skeleton, terrain gen, camera, HUD, CE turn, save, CI | flying over a generated kingdom is satisfying — **DONE** |
 | **1 · Living World** | day/night, seasons, weather, first 3 buildings, economy chains | watching the village grow over months is satisfying |
 | **2 · The People** | NPC agents, needs/utility-AI, jobs, schedules, relationships, crowd LOD | you recognize individual citizens and their stories |
 | **3 · Systems** | military + 3D battles, diplomacy, tech tree, events, missions | full strategy loop is engaging |
@@ -336,47 +559,91 @@ Manus AI: manual/interactive exports as fallback
 | **5 · Depth** | side stories, scenarios, minigames, Court & succession, espionage | parity with `KingdomUnfolded.md` reached |
 | **6 · Launch** | performance hardening, tutorial, onboarding, signed AAB | release-quality personal build |
 
-Each phase = vertical slice: game stays buildable and fun at every milestone.
+**MVP definition:** end of Phase 3 = a complete, if unpolished, strategy game loop:
+generate kingdom → build → grow → fight → lose. Phases 4–6 are depth + polish, not core.
 
-### Near-term Phase 1 task breakdown
+## 29. Phase task breakdowns
+
+### Phase 1 — Living World
 1. Day/night cycle: directional light angle from sim-hour; sky color gradient; ambient.
-2. Season system: 4 seasons × 3 months; leaf/snow shader params; crop yield modifier.
+2. Season system: 4 seasons × 3 months; leaf/snow shader params; crop-yield modifier.
 3. Weather: rain/snow/fog particle layers; visibility + mood effects.
-4. Building system: placeable footprints, 3 tiers (house, farm, mill); grows with CE pop.
+4. Building system: placeable footprints; 3 tiers (house, farm, mill); grows with CE pop.
 5. Economy chain: grain→flour→bread visible flow; shortage visibly empties market.
 6. Time controls: pause, ×1, ×4, ×12; month-end CE summary card.
 
----
+### Phase 2 — The People
+1. Agent spawn/despawn w/ LOD tiers; spatial hash.
+2. Needs + utility-AI tick (threaded).
+3. Job assignment from labor demand.
+4. Schedules + navmesh movement.
+5. Households + relations graph + memory.
+6. Crowd rendering (MultiMesh, billboards).
 
-## 13. Risk Register
+### Phase 3 — Systems
+1. Military: units, commanders, march, garrison.
+2. Real-time battle scene + auto-resolve.
+3. Diplomacy: rival AI, treaties, letters.
+4. Tech tree: research + visible upgrades.
+5. Events: state-weighted rolls + narrative handoff stub.
+6. Missions: main-quest act 1 + side templates.
+
+### Phase 4 — AI Soul
+1. `NarrativeProvider` interface + `LocalEngine`.
+2. Gemini + OpenAI-compat + Ollama adapters.
+3. Chronicle prose turn-by-turn.
+4. Dialogue system for NPCs + court.
+5. Caching/queue/fallback governance.
+6. Settings UI for providers + keys.
+
+### Phase 5 — Depth
+Side stories, scenarios, minigames (tournament/duel/battle-sim in-world), Court &
+succession, espionage. Full `KingdomUnfolded.md` parity.
+
+### Phase 6 — Launch
+Perf hardening, tutorial, onboarding, icon/splash, signed AAB, Play Store sideload.
+
+## 30. Risk Register
 
 | Risk | Mitigation |
 |---|---|
 | Realistic assets unaffordable | low-poly art direction + CC0 + procedural |
 | Mid-range phone perf | early profiling per phase; 3-tier LOD; Mobile renderer |
-| LLM cost / latency / blocking | Local-first engine, caching, queue, offline fallback |
-| Scope explosion | vertical slices only; sim depth gated by perf budget |
-| Phone↔PC workflow friction | single git repo; CI is the "PC in the cloud"; `docs/BUILD.md` |
+| LLM cost / latency / blocking | Local-first, caching, queue, offline fallback |
+| Scope explosion | vertical slices; sim depth gated by perf budget; MVP = Phase 3 |
+| Phone↔PC workflow friction | git + CI-as-PC; `docs/BUILD.md` |
 | CI silent failures | smoke test gates APK; `etc2_astc` + template layout documented |
-| Save-format drift | `SAVE_VERSION` in `game.gd`; migration hook stubbed |
+| Save-format drift | `SAVE_VERSION` + migration chain (pure functions) |
+| Balance cliff | data-driven `balance.json`; opt-in telemetry; per-phase playtests |
+| AI hallucination breaking rules | CE validates all LLM JSON output; rejects → LocalEngine |
 
----
-
-## 14. Glossary
+## 31. Glossary
 
 - **CE** — Coordination Engine (macro, monthly, the referee).
 - **WC** — World Clock / micro sim (real-time, individual NPCs).
 - **NarrativeProvider** — abstraction over Local + cloud LLMs.
 - **Tier-A/B/C agent** — near/mid/far simulation LOD.
 - **Dual-clock rule** — real-time micro + monthly macro, synced at month boundary.
+- **Willpower** — per-turn action-point budget (ruler attention).
+- **Reign / Dynasty** — one ruler's lifetime / chain of reigns via succession.
+
+## 32. Decision Log (ADR-style)
+
+- **ADR-001** Godot 4.4 + Mobile renderer — mobile-first 3D, text-friendly dev, broad device support.
+- **ADR-002** CI-as-PC (GitHub Actions godot-ci) — no PC available; proven 2026-08-20.
+- **ADR-003** Hybrid AI (Local + multi-provider) — fully playable offline; cloud = polish, never a gate.
+- **ADR-004** Dual-clock (real-time micro + monthly macro) — coherence over faking it.
+- **ADR-005** Data-driven JSON catalogs — iterate balance/content without code; moddable.
+- **ADR-006** Stylized low-poly art — "great graphics" via direction, not asset cost.
+- **ADR-007** Personal-polished, no monetization pre-1.0 — keeps build simple; revisit later.
+
+## 33. Changelog
+
+- **2026-08-20** — Phase 0 complete. CI green; first APK artifact (54 MB). Plan expanded to full
+  GDD+TDD with formulas, content bible, art/audio bibles, data-driven pipeline, testing
+  strategy, ADR log. Traps in `docs/BUILD.md`; tracker in `INSTALL_LOG.md`.
 
 ---
-
-## 15. Changelog
-
-- **2026-08-20** — Phase 0 complete. CI green; first APK artifact (54 MB). Plan migrated to
-  repo as `docs/GRAND_PLAN.md`; traps documented in `docs/BUILD.md`; tracker in
-  `INSTALL_LOG.md`.
 
 *This plan is the single source of truth. Update it when a phase completes or a decision
 changes; do not let it drift from the code.*
