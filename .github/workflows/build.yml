@@ -35,16 +35,15 @@ jobs:
           cp -r /root/.local/share/godot/export_templates/4.4.stable "$HOME/.local/share/godot/export_templates/" 2>/dev/null || true
           mkdir -p "$HOME/.config/godot"
           cp /root/.config/godot/editor_settings-4.4.tres "$HOME/.config/godot/" 2>/dev/null || true
-          echo "--- source templates ---"
-          ls -la /root/.local/share/godot/export_templates/4.4.stable/ 2>&1 || echo "SOURCE MISSING"
-          echo "--- dest templates ---"
-          ls -la "$HOME/.local/share/godot/export_templates/4.4.stable/" 2>&1 || echo "DEST MISSING"
-          echo "--- editor settings ---"
-          cat "$HOME/.config/godot/editor_settings-4.4.tres" 2>&1 || echo "SETTINGS MISSING"
+          ls "$HOME/.local/share/godot/export_templates/4.4.stable/" | grep android || echo "TEMPLATES MISSING"
+      - name: Install Android build template into project
+        run: |
+          mkdir -p android
+          unzip -o "$HOME/.local/share/godot/export_templates/4.4.stable/android_source.zip" -d android/
       - name: Export debug APK
         run: |
           mkdir -p build
-          godot --headless --path . --verbose --export-debug "Android" build/kingdom-eternal-debug.apk
+          godot --headless --path . --export-debug "Android" build/kingdom-eternal-debug.apk
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
