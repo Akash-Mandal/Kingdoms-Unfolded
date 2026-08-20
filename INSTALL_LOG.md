@@ -33,7 +33,7 @@ sessions or CI can be torn down cleanly.
 
 | # | Date | What | Why | Source | Landed on | Size | Cleanup | Status |
 |---|---|---|---|---|---|---|---|---|
-| 001 | 2026-08-20 | Godot 4.4+ export templates (set) | Needed by CI to export Android APK | godot-ci Docker image (preincluded) | CI container (ephemeral) | ~3 GB | container torn down per run (none) | planned |
+| 001 | 2026-08-20 | Godot 4.4 export templates + Android SDK + JDK (container) | CI export of Android APK | `barichello/godot-ci:4.4` pulled on GitHub-hosted runner | GitHub Actions (ephemeral, torn down per run) | ~5 GB transient | none needed — container is auto-deleted | active (first run) |
 
 ## 2. Phone-side downloads & installs (ON this phone)
 
