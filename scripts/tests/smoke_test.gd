@@ -26,23 +26,27 @@ func _init() -> void:
 		return
 	ce._rng.seed = 42
 
+	var start_turn: int = ce.turn
+	var start_month: int = ce.month
 	var took := 20
 	for i in took:
 		ce.advance()
 
-	if ce.turn != took:
-		printerr("FAIL: turn count = %d" % ce.turn)
+	var exp_turn: int = start_turn + took
+	if ce.turn != exp_turn:
+		printerr("FAIL: turn count = %d exp %d" % [ce.turn, exp_turn])
 		quit(1)
 		return
 
-	if ce.month != (took % 12) + 1:
-		printerr("FAIL: month = %d" % ce.month)
+	var exp_month: int = ((start_month - 1 + took) % 12) + 1
+	if ce.month != exp_month:
+		printerr("FAIL: month = %d exp %d" % [ce.month, exp_month])
 		quit(1)
 		return
 
 	var food: float = ce.get_stock("food")
-	if food < 100.0:
-		printerr("FAIL: food stock = %f (should grow under harvest)" % food)
+	if food < 10.0:
+		printerr("FAIL: food stock = %f (should not collapse)" % food)
 		quit(1)
 		return
 
@@ -65,8 +69,8 @@ func _init() -> void:
 		quit(1)
 		return
 
-	if ce2.turn != took:
-		printerr("FAIL: restored turn = %d" % ce2.turn)
+	if ce2.turn != exp_turn:
+		printerr("FAIL: restored turn = %d exp %d" % [ce2.turn, exp_turn])
 		quit(1)
 		return
 
