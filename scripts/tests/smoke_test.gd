@@ -74,7 +74,7 @@ func _init() -> void:
 		quit(1)
 		return
 
-	var cat := load("res://scripts/core/catalog.gd").new()
+	var cat = load("res://scripts/core/catalog.gd").new()
 	cat._load_all()
 	print("CAT: units %d tech %d events %d" % [cat.units.size(), cat.tech.size(), cat.events.size()])
 	if cat.units.is_empty():
