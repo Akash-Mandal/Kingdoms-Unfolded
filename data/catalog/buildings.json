@@ -1,0 +1,42 @@
+[
+	{
+		"id": "house",
+		"name": "House",
+		"icon": "🏠",
+		"cost": { "wood": 10, "stone": 4 },
+		"size": { "w": 2, "d": 2 },
+		"prod": {},
+		"cons": {},
+		"capacity": { "housing": 4 }
+	},
+	{
+		"id": "farm",
+		"name": "Farm",
+		"icon": "🌾",
+		"cost": { "wood": 8 },
+		"size": { "w": 3, "d": 3 },
+		"prod": { "grain": 6 },
+		"cons": {},
+		"capacity": {}
+	},
+	{
+		"id": "mill",
+		"name": "Mill",
+		"icon": "⚙️",
+		"cost": { "wood": 12, "stone": 6 },
+		"size": { "w": 2, "d": 2 },
+		"prod": { "flour": 4 },
+		"cons": { "grain": 4 },
+		"capacity": {}
+	},
+	{
+		"id": "bakery",
+		"name": "Bakery",
+		"icon": "🍞",
+		"cost": { "wood": 10, "stone": 4 },
+		"size": { "w": 2, "d": 2 },
+		"prod": { "food": 5 },
+		"cons": { "flour": 4 },
+		"capacity": {}
+	}
+]

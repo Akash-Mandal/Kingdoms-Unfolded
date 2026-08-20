@@ -14,6 +14,8 @@ config/icon="res://icon.svg"
 [autoload]
 
 Game="*res://scripts/core/game.gd"
+TimeClock="*res://scripts/core/time_clock.gd"
+Catalog="*res://scripts/core/catalog.gd"
 
 [display]
 

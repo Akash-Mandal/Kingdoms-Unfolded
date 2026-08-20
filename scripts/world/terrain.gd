@@ -50,10 +50,19 @@ func biome_color(h: float, m: float) -> Color:
 		c = c.lerp(Color(0.95, 0.95, 0.98), 0.85)  # snow
 	return c
 
+var terrain_material: ShaderMaterial
+
 func build_terrain() -> void:
 	var terrain := MeshInstance3D.new()
 	terrain.name = "TerrainMesh"
 	terrain.mesh = build_mesh()
+	var sm := ShaderMaterial.new()
+	sm.shader = load("res://shaders/terrain.gdshader")
+	sm.set_shader_parameter("snow_amount", 0.0)
+	sm.set_shader_parameter("season_tint", Color(1, 1, 1))
+	sm.set_shader_parameter("snow_max_height", 14.0)
+	terrain.material_override = sm
+	terrain_material = sm
 	terrain.create_trimesh_collision()
 	add_child(terrain)
 	build_water()
