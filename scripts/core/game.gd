@@ -220,8 +220,16 @@ func load_from_file(path: String = "user://saves/slot_0.json") -> bool:
 func _restore(data: Dictionary) -> void:
 	var state: Dictionary = data.get("gameState", {})
 	resources = state.get("resources", resources)
-	placed_buildings = state.get("buildings", placed_buildings)
-	events.assign(data.get("eventHistory", []))
+	var pb: Array = state.get("buildings", placed_buildings)
+	placed_buildings.clear()
+	for e in pb:
+		if typeof(e) == TYPE_DICTIONARY:
+			placed_buildings.append(e)
+	var eh: Array = data.get("eventHistory", [])
+	events.clear()
+	for e in eh:
+		if typeof(e) == TYPE_DICTIONARY:
+			events.append(e)
 	settings = data.get("settings", settings)
 	turn = int(data.get("meta", {}).get("turnCount", 0))
 	year = turn / TURNS_PER_YEAR
