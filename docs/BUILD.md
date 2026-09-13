@@ -1,17 +1,18 @@
 # Building the APK — CI Handbook
 
-The Android APK is built **100% in the cloud** by GitHub Actions (`barichello/godot-ci:4.4`).
+The Android APK is built **100% in the cloud** by GitHub Actions (`barichello/godot-ci:4.7.2`).
 No PC and no local Godot install are ever required. This file documents the pipeline and the
 traps found while getting it green (2026-08-20 session).
 
 ## Trigger
 
-A build starts on:
-- push to `main`
+A build starts ONLY on:
 - any tag `v*`
 - manual "Run workflow" button on the Actions page (no commit needed)
 
-Download the result: repo → Actions → newest run → `kingdom-eternal-debug-apk` artifact →
+Pushes to `main` never trigger a build (cost-saving).
+
+Download the result: repo → Actions → newest run → `kingdoms-unfolded-debug-apk` artifact →
 install the `.apk` on your phone.
 
 ## Required export sequence (do not reorder)
@@ -19,12 +20,12 @@ install the `.apk` on your phone.
 1. `godot --headless --path . --import` — imports resources.
 2. Copy image tooling into the runner HOME (the image installs under `/root`, but the
    runner's `$HOME` is `/github/home`):
-   - `cp -r /root/.local/share/godot/export_templates/4.4.stable $HOME/.local/share/godot/export_templates/`
-   - `cp /root/.config/godot/editor_settings-4.4.tres $HOME/.config/godot/`
+   - `cp -r /root/.local/share/godot/export_templates/4.7.2.stable $HOME/.local/share/godot/export_templates/`
+   - `cp /root/.config/godot/editor_settings-4.7.tres $HOME/.config/godot/`
 3. Install the Android Gradle build template into the project:
-   - `unzip -o $HOME/.local/share/godot/export_templates/4.4.stable/android_source.zip -d android/build/`
-   - `echo "4.4.stable" > android/.build_version`
-4. `godot --headless --path . --export-debug "Android" build/kingdom-eternal-debug.apk`
+   - `unzip -o $HOME/.local/share/godot/export_templates/4.7.2.stable/android_source.zip -d android/build/`
+   - `echo "4.7.2.stable" > android/.build_version`
+4. `godot --headless --path . --export-debug "Android" build/kingdoms-unfolded-debug.apk`
 
 ## Traps that caused silent failures
 
@@ -51,6 +52,6 @@ install the `.apk` on your phone.
 | `gradle_build/use_gradle_build` | `true` | modern APK; also enables AAB later |
 | `gradle_build/target_sdk` | `33` | image ships build-tools 33.0.2 / platform 33 |
 | `gradle_build/min_sdk` | `24` | Godot minimum |
-| `package/unique_name` | `dev.kingdometernal.kingdometernal` | app id |
+| `package/unique_name` | `com.pexel.kingdomsunfolded` | app id |
 | `permissions/internet` | `true` | LLM providers later |
 | `rendering/textures/vram_compression/import_etc2_astc` | `true` | Android validation requirement |
