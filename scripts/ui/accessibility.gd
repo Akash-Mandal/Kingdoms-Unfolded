@@ -20,13 +20,7 @@ func _build() -> void:
 	margin.add_theme_constant_override("margin_bottom", 12)
 	add_child(margin)
 	_panel = PanelContainer.new()
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0.10, 0.10, 0.13, 0.96)
-	sb.corner_radius_top_left = 10
-	sb.corner_radius_top_right = 10
-	sb.corner_radius_bottom_left = 10
-	sb.corner_radius_bottom_right = 10
-	_panel.add_theme_stylebox_override("panel", sb)
+	_panel.add_theme_stylebox_override("panel", UITheme.panel_style(Color(0.10, 0.10, 0.13, 0.96), 10))
 	margin.add_child(_panel)
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 8)
@@ -61,8 +55,7 @@ func _build() -> void:
 	_haptics_check.button_pressed = true
 	_haptics_check.toggled.connect(_on_haptics)
 	hap_row.add_child(_haptics_check)
-	var close := Button.new()
-	close.text = "Close"
+	var close := UITheme.make_button("Close", "danger", Vector2(120, 44))
 	close.pressed.connect(func() -> void: visible = false)
 	v.add_child(close)
 	_sync()

@@ -18,14 +18,82 @@ var _save_slots: Node
 var _accessibility: Node
 
 func _ready() -> void:
+	_show_loading_cover()
 	await get_tree().process_frame
-	if Catalog != null and "buildings" in Catalog and (Catalog.buildings as Dictionary).is_empty():
+	if Catalog != null and Catalog.get("buildings") is Dictionary and (Catalog.get("buildings") as Dictionary).is_empty():
 		await get_tree().process_frame
 	if _try_load_existing():
 		_build_all()
+		_hide_loading_cover()
 		return
 	_build_minimal()
 	call_deferred("_show_start_screen")
+
+var _loading_cover: CanvasLayer = null
+func _show_loading_cover() -> void:
+	if _loading_cover != null and is_instance_valid(_loading_cover):
+		return
+	var cover := CanvasLayer.new()
+	cover.name = "LoadingCover"
+	cover.layer = 99
+	var root := Control.new()
+	root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root.mouse_filter = Control.MOUSE_FILTER_STOP
+	cover.add_child(root)
+	var bg := ColorRect.new()
+	bg.color = Color(0.055, 0.05, 0.075, 1.0)
+	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root.add_child(bg)
+	var center := CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(center)
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 12)
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	center.add_child(vbox)
+	var title := Label.new()
+	title.text = "Kingdoms Unfolded"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 30)
+	title.add_theme_color_override("font_color", Color(1.0, 0.96, 0.82))
+	vbox.add_child(title)
+	var sub := Label.new()
+	sub.text = "Raising the realm…"
+	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	sub.add_theme_font_size_override("font_size", 16)
+	sub.add_theme_color_override("font_color", Color(0.68, 0.67, 0.70))
+	vbox.add_child(sub)
+	add_child(cover)
+	_loading_cover = cover
+
+func _hide_loading_cover() -> void:
+	if _loading_cover != null and is_instance_valid(_loading_cover):
+		_loading_cover.queue_free()
+		_loading_cover = null
+
+func _show_fatal_error(msg: String) -> void:
+	_hide_loading_cover()
+	var cover := CanvasLayer.new()
+	cover.name = "FatalError"
+	cover.layer = 200
+	var root := Control.new()
+	root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	cover.add_child(root)
+	var bg := ColorRect.new()
+	bg.color = Color(0.055, 0.05, 0.075, 1.0)
+	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root.add_child(bg)
+	var center := CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root.add_child(center)
+	var lbl := Label.new()
+	lbl.text = "Something went wrong starting the game.\n%s\n\nRestart the app. Your saves are kept." % msg
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	lbl.custom_minimum_size = Vector2(560, 0)
+	lbl.add_theme_font_size_override("font_size", 16)
+	center.add_child(lbl)
 
 func _try_load_existing() -> bool:
 	if not FileAccess.file_exists("user://saves/slot_0.json"):
@@ -105,12 +173,21 @@ func _apply_graphics_to_world_cfg(cfg: Dictionary) -> void:
 
 func _show_start_screen() -> void:
 	if _start_screen != null and is_instance_valid(_start_screen):
+		_hide_loading_cover()
 		return
-	var screen: CanvasLayer = load("res://scripts/ui/start_screen.gd").new()
+	var start_script: Script = load("res://scripts/ui/start_screen.gd") as Script
+	if start_script == null:
+		_show_fatal_error("Start screen script failed to load.")
+		return
+	var screen: CanvasLayer = start_script.new() as CanvasLayer
+	if screen == null:
+		_show_fatal_error("Start screen failed to initialize.")
+		return
 	screen.name = "StartScreen"
 	screen.layer = 100
 	add_child(screen)
 	_start_screen = screen
+	_hide_loading_cover()
 	if not screen.start_requested.is_connected(_on_start_requested):
 		screen.start_requested.connect(_on_start_requested)
 	if not screen.continue_requested.is_connected(_on_continue_requested):
@@ -173,6 +250,9 @@ func _build_sun() -> void:
 func _build_camera() -> void:
 	var cam := Camera3D.new()
 	cam.name = "MainCamera"
+	cam.far = 600.0
+	cam.near = 0.1
+	cam.fov = 55.0
 	cam.set_script(load("res://scripts/world/camera_controller.gd"))
 	add_child(cam)
 	cam.make_current()

@@ -116,6 +116,8 @@ func _get_memory_mb() -> float:
 	return 0.0
 
 func _get_screen_pixels() -> int:
+	if OS.has_feature("dedicated_server") or DisplayServer.get_name() == "headless":
+		return 0
 	var sz: Vector2i = Vector2i.ZERO
 	if DisplayServer.get_screen_count() > 0:
 		sz = DisplayServer.screen_get_size()
@@ -230,9 +232,10 @@ func _apply_viewport(cfg: Dictionary) -> void:
 		vp.msaa_3d = mode
 		vp.use_taa = false
 	var vsync: int = int(cfg.get("vsync", 1))
-	var vsync_mode: int = DisplayServer.VSYNC_ENABLED if vsync != 0 else DisplayServer.VSYNC_DISABLED
-	if DisplayServer.window_get_vsync_mode(0) != vsync_mode:
-		DisplayServer.window_set_vsync_mode(vsync_mode)
+	if not OS.has_feature("dedicated_server") and DisplayServer.get_name() != "headless":
+		var vsync_mode: int = DisplayServer.VSYNC_ENABLED if vsync != 0 else DisplayServer.VSYNC_DISABLED
+		if DisplayServer.window_get_vsync_mode(0) != vsync_mode:
+			DisplayServer.window_set_vsync_mode(vsync_mode)
 	var atlas: int = int(cfg.get("shadow_atlas", 2048))
 	if RenderingServer.has_method("directional_shadow_atlas_set_size"):
 		RenderingServer.directional_shadow_atlas_set_size(atlas, true)

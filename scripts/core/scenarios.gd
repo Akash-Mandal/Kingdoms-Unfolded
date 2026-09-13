@@ -82,8 +82,11 @@ func apply_scenario(id: String, to_game: bool = true) -> bool:
 		elif "settings" in g:
 			g.settings["scenario"] = id
 		var season: Variant = sc.get("starting_season", null)
-		if season != null and g.has_method("season"):
-			pass
+		if season != null and str(season) != "":
+			var season_month := {"spring": 3, "summer": 6, "autumn": 9, "winter": 12}
+			var m: int = int(season_month.get(str(season).to_lower(), 0))
+			if m >= 1 and m <= 12:
+				g.set("month", m)
 		if g.has_signal("resources_changed"):
 			g.resources_changed.emit()
 		if g.has_signal("population_changed"):

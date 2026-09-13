@@ -28,9 +28,7 @@ func _build_ui() -> void:
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root)
-	_toggle_btn = Button.new()
-	_toggle_btn.text = "🤝 Diplomacy"
-	_toggle_btn.custom_minimum_size = Vector2(140, 40)
+	_toggle_btn = UITheme.make_button("🤝 Diplomacy", "ghost", Vector2(140, 44), 15)
 	_toggle_btn.anchor_left = 1.0
 	_toggle_btn.anchor_top = 0.0
 	_toggle_btn.anchor_right = 1.0
@@ -38,8 +36,7 @@ func _build_ui() -> void:
 	_toggle_btn.offset_left = -158.0
 	_toggle_btn.offset_top = 98.0
 	_toggle_btn.offset_right = -12.0
-	_toggle_btn.offset_bottom = 138.0
-	_toggle_btn.add_theme_font_size_override("font_size", 15)
+	_toggle_btn.offset_bottom = 142.0
 	_toggle_btn.pressed.connect(_toggle)
 	root.add_child(_toggle_btn)
 	_panel = PanelContainer.new()
@@ -52,13 +49,7 @@ func _build_ui() -> void:
 	_panel.offset_top = -300.0
 	_panel.offset_bottom = 300.0
 	_panel.visible = false
-	var ps := StyleBoxFlat.new()
-	ps.bg_color = Color(0.12, 0.12, 0.14, 0.96)
-	ps.corner_radius_top_left = 10
-	ps.corner_radius_top_right = 10
-	ps.corner_radius_bottom_left = 10
-	ps.corner_radius_bottom_right = 10
-	_panel.add_theme_stylebox_override("panel", ps)
+	_panel.add_theme_stylebox_override("panel", UITheme.panel_style(Color(0.12, 0.12, 0.14, 0.96), 10))
 	root.add_child(_panel)
 	var margin := MarginContainer.new()
 	margin.add_theme_constant_override("margin_left", 12)
@@ -78,9 +69,7 @@ func _build_ui() -> void:
 	_header.add_theme_color_override("font_color", Color(1, 0.92, 0.6))
 	_header.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title_row.add_child(_header)
-	var close_btn := Button.new()
-	close_btn.text = "✕"
-	close_btn.custom_minimum_size = Vector2(36, 36)
+	var close_btn := UITheme.make_button("✕", "danger", Vector2(44, 44))
 	close_btn.pressed.connect(_toggle)
 	title_row.add_child(close_btn)
 	vbox.add_child(HSeparator.new())
@@ -132,13 +121,7 @@ func _refresh() -> void:
 		var kingdom: Dictionary = d.get_kingdom(kid) if d.has_method("get_kingdom") else {}
 		var rel: Dictionary = d.get_relation(kid) if d.has_method("get_relation") else {}
 		var row := PanelContainer.new()
-		var rs := StyleBoxFlat.new()
-		rs.bg_color = Color(0.18, 0.18, 0.20, 1)
-		rs.corner_radius_top_left = 8
-		rs.corner_radius_top_right = 8
-		rs.corner_radius_bottom_left = 8
-		rs.corner_radius_bottom_right = 8
-		row.add_theme_stylebox_override("panel", rs)
+		row.add_theme_stylebox_override("panel", UITheme.panel_style(Color(0.18, 0.18, 0.20, 1), 8))
 		_list.add_child(row)
 		var inner := MarginContainer.new()
 		inner.add_theme_constant_override("margin_left", 8)
@@ -239,10 +222,7 @@ func _refresh() -> void:
 		var btn_row := HBoxContainer.new()
 		btn_row.add_theme_constant_override("separation", 6)
 		v.add_child(btn_row)
-		var gift_btn := Button.new()
-		gift_btn.text = "🎁 Gift (10g)"
-		gift_btn.custom_minimum_size = Vector2(110, 32)
-		gift_btn.add_theme_font_size_override("font_size", 13)
+		var gift_btn := UITheme.make_button("🎁 Gift (10g)", "primary", Vector2(120, 44), 13)
 		var gkid: String = String(kid)
 		gift_btn.pressed.connect(func() -> void:
 			var dip: Variant = get_node_or_null("/root/Diplomacy")
@@ -251,10 +231,7 @@ func _refresh() -> void:
 				_refresh()
 		)
 		btn_row.add_child(gift_btn)
-		var nap_btn := Button.new()
-		nap_btn.text = "🤝 Pact"
-		nap_btn.custom_minimum_size = Vector2(90, 32)
-		nap_btn.add_theme_font_size_override("font_size", 13)
+		var nap_btn := UITheme.make_button("🤝 Pact", "primary", Vector2(96, 44), 13)
 		nap_btn.pressed.connect(func() -> void:
 			var dip2: Variant = get_node_or_null("/root/Diplomacy")
 			if dip2 != null and dip2.has_method("set_treaty"):
@@ -263,10 +240,7 @@ func _refresh() -> void:
 		)
 		nap_btn.disabled = treaty != "none"
 		btn_row.add_child(nap_btn)
-		var ally_btn := Button.new()
-		ally_btn.text = "🛡️ Ally"
-		ally_btn.custom_minimum_size = Vector2(90, 32)
-		ally_btn.add_theme_font_size_override("font_size", 13)
+		var ally_btn := UITheme.make_button("🛡️ Ally", "primary", Vector2(96, 44), 13)
 		ally_btn.pressed.connect(func() -> void:
 			var dip3: Variant = get_node_or_null("/root/Diplomacy")
 			if dip3 != null and dip3.has_method("set_treaty"):
@@ -275,10 +249,7 @@ func _refresh() -> void:
 		)
 		ally_btn.disabled = treaty != "none"
 		btn_row.add_child(ally_btn)
-		var break_btn := Button.new()
-		break_btn.text = "💔 Break"
-		break_btn.custom_minimum_size = Vector2(90, 32)
-		break_btn.add_theme_font_size_override("font_size", 13)
+		var break_btn := UITheme.make_button("💔 Break", "danger", Vector2(96, 44), 13)
 		break_btn.pressed.connect(func() -> void:
 			var dip4: Variant = get_node_or_null("/root/Diplomacy")
 			if dip4 != null and dip4.has_method("break_treaty"):

@@ -39,22 +39,7 @@ func _build() -> void:
 	margin.add_theme_constant_override("margin_right", 12)
 	add_child(margin)
 	_panel = PanelContainer.new()
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0.12, 0.10, 0.08, 0.92)
-	sb.corner_radius_top_left = 10
-	sb.corner_radius_top_right = 10
-	sb.corner_radius_bottom_left = 10
-	sb.corner_radius_bottom_right = 10
-	sb.content_margin_left = 10
-	sb.content_margin_right = 10
-	sb.content_margin_top = 8
-	sb.content_margin_bottom = 8
-	sb.border_color = Color(0.9, 0.78, 0.35, 0.9)
-	sb.border_width_left = 2
-	sb.border_width_right = 2
-	sb.border_width_top = 2
-	sb.border_width_bottom = 2
-	_panel.add_theme_stylebox_override("panel", sb)
+	_panel.add_theme_stylebox_override("panel", UITheme.panel_style(Color(0.12, 0.10, 0.08, 0.92), 10, Color(0.9, 0.78, 0.35, 0.9), 2))
 	margin.add_child(_panel)
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 4)
@@ -70,10 +55,7 @@ func _build() -> void:
 	var spacer := Control.new()
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	top.add_child(spacer)
-	_skip_btn = Button.new()
-	_skip_btn.text = "Skip"
-	_skip_btn.custom_minimum_size = Vector2(64, 32)
-	_skip_btn.add_theme_font_size_override("font_size", 13)
+	_skip_btn = UITheme.make_button("Skip", "ghost", Vector2(96, 44), 13)
 	_skip_btn.pressed.connect(_finish)
 	top.add_child(_skip_btn)
 	_text = Label.new()
@@ -85,10 +67,7 @@ func _build() -> void:
 	var row := HBoxContainer.new()
 	row.alignment = BoxContainer.ALIGNMENT_END
 	v.add_child(row)
-	_next_btn = Button.new()
-	_next_btn.text = "Next →"
-	_next_btn.custom_minimum_size = Vector2(110, 36)
-	_next_btn.add_theme_font_size_override("font_size", 14)
+	_next_btn = UITheme.make_button("Next →", "primary", Vector2(120, 48), 14)
 	_next_btn.pressed.connect(_on_next)
 	row.add_child(_next_btn)
 
@@ -102,22 +81,13 @@ func _connect_signals() -> void:
 	var bm: Node = get_parent().get_node_or_null("BuildingManager") if get_parent() != null else null
 	if bm == null:
 		bm = get_node_or_null("/root/Main/BuildingManager")
-	if bm != null and bm.has_signal("place_failed"):
-		pass
+	if bm == null:
+		push_warning("Tutorial: BuildingManager not found; farm step auto-detect disabled")
 	call_deferred("_hook_building_signal")
 
 func _hook_building_signal() -> void:
-	var bm: Node = get_parent().get_node_or_null("BuildingManager") if get_parent() != null else null
-	if bm == null:
-		bm = get_node_or_null("/root/Main/BuildingManager")
-	if bm != null:
-		if bm.has_signal("ghost_update"):
-			pass
-	await get_tree().process_frame
-	var check: Node = get_node_or_null("/root/Main/BuildingManager")
-	if check != null:
-		pass
-	Game.resources_changed.connect(_check_farm_placed)
+	if not Game.resources_changed.is_connected(_check_farm_placed):
+		Game.resources_changed.connect(_check_farm_placed)
 
 func _check_farm_placed() -> void:
 	if _step == 1 or _step == 0:

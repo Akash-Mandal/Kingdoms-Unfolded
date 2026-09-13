@@ -326,8 +326,6 @@ func restore(data: Dictionary) -> void:
 	military_changed.emit()
 
 func _sync_to_game() -> void:
-	if Engine.has_singleton("Game"):
-		pass
 	var g: Node = get_node_or_null("/root/Game")
 	if g != null and "military" in g:
 		g.military = units.duplicate(true)

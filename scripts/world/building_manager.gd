@@ -175,7 +175,7 @@ func _update_ghost(world_pos: Variant) -> void:
 		_ghost.visible = false
 		return
 	if _ghost_tween != null and _ghost_tween.is_valid():
-		pass
+		_ghost_tween.kill()
 	_ghost.visible = true
 	var mesh: ArrayMesh = _make_building_mesh(selected_id)
 	_ghost.mesh = mesh

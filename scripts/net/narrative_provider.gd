@@ -16,6 +16,7 @@ var _cache_order: PackedStringArray = []
 var _local_engine: RefCounted
 var _adapters: Dictionary = {}
 var _retry_map: Dictionary = {}
+var _current: Dictionary = {}
 func _ready() -> void:
 	_local_engine = load("res://scripts/net/local_engine.gd").new()
 	_ensure_adapters()
@@ -237,6 +238,7 @@ func _dequeue() -> void:
 		return
 	_busy = true
 	var item: Dictionary = _queue.pop_front()
+	_current = item
 	var event: Dictionary = item["event"] as Dictionary
 	var prompt: Dictionary = item["prompt"] as Dictionary
 	if provider == "local":
@@ -298,16 +300,37 @@ func _on_timeout(item: Dictionary) -> void:
 		_busy = false
 		_dequeue()
 func _on_adapter_completed(result: Dictionary, provider_key: String) -> void:
-	if not _busy:
+	if not _busy or _current.is_empty():
 		return
-	var item_event: Dictionary = {}
-	if not _queue.is_empty():
-		item_event = _queue[0].get("event", {}) as Dictionary
+	var event: Dictionary = _current.get("event", {}) as Dictionary
+	var prompt: Dictionary = _current.get("prompt", {}) as Dictionary
+	var res: Dictionary = result.duplicate(true)
+	if not _validate(res):
+		res = _local_engine.call("generate", prompt) as Dictionary
+		res["provider"] = "local-fallback"
+	else:
+		res["provider"] = provider_key
+	_cache_store(prompt, res)
+	narrative_ready.emit(event, res)
+	_push_chronicle(event, res)
 	_busy = false
-	if _queue.is_empty():
+	_current = {}
+	_dequeue()
+func _on_adapter_failed(error: String, provider_key: String) -> void:
+	if not _busy or _current.is_empty():
 		return
-func _on_adapter_failed(_error: String, _provider_key: String) -> void:
-	pass
+	var event: Dictionary = _current.get("event", {}) as Dictionary
+	var prompt: Dictionary = _current.get("prompt", {}) as Dictionary
+	narrative_failed.emit(event, "%s: %s" % [provider_key, error])
+	var fb: Dictionary = _local_engine.call("generate", prompt) as Dictionary
+	fb["provider"] = "local-fallback"
+	fb["error"] = error
+	_cache_store(prompt, fb)
+	narrative_ready.emit(event, fb)
+	_push_chronicle(event, fb)
+	_busy = false
+	_current = {}
+	_dequeue()
 func _push_chronicle(event: Dictionary, result: Dictionary) -> void:
 	var chron: Node = get_node_or_null("/root/Chronicle")
 	if chron != null and chron.has_method("append"):

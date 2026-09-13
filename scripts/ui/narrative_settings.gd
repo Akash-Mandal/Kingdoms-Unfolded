@@ -37,13 +37,7 @@ func _build_ui() -> void:
 	panel.offset_right = 380.0
 	panel.offset_top = -300.0
 	panel.offset_bottom = 300.0
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.10, 0.10, 0.13, 0.97)
-	style.corner_radius_top_left = 14
-	style.corner_radius_top_right = 14
-	style.corner_radius_bottom_left = 14
-	style.corner_radius_bottom_right = 14
-	panel.add_theme_stylebox_override("panel", style)
+	panel.add_theme_stylebox_override("panel", UITheme.panel_style(Color(0.10, 0.10, 0.13, 0.97), 14))
 	root.add_child(panel)
 	var margin := MarginContainer.new()
 	margin.add_theme_constant_override("margin_left", 14)
@@ -78,9 +72,7 @@ func _build_ui() -> void:
 	var spacer := Control.new()
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row1.add_child(spacer)
-	var close := Button.new()
-	close.text = "✕"
-	close.custom_minimum_size = Vector2(44, 36)
+	var close := UITheme.make_button("✕", "danger", Vector2(44, 44))
 	close.pressed.connect(func() -> void: visible = false)
 	row1.add_child(close)
 	var row2 := HBoxContainer.new()
@@ -90,13 +82,12 @@ func _build_ui() -> void:
 	klab.custom_minimum_size = Vector2(90, 0)
 	row2.add_child(klab)
 	_key_input = LineEdit.new()
+	_key_input.custom_minimum_size = Vector2(0, 44)
 	_key_input.placeholder_text = "sk-… (encrypted via OS keystore stub)"
 	_key_input.secret = true
 	_key_input.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row2.add_child(_key_input)
-	var reveal := Button.new()
-	reveal.text = "👁"
-	reveal.custom_minimum_size = Vector2(44, 36)
+	var reveal := UITheme.make_button("👁", "ghost", Vector2(44, 44))
 	reveal.pressed.connect(func() -> void: _key_input.secret = not _key_input.secret)
 	row2.add_child(reveal)
 	var row3 := HBoxContainer.new()
@@ -116,6 +107,7 @@ func _build_ui() -> void:
 	blab.custom_minimum_size = Vector2(90, 0)
 	row4.add_child(blab)
 	_base_url_input = LineEdit.new()
+	_base_url_input.custom_minimum_size = Vector2(0, 44)
 	_base_url_input.placeholder_text = "OpenAI-compat / Ollama URL (leave blank for default)"
 	_base_url_input.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row4.add_child(_base_url_input)
@@ -152,14 +144,10 @@ func _build_ui() -> void:
 	btn_row.alignment = BoxContainer.ALIGNMENT_END
 	btn_row.add_theme_constant_override("separation", 8)
 	vbox.add_child(btn_row)
-	_test_btn = Button.new()
-	_test_btn.text = "Test Connection"
-	_test_btn.custom_minimum_size = Vector2(140, 40)
+	_test_btn = UITheme.make_button("Test Connection", "primary", Vector2(150, 48))
 	_test_btn.pressed.connect(_on_test)
 	btn_row.add_child(_test_btn)
-	_save_btn = Button.new()
-	_save_btn.text = "Save"
-	_save_btn.custom_minimum_size = Vector2(100, 40)
+	_save_btn = UITheme.make_button("Save", "primary", Vector2(100, 48))
 	_save_btn.pressed.connect(_on_save)
 	btn_row.add_child(_save_btn)
 	var hint := Label.new()

@@ -65,6 +65,9 @@ func _haptic(kind: String) -> void:
 	if ac != null and ac.has_method("haptic_for_event"):
 		ac.call("haptic_for_event", kind)
 func _add_pressed_feedback(btn: Button) -> void:
+	if not is_instance_valid(btn) or btn.has_meta("_press_fb"):
+		return
+	btn.set_meta("_press_fb", true)
 	btn.button_down.connect(func() -> void:
 		var tw := create_tween()
 		tw.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
@@ -153,13 +156,7 @@ func _build_hud() -> void:
 	root.add_child(vbox)
 	var top_panel := PanelContainer.new()
 	top_panel.mouse_filter = Control.MOUSE_FILTER_STOP
-	var top_style := StyleBoxFlat.new()
-	top_style.bg_color = Color(0.08, 0.08, 0.10, 0.72)
-	top_style.corner_radius_top_left = 8
-	top_style.corner_radius_top_right = 8
-	top_style.corner_radius_bottom_left = 8
-	top_style.corner_radius_bottom_right = 8
-	top_panel.add_theme_stylebox_override("panel", top_style)
+	top_panel.add_theme_stylebox_override("panel", UITheme.panel_style(Color(UITheme.BG_CARD, 0.88), UITheme.RADIUS_M, Color(UITheme.GOLD_DIM, 0.5), 1))
 	vbox.add_child(top_panel)
 	var top_margin := MarginContainer.new()
 	top_margin.add_theme_constant_override("margin_left", 8 + int(insets["left"]))
@@ -187,32 +184,20 @@ func _build_hud() -> void:
 	spacer1.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	spacer1.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row1.add_child(spacer1)
-	_tech_btn = Button.new()
-	_tech_btn.text = "🔬 Tech"
-	_tech_btn.custom_minimum_size = Vector2(92, 36)
-	_tech_btn.add_theme_font_size_override("font_size", 16)
+	_tech_btn = UITheme.make_button("🔬 Tech", "gold", Vector2(96, 44), 15)
 	_tech_btn.tooltip_text = "Research tree (6 branches)"
 	_tech_btn.pressed.connect(_toggle_tech_panel)
 	row1.add_child(_tech_btn)
-	var narr_btn := Button.new()
-	narr_btn.text = "📖 AI"
-	narr_btn.custom_minimum_size = Vector2(72, 36)
-	narr_btn.add_theme_font_size_override("font_size", 15)
+	var narr_btn := UITheme.make_button("📖 AI", "ghost", Vector2(76, 44), 15)
 	narr_btn.tooltip_text = "Narrative provider settings"
 	narr_btn.pressed.connect(_open_narrative_settings)
 	row1.add_child(narr_btn)
-	var gfx_btn := Button.new()
-	gfx_btn.text = "🎮 GFX"
-	gfx_btn.custom_minimum_size = Vector2(72, 36)
-	gfx_btn.add_theme_font_size_override("font_size", 15)
+	var gfx_btn := UITheme.make_button("🎮 GFX", "ghost", Vector2(76, 44), 15)
 	gfx_btn.tooltip_text = "Graphics settings — presets, LOD, MSAA"
 	gfx_btn.pressed.connect(_open_graphics_settings)
 	row1.add_child(gfx_btn)
 	_add_pressed_feedback(gfx_btn)
-	_acc_scale_btn = Button.new()
-	_acc_scale_btn.text = "A+"
-	_acc_scale_btn.custom_minimum_size = Vector2(44, 36)
-	_acc_scale_btn.add_theme_font_size_override("font_size", 14)
+	_acc_scale_btn = UITheme.make_button("A+", "ghost", Vector2(48, 44), 14)
 	_acc_scale_btn.tooltip_text = "Text scale (Accessibility)"
 	_acc_scale_btn.pressed.connect(func() -> void:
 		var ac: Node = get_node_or_null("/root/Main/Accessibility")
@@ -222,10 +207,7 @@ func _build_hud() -> void:
 		_haptic("tap")
 	)
 	row1.add_child(_acc_scale_btn)
-	_acc_slow_btn = Button.new()
-	_acc_slow_btn.text = "🐢"
-	_acc_slow_btn.custom_minimum_size = Vector2(44, 36)
-	_acc_slow_btn.add_theme_font_size_override("font_size", 14)
+	_acc_slow_btn = UITheme.make_button("🐢", "ghost", Vector2(48, 44), 14)
 	_acc_slow_btn.tooltip_text = "Slow-mode ×0.5"
 	_acc_slow_btn.pressed.connect(func() -> void:
 		var ac2: Node = get_node_or_null("/root/Main/Accessibility")
@@ -237,10 +219,7 @@ func _build_hud() -> void:
 		_haptic("tap")
 	)
 	row1.add_child(_acc_slow_btn)
-	var dbg_btn := Button.new()
-	dbg_btn.text = "DBG"
-	dbg_btn.custom_minimum_size = Vector2(44, 36)
-	dbg_btn.add_theme_font_size_override("font_size", 12)
+	var dbg_btn := UITheme.make_button("DBG", "ghost", Vector2(48, 44), 12)
 	dbg_btn.tooltip_text = "F1 Debug overlay"
 	dbg_btn.pressed.connect(func() -> void:
 		var d: Node = get_parent().get_node_or_null("DebugOverlay")
@@ -248,10 +227,7 @@ func _build_hud() -> void:
 		_haptic("tap")
 	)
 	row1.add_child(dbg_btn)
-	var menu_btn := Button.new()
-	menu_btn.text = "☰"
-	menu_btn.custom_minimum_size = Vector2(44, 36)
-	menu_btn.add_theme_font_size_override("font_size", 20)
+	var menu_btn := UITheme.make_button("☰", "ghost", Vector2(48, 44), 20)
 	menu_btn.pressed.connect(_toggle_radial)
 	_add_pressed_feedback(menu_btn)
 	row1.add_child(menu_btn)
@@ -265,7 +241,7 @@ func _build_hud() -> void:
 	top.add_child(row2_scroll)
 	var row2 := HBoxContainer.new()
 	row2.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row2.add_theme_constant_override("separation", 6)
+	row2.add_theme_constant_override("separation", 8)
 	row2_scroll.add_child(row2)
 	for key in Game.RESOURCE_KEYS:
 		var chip: Label = _make_resource_chip(key)
@@ -282,15 +258,9 @@ func _build_hud() -> void:
 	center_spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vbox.add_child(center_spacer)
 	var bottom_panel := PanelContainer.new()
-	bottom_panel.custom_minimum_size = Vector2(0, 92)
+	bottom_panel.custom_minimum_size = Vector2(0, 96)
 	bottom_panel.mouse_filter = Control.MOUSE_FILTER_STOP
-	var bot_style := StyleBoxFlat.new()
-	bot_style.bg_color = Color(0.09, 0.09, 0.11, 0.78)
-	bot_style.corner_radius_top_left = 10
-	bot_style.corner_radius_top_right = 10
-	bot_style.corner_radius_bottom_left = 10
-	bot_style.corner_radius_bottom_right = 10
-	bottom_panel.add_theme_stylebox_override("panel", bot_style)
+	bottom_panel.add_theme_stylebox_override("panel", UITheme.panel_style(Color(UITheme.BG_CARD, 0.90), UITheme.RADIUS_M, Color(UITheme.GOLD_DIM, 0.5), 1))
 	vbox.add_child(bottom_panel)
 	var bottom_margin := MarginContainer.new()
 	bottom_margin.add_theme_constant_override("margin_left", 8 + int(insets["left"]))
@@ -312,15 +282,12 @@ func _build_hud() -> void:
 	bottom_scroll.add_child(bottom_h)
 	var left := HBoxContainer.new()
 	left.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	left.add_theme_constant_override("separation", 6)
+	left.add_theme_constant_override("separation", 8)
 	bottom_h.add_child(left)
 	for id in ["house", "farm", "mill", "bakery"]:
 		var def: Dictionary = Catalog.get_building(id) if Catalog != null else {}
-		var btn := Button.new()
 		var icon: String = String(def.get("icon", id))
-		btn.text = "%s %s" % [icon, String(def.get("name", id))]
-		btn.custom_minimum_size = Vector2(72, 44)
-		btn.add_theme_font_size_override("font_size", 16)
+		var btn := UITheme.make_button("%s %s" % [icon, String(def.get("name", id))], "default", Vector2(84, 48), 15)
 		btn.tooltip_text = _cost_tooltip(id)
 		var bid: String = id
 		btn.pressed.connect(func() -> void: _select_building(bid))
@@ -328,48 +295,33 @@ func _build_hud() -> void:
 		_add_long_press_tooltip(btn, _cost_tooltip(id))
 		_build_btns[id] = btn
 		left.add_child(btn)
-	var clear_btn := Button.new()
-	clear_btn.text = "✕"
-	clear_btn.custom_minimum_size = Vector2(44, 44)
-	clear_btn.add_theme_font_size_override("font_size", 18)
+	var clear_btn := UITheme.make_button("✕", "danger", Vector2(48, 48), 18)
 	clear_btn.pressed.connect(func() -> void: _select_building(""))
 	_add_pressed_feedback(clear_btn)
 	left.add_child(clear_btn)
-	var more_btn := Button.new()
-	more_btn.text = "⋯"
-	more_btn.custom_minimum_size = Vector2(44, 44)
-	more_btn.add_theme_font_size_override("font_size", 18)
+	var more_btn := UITheme.make_button("⋯", "ghost", Vector2(48, 48), 18)
 	more_btn.pressed.connect(_toggle_radial)
 	_add_pressed_feedback(more_btn)
 	left.add_child(more_btn)
 	var right := HBoxContainer.new()
 	right.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	right.add_theme_constant_override("separation", 6)
+	right.add_theme_constant_override("separation", 8)
 	right.alignment = BoxContainer.ALIGNMENT_END
 	bottom_h.add_child(right)
 	for s in [0, 1, 4, 12]:
 		var label: String = "⏸" if s == 0 else "×%d" % s
-		var btn := Button.new()
-		btn.text = label
-		btn.custom_minimum_size = Vector2(44, 44)
-		btn.add_theme_font_size_override("font_size", 18)
+		var btn := UITheme.make_button(label, "ghost", Vector2(48, 48), 17)
 		var sv: int = s
 		btn.pressed.connect(func() -> void: TimeClock.set_speed(sv); _haptic("tap"))
 		_add_pressed_feedback(btn)
 		_speed_btns.append(btn)
 		right.add_child(btn)
-	var battle_btn := Button.new()
-	battle_btn.text = "⚔️ Battle"
-	battle_btn.custom_minimum_size = Vector2(92, 44)
-	battle_btn.add_theme_font_size_override("font_size", 16)
+	var battle_btn := UITheme.make_button("⚔️ Battle", "danger", Vector2(104, 48), 15)
 	battle_btn.tooltip_text = "Trigger test battle (3D MultiMesh)"
 	battle_btn.pressed.connect(_trigger_battle)
 	_add_pressed_feedback(battle_btn)
 	right.add_child(battle_btn)
-	var next_btn := Button.new()
-	next_btn.text = "► End Turn"
-	next_btn.custom_minimum_size = Vector2(98, 44)
-	next_btn.add_theme_font_size_override("font_size", 16)
+	var next_btn := UITheme.make_button("► End Turn", "primary", Vector2(118, 48), 15)
 	next_btn.pressed.connect(func() -> void: TimeClock.end_turn_now(); _haptic("turn"))
 	_add_pressed_feedback(next_btn)
 	right.add_child(next_btn)
@@ -428,35 +380,26 @@ func _build_radial() -> PanelContainer:
 	p.offset_right = 220.0
 	p.offset_top = -180.0
 	p.offset_bottom = 180.0
-	var s := StyleBoxFlat.new()
-	s.bg_color = Color(0.12, 0.12, 0.14, 0.92)
-	s.corner_radius_top_left = 12
-	s.corner_radius_top_right = 12
-	s.corner_radius_bottom_left = 12
-	s.corner_radius_bottom_right = 12
-	p.add_theme_stylebox_override("panel", s)
+	p.add_theme_stylebox_override("panel", UITheme.panel_style(UITheme.BG_PANEL, UITheme.RADIUS_L, Color(UITheme.GOLD_DIM, 0.8), 1))
 	var v := VBoxContainer.new()
-	v.add_theme_constant_override("separation", 6)
+	v.add_theme_constant_override("separation", 8)
 	p.add_child(v)
 	var title := _make_label("Build Menu", 18)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(title)
 	var grid := GridContainer.new()
 	grid.columns = 3
-	grid.add_theme_constant_override("h_separation", 6)
-	grid.add_theme_constant_override("v_separation", 6)
+	grid.add_theme_constant_override("h_separation", 8)
+	grid.add_theme_constant_override("v_separation", 8)
 	v.add_child(grid)
 	for id in Catalog.building_ids() if Catalog != null else ["house", "farm", "mill", "bakery"]:
 		var def: Dictionary = Catalog.get_building(id) if Catalog != null else {}
-		var btn := Button.new()
-		btn.text = "%s %s" % [String(def.get("icon", id)), String(def.get("name", id))]
-		btn.custom_minimum_size = Vector2(120, 44)
+		var btn := UITheme.make_button("%s %s" % [String(def.get("icon", id)), String(def.get("name", id))], "default", Vector2(130, 48), 15)
 		btn.tooltip_text = _cost_tooltip(id)
 		var bid: String = id
 		btn.pressed.connect(func() -> void: _select_building(bid); _radial.visible = false)
 		grid.add_child(btn)
-	var close := Button.new()
-	close.text = "Close"
+	var close := UITheme.make_button("Close", "ghost", Vector2(0, 48), 15)
 	close.pressed.connect(func() -> void: _radial.visible = false)
 	v.add_child(close)
 	return p
@@ -471,13 +414,7 @@ func _build_tech_panel() -> PanelContainer:
 	p.offset_right = 420.0
 	p.offset_top = -300.0
 	p.offset_bottom = 300.0
-	var st := StyleBoxFlat.new()
-	st.bg_color = Color(0.10, 0.10, 0.13, 0.96)
-	st.corner_radius_top_left = 12
-	st.corner_radius_top_right = 12
-	st.corner_radius_bottom_left = 12
-	st.corner_radius_bottom_right = 12
-	p.add_theme_stylebox_override("panel", st)
+	p.add_theme_stylebox_override("panel", UITheme.panel_style(UITheme.BG_PANEL, UITheme.RADIUS_L, Color(UITheme.GOLD_DIM, 0.8), 1))
 	var mv := MarginContainer.new()
 	mv.add_theme_constant_override("margin_left", 10)
 	mv.add_theme_constant_override("margin_right", 10)
@@ -494,9 +431,7 @@ func _build_tech_panel() -> PanelContainer:
 	var spacer := Control.new()
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(spacer)
-	var close := Button.new()
-	close.text = "✕"
-	close.custom_minimum_size = Vector2(44, 32)
+	var close := UITheme.make_button("✕", "ghost", Vector2(48, 44), 16)
 	close.pressed.connect(func() -> void: _tech_panel.visible = false)
 	header.add_child(close)
 	var research_row := HBoxContainer.new()
@@ -529,7 +464,7 @@ func _refresh_tech_tree() -> void:
 	var branch_icons := {"agriculture": "🌾", "military": "⚔️", "commerce": "💰", "architecture": "🏛️", "arcane": "✨", "governance": "⚖️"}
 	for branch in branches:
 		var sec := VBoxContainer.new()
-		sec.add_theme_constant_override("separation", 4)
+		sec.add_theme_constant_override("separation", 8)
 		_tech_vbox.add_child(sec)
 		var h := HBoxContainer.new()
 		sec.add_child(h)
@@ -538,8 +473,8 @@ func _refresh_tech_tree() -> void:
 		h.add_child(blab)
 		var grid := GridContainer.new()
 		grid.columns = 2
-		grid.add_theme_constant_override("h_separation", 6)
-		grid.add_theme_constant_override("v_separation", 6)
+		grid.add_theme_constant_override("h_separation", 8)
+		grid.add_theme_constant_override("v_separation", 8)
 		sec.add_child(grid)
 		var ids: Array = []
 		if Catalog != null and Catalog.has_method("tech_by_branch"):
@@ -584,18 +519,18 @@ func _make_tech_card(id: String) -> PanelContainer:
 		sb.bg_color = Color(0.18, 0.20, 0.28, 0.95)
 	else:
 		sb.bg_color = Color(0.16, 0.16, 0.17, 0.88)
-	sb.corner_radius_top_left = 8
-	sb.corner_radius_top_right = 8
-	sb.corner_radius_bottom_left = 8
-	sb.corner_radius_bottom_right = 8
+	sb.corner_radius_top_left = UITheme.RADIUS_M
+	sb.corner_radius_top_right = UITheme.RADIUS_M
+	sb.corner_radius_bottom_left = UITheme.RADIUS_M
+	sb.corner_radius_bottom_right = UITheme.RADIUS_M
 	p.add_theme_stylebox_override("panel", sb)
 	var v := VBoxContainer.new()
-	v.add_theme_constant_override("separation", 2)
+	v.add_theme_constant_override("separation", 8)
 	var mm := MarginContainer.new()
-	mm.add_theme_constant_override("margin_left", 6)
-	mm.add_theme_constant_override("margin_right", 6)
-	mm.add_theme_constant_override("margin_top", 4)
-	mm.add_theme_constant_override("margin_bottom", 4)
+	mm.add_theme_constant_override("margin_left", 8)
+	mm.add_theme_constant_override("margin_right", 8)
+	mm.add_theme_constant_override("margin_top", 8)
+	mm.add_theme_constant_override("margin_bottom", 8)
 	mm.add_child(v)
 	p.add_child(mm)
 	var title := _make_label("%s %s" % [String(entry.get("icon", "•")), String(entry.get("name", id))], 14)
@@ -622,21 +557,19 @@ func _make_tech_card(id: String) -> PanelContainer:
 		var pre_lab := _make_label("Req: %s" % ", ".join(prereqs), 10)
 		pre_lab.add_theme_color_override("font_color", Color(0.85, 0.6, 0.6) if not unlocked and not can else Color(0.6, 0.85, 0.6))
 		v.add_child(pre_lab)
-	var btn := Button.new()
+	var btn: Button
 	if unlocked:
-		btn.text = "✓ Unlocked"
+		btn = UITheme.make_button("✓ Unlocked", "ghost", Vector2(0, 44), 13)
 		btn.disabled = true
 	elif researching:
-		btn.text = "Researching…"
+		btn = UITheme.make_button("Researching…", "ghost", Vector2(0, 44), 13)
 		btn.disabled = true
 	elif can:
-		btn.text = "Research"
+		btn = UITheme.make_button("Research", "primary", Vector2(0, 44), 13)
 		btn.pressed.connect(func() -> void: _try_research(id))
 	else:
-		btn.text = "Locked"
+		btn = UITheme.make_button("Locked", "ghost", Vector2(0, 44), 13)
 		btn.disabled = true
-	btn.custom_minimum_size = Vector2(0, 28)
-	btn.add_theme_font_size_override("font_size", 12)
 	v.add_child(btn)
 	if researching and tn != null:
 		var prog: float = float(tn.get("progress"))
@@ -735,7 +668,7 @@ func _make_label(text: String, size: int) -> Label:
 	var l := Label.new()
 	l.text = text
 	l.add_theme_font_size_override("font_size", size)
-	l.add_theme_color_override("font_color", Color(1, 1, 1))
+	l.add_theme_color_override("font_color", UITheme.TEXT_MAIN)
 	l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.7))
 	l.add_theme_constant_override("outline_size", 4)
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE

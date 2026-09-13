@@ -66,40 +66,22 @@ func _build_ui() -> void:
 	root.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(root)
 	var bg := ColorRect.new()
-	bg.color = Color(0.04, 0.04, 0.06, 0.86)
+	bg.color = Color(0.055, 0.05, 0.075, 1.0)
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.add_child(bg)
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.add_child(center)
 	var panel := PanelContainer.new()
-	panel.custom_minimum_size = Vector2(900, 520)
-	var ps := StyleBoxFlat.new()
-	ps.bg_color = Color(0.13, 0.13, 0.15, 0.98)
-	ps.corner_radius_top_left = 12
-	ps.corner_radius_top_right = 12
-	ps.corner_radius_bottom_left = 12
-	ps.corner_radius_bottom_right = 12
-	ps.content_margin_left = 12
-	ps.content_margin_right = 12
-	ps.content_margin_top = 12
-	ps.content_margin_bottom = 12
+	panel.custom_minimum_size = Vector2(860, 500)
+	var ps := UITheme.panel_style(UITheme.BG_PANEL, UITheme.RADIUS_L, Color(0.38, 0.32, 0.20, 0.8), 1)
 	panel.add_theme_stylebox_override("panel", ps)
 	center.add_child(panel)
-	var margin := MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 12)
-	margin.add_theme_constant_override("margin_right", 12)
-	margin.add_theme_constant_override("margin_top", 10)
-	margin.add_theme_constant_override("margin_bottom", 10)
+	var margin := UITheme.margins(16, 14, 16, 14)
 	panel.add_child(margin)
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 8)
+	var vbox := UITheme.vbox(10)
 	margin.add_child(vbox)
-	_title_lbl = Label.new()
-	_title_lbl.text = "New Kingdom — Step 1/4: World"
-	_title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_title_lbl.add_theme_font_size_override("font_size", 20)
-	_title_lbl.add_theme_color_override("font_color", Color(1, 1, 0.85))
+	_title_lbl = UITheme.make_title("New Kingdom — Step 1/4: World", 22)
 	vbox.add_child(_title_lbl)
 	var dots := HBoxContainer.new()
 	dots.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -109,20 +91,15 @@ func _build_ui() -> void:
 		var d := Label.new()
 		d.text = "●" if i == 0 else "○"
 		d.add_theme_font_size_override("font_size", 18)
-		d.add_theme_color_override("font_color", Color(0.9, 0.8, 0.4) if i == 0 else Color(0.5, 0.5, 0.5))
+		d.add_theme_color_override("font_color", UITheme.GOLD if i == 0 else UITheme.TEXT_FAINT)
 		dots.add_child(d)
 		_step_dots.append(d)
 	var sep := HSeparator.new()
 	vbox.add_child(sep)
 	var content := PanelContainer.new()
 	content.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	content.custom_minimum_size = Vector2(860, 360)
-	var cs := StyleBoxFlat.new()
-	cs.bg_color = Color(0.09, 0.09, 0.11, 1)
-	cs.corner_radius_top_left = 8
-	cs.corner_radius_top_right = 8
-	cs.corner_radius_bottom_left = 8
-	cs.corner_radius_bottom_right = 8
+	content.custom_minimum_size = Vector2(820, 340)
+	var cs := UITheme.panel_style(UITheme.BG_CARD, UITheme.RADIUS_M, Color(0.30, 0.28, 0.22, 0.5), 1)
 	content.add_theme_stylebox_override("panel", cs)
 	vbox.add_child(content)
 	var s1 := _build_step1()
@@ -138,55 +115,36 @@ func _build_ui() -> void:
 	nav.alignment = BoxContainer.ALIGNMENT_SPACE_BETWEEN
 	nav.add_theme_constant_override("separation", 8)
 	vbox.add_child(nav)
-	_back_btn = _btn("← Back", func() -> void: _go(-1))
-	_back_btn.custom_minimum_size = Vector2(120, 44)
+	_back_btn = _btn("← Back", func() -> void: _go(-1), "ghost")
+	_back_btn.custom_minimum_size = Vector2(120, 48)
 	_back_btn.disabled = true
 	nav.add_child(_back_btn)
 	var spacer := Control.new()
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	nav.add_child(spacer)
 	if FileAccess.file_exists("user://saves/slot_0.json"):
-		var cont := _btn("Continue", func() -> void: continue_requested.emit())
-		cont.custom_minimum_size = Vector2(130, 44)
+		var cont := _btn("Continue", func() -> void: continue_requested.emit(), "gold")
+		cont.custom_minimum_size = Vector2(130, 48)
 		nav.add_child(cont)
 	_next_btn = _btn("Next →", func() -> void: _go(1))
-	_next_btn.custom_minimum_size = Vector2(130, 44)
+	_next_btn.custom_minimum_size = Vector2(130, 48)
 	nav.add_child(_next_btn)
-	_apply_btn = _btn("Apply & Begin", func() -> void: _apply())
-	_apply_btn.custom_minimum_size = Vector2(160, 44)
+	_apply_btn = _btn("Apply & Begin", func() -> void: _apply(), "primary")
+	_apply_btn.custom_minimum_size = Vector2(170, 48)
 	_apply_btn.visible = false
-	var abg := StyleBoxFlat.new()
-	abg.bg_color = Color(0.2, 0.55, 0.28)
-	abg.corner_radius_top_left = 6
-	abg.corner_radius_top_right = 6
-	abg.corner_radius_bottom_left = 6
-	abg.corner_radius_bottom_right = 6
-	_apply_btn.add_theme_stylebox_override("normal", abg)
 	nav.add_child(_apply_btn)
 
-func _btn(text: String, cb: Callable) -> Button:
-	var b := Button.new()
-	b.text = text
-	b.custom_minimum_size = Vector2(44, 44)
-	b.add_theme_font_size_override("font_size", 16)
+func _btn(text: String, cb: Callable, kind: String = "default") -> Button:
+	var b := UITheme.make_button(text, kind, Vector2(96, UITheme.TOUCH_MIN), 16)
 	b.pressed.connect(cb)
+	UITheme.press_feedback(b)
 	return b
 
 func _opt(items: PackedStringArray, selected: int = 0) -> OptionButton:
-	var o := OptionButton.new()
-	o.custom_minimum_size = Vector2(160, 44)
-	o.add_theme_font_size_override("font_size", 15)
-	for it in items:
-		o.add_item(it)
-	o.selected = selected
-	return o
+	return UITheme.make_option(items, selected)
 
 func _label(t: String, sz: int = 14) -> Label:
-	var l := Label.new()
-	l.text = t
-	l.add_theme_font_size_override("font_size", sz)
-	l.add_theme_color_override("font_color", Color(0.92, 0.92, 0.92))
-	return l
+	return UITheme.make_label(t, sz, UITheme.TEXT_MAIN)
 
 func _field_row(parent: VBoxContainer, label_text: String, control: Control) -> void:
 	var row := HBoxContainer.new()
@@ -215,9 +173,8 @@ func _build_step1() -> Control:
 	lab.custom_minimum_size = Vector2(140, 44)
 	lab.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	seed_row.add_child(lab)
-	_seed_edit = LineEdit.new()
+	_seed_edit = UITheme.make_input(Vector2(200, 44), 15)
 	_seed_edit.placeholder_text = "e.g. 12345 or myworld"
-	_seed_edit.custom_minimum_size = Vector2(200, 44)
 	_seed_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var rng := RandomNumberGenerator.new()
 	rng.randomize()
@@ -235,7 +192,7 @@ func _build_step1() -> Control:
 	_diff_btn = _opt(DIFFS, 0)
 	_field_row(v, "Difficulty", _diff_btn)
 	var hint := _label("Seed determines terrain. Era & Difficulty affect future events.", 12)
-	hint.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
+	hint.add_theme_color_override("font_color", UITheme.TEXT_DIM)
 	v.add_child(hint)
 	return sc
 
@@ -245,10 +202,9 @@ func _build_step2() -> Control:
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 8)
 	sc.add_child(v)
-	_kingdom_name = LineEdit.new()
+	_kingdom_name = UITheme.make_input(Vector2(0, 44), 15)
 	_kingdom_name.placeholder_text = "Kingdom name"
 	_kingdom_name.text = "Eterna"
-	_kingdom_name.custom_minimum_size = Vector2(0, 44)
 	_field_row(v, "Kingdom Name", _kingdom_name)
 	var banner_row := HBoxContainer.new()
 	banner_row.add_theme_constant_override("separation", 8)
@@ -278,10 +234,9 @@ func _build_step3() -> Control:
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 8)
 	sc.add_child(v)
-	_ruler_name = LineEdit.new()
+	_ruler_name = UITheme.make_input(Vector2(0, 44), 15)
 	_ruler_name.placeholder_text = "Ruler name"
 	_ruler_name.text = "Aurelia"
-	_ruler_name.custom_minimum_size = Vector2(0, 44)
 	_field_row(v, "Ruler Name", _ruler_name)
 	_ruler_age = SpinBox.new()
 	_ruler_age.min_value = 16
@@ -298,8 +253,8 @@ func _build_step3() -> Control:
 	v.add_child(tl)
 	var grid := GridContainer.new()
 	grid.columns = 3
-	grid.add_theme_constant_override("h_separation", 6)
-	grid.add_theme_constant_override("v_separation", 6)
+	grid.add_theme_constant_override("h_separation", 8)
+	grid.add_theme_constant_override("v_separation", 8)
 	v.add_child(grid)
 	for t in TRAITS_24:
 		var cb := CheckBox.new()
@@ -383,7 +338,7 @@ func _refresh_nav() -> void:
 	_title_lbl.text = "New Kingdom — Step %d/4: %s" % [_step + 1, STEP_TITLES[_step]]
 	for i in _step_dots.size():
 		_step_dots[i].text = "●" if i == _step else "○"
-		_step_dots[i].add_theme_color_override("font_color", Color(0.9, 0.8, 0.4) if i == _step else Color(0.5, 0.5, 0.5))
+		_step_dots[i].add_theme_color_override("font_color", UITheme.GOLD if i == _step else UITheme.TEXT_FAINT)
 	_back_btn.disabled = _step == 0
 	_next_btn.visible = _step < 3
 	_apply_btn.visible = _step == 3

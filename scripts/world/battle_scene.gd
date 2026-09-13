@@ -22,10 +22,6 @@ func setup(center: Vector3, ground_y: float, attacker: Dictionary, defender: Dic
 	_mid = center
 	_ground_y = ground_y
 	_terrain_name = terrain
-	_attacker_power = 0.0
-	_defender_power = 0.0
-	if Engine.has_singleton("Military"):
-		pass
 	var mil: Node = get_node_or_null("/root/Military")
 	if mil != null and mil.has_method("calc_power"):
 		_attacker_power = mil.calc_power(attacker, terrain)
@@ -139,9 +135,6 @@ func _process(delta: float) -> void:
 		_running = false
 		_flash_outcome()
 		battle_finished.emit(_outcome)
-		var mil: Node = get_node_or_null("/root/Military")
-		if mil != null and mil.has_method("auto_resolve"):
-			pass
 		await get_tree().create_timer(2.0).timeout
 		queue_free()
 

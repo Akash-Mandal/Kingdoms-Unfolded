@@ -39,7 +39,9 @@ func _apply_scale_recursive(node: Node, factor: float) -> void:
 	if node is Control:
 		var c: Control = node as Control
 		if c.has_theme_font_size_override("font_size"):
-			pass
+			if not c.has_meta("_acc_base_fs"):
+				c.set_meta("_acc_base_fs", c.get_theme_font_size("font_size"))
+			c.add_theme_font_size_override("font_size", int(float(c.get_meta("_acc_base_fs")) * factor))
 	for ch in node.get_children():
 		_apply_scale_recursive(ch, factor)
 

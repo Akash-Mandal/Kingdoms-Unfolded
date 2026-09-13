@@ -1,14 +1,14 @@
 ; Engine configuration file.
-; Engine version: 4.4+
-; Project: Kingdom Eternal 3D
+; Engine version: 4.7.2
+; Project: Kingdoms Unfolded
 
 config_version=5
 
 [application]
 
-config/name="Kingdom Eternal 3D"
+config/name="Kingdoms Unfolded"
 run/main_scene="res://scenes/main.tscn"
-config/features=PackedStringArray("4.4", "Mobile")
+config/features=PackedStringArray("4.7", "Mobile")
 config/icon="res://icon.svg"
 boot_splash/bg_color=Color(0.10196, 0.07059, 0.03137, 1)
 boot_splash/show_image=true
@@ -68,7 +68,7 @@ ui_zoom_out={
 
 renderer/rendering_method="mobile"
 renderer/rendering_method.mobile="mobile"
-environment/defaults/default_clear_color=Color(0.55, 0.62, 0.7, 1)
+environment/defaults/default_clear_color=Color(0.055, 0.05, 0.075, 1)
 anti_aliasing/quality/msaa_3d=1
 textures/vram_compression/import_etc2_astc=true
 

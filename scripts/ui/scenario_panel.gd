@@ -26,9 +26,7 @@ func _build_ui() -> void:
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root)
-	_toggle_btn = Button.new()
-	_toggle_btn.text = "🌍 Scenarios"
-	_toggle_btn.custom_minimum_size = Vector2(150, 40)
+	_toggle_btn = UITheme.make_button("🌍 Scenarios", "ghost", Vector2(150, 44), 15)
 	_toggle_btn.anchor_left = 1.0
 	_toggle_btn.anchor_top = 0.0
 	_toggle_btn.anchor_right = 1.0
@@ -36,8 +34,7 @@ func _build_ui() -> void:
 	_toggle_btn.offset_left = -168.0
 	_toggle_btn.offset_top = 54.0
 	_toggle_btn.offset_right = -12.0
-	_toggle_btn.offset_bottom = 94.0
-	_toggle_btn.add_theme_font_size_override("font_size", 15)
+	_toggle_btn.offset_bottom = 98.0
 	_toggle_btn.pressed.connect(_toggle)
 	root.add_child(_toggle_btn)
 	_panel = PanelContainer.new()
@@ -50,13 +47,7 @@ func _build_ui() -> void:
 	_panel.offset_top = -320.0
 	_panel.offset_bottom = 320.0
 	_panel.visible = false
-	var ps := StyleBoxFlat.new()
-	ps.bg_color = Color(0.12, 0.12, 0.14, 0.96)
-	ps.corner_radius_top_left = 10
-	ps.corner_radius_top_right = 10
-	ps.corner_radius_bottom_left = 10
-	ps.corner_radius_bottom_right = 10
-	_panel.add_theme_stylebox_override("panel", ps)
+	_panel.add_theme_stylebox_override("panel", UITheme.panel_style(Color(0.12, 0.12, 0.14, 0.96), 10))
 	root.add_child(_panel)
 	var margin := MarginContainer.new()
 	margin.add_theme_constant_override("margin_left", 12)
@@ -75,9 +66,7 @@ func _build_ui() -> void:
 	_header.add_theme_color_override("font_color", Color(1, 0.92, 0.6))
 	_header.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title_row.add_child(_header)
-	var close_btn := Button.new()
-	close_btn.text = "✕"
-	close_btn.custom_minimum_size = Vector2(36, 36)
+	var close_btn := UITheme.make_button("✕", "danger", Vector2(44, 44))
 	close_btn.pressed.connect(_toggle)
 	title_row.add_child(close_btn)
 	vbox.add_child(HSeparator.new())
@@ -101,34 +90,18 @@ func _build_ui() -> void:
 	_custom_input = LineEdit.new()
 	_custom_input.placeholder_text = "Custom prompt e.g., comet cult, salt famine…"
 	_custom_input.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_custom_input.custom_minimum_size = Vector2(0, 36)
+	_custom_input.custom_minimum_size = Vector2(0, 44)
 	custom_row.add_child(_custom_input)
-	var gen_btn := Button.new()
-	gen_btn.text = "✨ Generate Custom"
-	gen_btn.custom_minimum_size = Vector2(160, 36)
-	gen_btn.add_theme_font_size_override("font_size", 13)
+	var gen_btn := UITheme.make_button("✨ Generate Custom", "primary", Vector2(170, 44), 13)
 	gen_btn.pressed.connect(_on_generate_custom)
 	custom_row.add_child(gen_btn)
 	var bot_row := HBoxContainer.new()
 	bot_row.add_theme_constant_override("separation", 6)
 	vbox.add_child(bot_row)
-	var apply_btn := Button.new()
-	apply_btn.text = "Apply Scenario"
-	apply_btn.custom_minimum_size = Vector2(180, 40)
-	apply_btn.add_theme_font_size_override("font_size", 14)
-	var abg := StyleBoxFlat.new()
-	abg.bg_color = Color(0.2, 0.55, 0.28)
-	abg.corner_radius_top_left = 6
-	abg.corner_radius_top_right = 6
-	abg.corner_radius_bottom_left = 6
-	abg.corner_radius_bottom_right = 6
-	apply_btn.add_theme_stylebox_override("normal", abg)
+	var apply_btn := UITheme.make_button("Apply Scenario", "primary", Vector2(180, 48), 14)
 	apply_btn.pressed.connect(_on_apply)
 	bot_row.add_child(apply_btn)
-	var note_btn := Button.new()
-	note_btn.text = "📝 Annotate Timeline"
-	note_btn.custom_minimum_size = Vector2(180, 40)
-	note_btn.add_theme_font_size_override("font_size", 14)
+	var note_btn := UITheme.make_button("📝 Annotate Timeline", "ghost", Vector2(190, 48), 14)
 	note_btn.pressed.connect(_on_annotate)
 	bot_row.add_child(note_btn)
 
@@ -173,19 +146,8 @@ func _refresh() -> void:
 		var entry: Dictionary = scn.get_scenario(str(sid)) if scn.has_method("get_scenario") else {}
 		if entry.is_empty() and cat != null and cat.has_method("get_scenario"):
 			entry = cat.get_scenario(str(sid))
-		var row := Button.new()
-		row.text = "%s %s — %s" % [String(entry.get("icon", "—")), String(entry.get("name", sid)), String(entry.get("timeline_label", ""))]
+		var row := UITheme.make_button("%s %s — %s" % [String(entry.get("icon", "—")), String(entry.get("name", sid)), String(entry.get("timeline_label", ""))], "primary" if str(sid) == active else "ghost", Vector2(0, 44), 14)
 		row.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		row.custom_minimum_size = Vector2(0, 38)
-		row.add_theme_font_size_override("font_size", 14)
-		if str(sid) == active:
-			var sb := StyleBoxFlat.new()
-			sb.bg_color = Color(0.22, 0.4, 0.22)
-			sb.corner_radius_top_left = 6
-			sb.corner_radius_top_right = 6
-			sb.corner_radius_bottom_left = 6
-			sb.corner_radius_bottom_right = 6
-			row.add_theme_stylebox_override("normal", sb)
 		var csid: String = str(sid)
 		row.pressed.connect(func() -> void: _select(csid))
 		_list.add_child(row)

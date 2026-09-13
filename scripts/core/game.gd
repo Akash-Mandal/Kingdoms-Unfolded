@@ -176,8 +176,10 @@ func advance() -> void:
 	resources_changed.emit()
 	population_changed.emit()
 	military_changed.emit()
-	if has_node("/root/SaveSlots") and get_node("/root/SaveSlots").has_method("autosave_check"):
-		get_node("/root/SaveSlots").call("autosave_check")
+	if has_node("/root/SaveSlots"):
+		var ss: Node = get_node("/root/SaveSlots")
+		if ss.has_method("autosave_check"):
+			ss.call("autosave_check")
 
 func _season_yield_mult(key: String) -> float:
 	var s := season()
@@ -475,11 +477,8 @@ func _roll_events() -> void:
 	}
 	events.push_front(ev)
 	if str(ev["category"]) in ["plague", "revolt", "disaster"]:
-		_crisis_survived += 0
+		_crisis_survived += 1
 	event_occurred.emit(ev)
-	var evn: Node = get_node_or_null("/root/Events")
-	if evn != null and evn.has_method("serialize"):
-		pass
 
 func apply_event_choice(event_id: Variant, choice_id: String) -> bool:
 	var ev: Dictionary = {}
@@ -530,7 +529,11 @@ func _tick_missions() -> void:
 		_fallback_mission_tick()
 
 func _fallback_mission_tick() -> void:
-	pass
+	var n := 0
+	for e in events:
+		if str(e.get("category", "")) in ["plague", "revolt", "disaster"]:
+			n += 1
+	_crisis_survived = maxi(_crisis_survived, n)
 
 func set_building_contributions(prod: Dictionary, cons: Dictionary, cap: Dictionary) -> void:
 	building_prod = prod

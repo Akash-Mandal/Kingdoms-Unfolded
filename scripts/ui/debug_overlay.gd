@@ -27,17 +27,7 @@ func _build() -> void:
 	add_child(margin)
 	_panel = PanelContainer.new()
 	_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0.05, 0.05, 0.07, 0.82)
-	sb.corner_radius_top_left = 6
-	sb.corner_radius_top_right = 6
-	sb.corner_radius_bottom_left = 6
-	sb.corner_radius_bottom_right = 6
-	sb.content_margin_left = 8
-	sb.content_margin_right = 8
-	sb.content_margin_top = 4
-	sb.content_margin_bottom = 4
-	_panel.add_theme_stylebox_override("panel", sb)
+	_panel.add_theme_stylebox_override("panel", UITheme.panel_style(Color(0.05, 0.05, 0.07, 0.82), 6))
 	margin.add_child(_panel)
 	_label = Label.new()
 	_label.add_theme_font_size_override("font_size", 12)

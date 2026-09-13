@@ -55,13 +55,7 @@ func _build_ui() -> void:
 	panel.offset_right = 420
 	panel.offset_top = -360
 	panel.offset_bottom = 360
-	var st := StyleBoxFlat.new()
-	st.bg_color = Color(0.09, 0.09, 0.12, 0.98)
-	st.corner_radius_top_left = 14
-	st.corner_radius_top_right = 14
-	st.corner_radius_bottom_left = 14
-	st.corner_radius_bottom_right = 14
-	panel.add_theme_stylebox_override("panel", st)
+	panel.add_theme_stylebox_override("panel", UITheme.panel_style(Color(0.09, 0.09, 0.12, 0.98), 14))
 	root.add_child(panel)
 	var mv := MarginContainer.new()
 	mv.add_theme_constant_override("margin_left", 14)
@@ -82,9 +76,7 @@ func _build_ui() -> void:
 	var spacer := Control.new()
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(spacer)
-	var close := Button.new()
-	close.text = "✕"
-	close.custom_minimum_size = Vector2(44, 36)
+	var close := UITheme.make_button("✕", "danger", Vector2(44, 44))
 	close.pressed.connect(func() -> void: visible = false)
 	header.add_child(close)
 	vbox.add_child(HSeparator.new())
@@ -96,14 +88,12 @@ func _build_ui() -> void:
 	plab.custom_minimum_size = Vector2(90, 0)
 	preset_row.add_child(plab)
 	_preset_opt = OptionButton.new()
-	_preset_opt.custom_minimum_size = Vector2(260, 36)
+	_preset_opt.custom_minimum_size = Vector2(260, 44)
 	for p in ["Potato", "Balanced", "High", "Ultra"]:
 		_preset_opt.add_item(p)
 	_preset_opt.item_selected.connect(_on_preset_picked)
 	preset_row.add_child(_preset_opt)
-	var auto_btn := Button.new()
-	auto_btn.text = "Auto-Detect"
-	auto_btn.custom_minimum_size = Vector2(110, 36)
+	var auto_btn := UITheme.make_button("Auto-Detect", "ghost", Vector2(120, 44), 13)
 	auto_btn.pressed.connect(_on_auto_detect)
 	preset_row.add_child(auto_btn)
 	var sc := ScrollContainer.new()
@@ -181,14 +171,10 @@ func _build_ui() -> void:
 	btn_row.alignment = BoxContainer.ALIGNMENT_END
 	btn_row.add_theme_constant_override("separation", 8)
 	vbox.add_child(btn_row)
-	var cancel := Button.new()
-	cancel.text = "Cancel"
-	cancel.custom_minimum_size = Vector2(90, 40)
+	var cancel := UITheme.make_button("Cancel", "ghost", Vector2(96, 44))
 	cancel.pressed.connect(func() -> void: _load_from_autoload(); visible = false)
 	btn_row.add_child(cancel)
-	var apply := Button.new()
-	apply.text = "Apply"
-	apply.custom_minimum_size = Vector2(110, 40)
+	var apply := UITheme.make_button("Apply", "primary", Vector2(110, 48))
 	apply.pressed.connect(_on_apply)
 	btn_row.add_child(apply)
 
@@ -200,7 +186,7 @@ func _add_option_row(parent: VBoxContainer, label_txt: String, items: PackedStri
 	l.custom_minimum_size = Vector2(110, 0)
 	row.add_child(l)
 	var opt := OptionButton.new()
-	opt.custom_minimum_size = Vector2(200, 32)
+	opt.custom_minimum_size = Vector2(200, 44)
 	for it in items:
 		opt.add_item(it)
 	opt.item_selected.connect(cb)

@@ -142,7 +142,6 @@ func _build_chunks() -> void:
 			mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
 			mi.visibility_range_end = TERRAIN_CULL_DIST
 			mi.visibility_range_begin = 0.0
-			mi.set_instance_shader_parameter("chunk_id", Vector2(cx, cz))
 			add_child(mi)
 			_chunks.append(mi)
 			var notifier := VisibleOnScreenNotifier3D.new()
