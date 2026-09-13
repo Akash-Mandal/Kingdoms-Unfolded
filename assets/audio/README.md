@@ -11,7 +11,7 @@
 | **triumph** | `triumph.ogg` (stinger, 4–6s) | `battle victory` OR `prestige milestone` | One-shot Bus `Music/Stinger` +0 dB, duck base -3 dB 1.5s |
 | **mourning** | `mourning.ogg` (loop, sparse) | `ruler death` / `succession crisis` / `plague severity>0.7` | Bus `Music/Mourning` replaces base, low-pass 800Hz |
 
-All layers loop at same BPM (e.g., 80) for seamless crossfade. Placeholder OGGs are silent 1s loops until CC0 music is curated.
+All layers loop at same BPM (e.g., 80) for seamless crossfade. Real CC0 audio since 2026-09-14: base = Medieval fair loop (Woli34), tension = dungeon ambience (JaggedStone), triumph = A Brand New Wisdom (hernandack), mourning = Winter Dust (hernandack), rain bed = Ylmir rain loop. SFX = Kenney RPG Audio subset (15 OGG). Engine: `scripts/audio/sfx.gd` (autoload Sfx, 8-player pool) + `scripts/audio/music.gd` (autoload Music, adaptive fades).
 
 ## CE → Audio Mapping
 

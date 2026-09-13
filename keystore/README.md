@@ -4,7 +4,7 @@
 
 ## Debug (current CI)
 
-CI image `barichello/godot-ci:4.4` ships a default debug keystore:
+CI image `barichello/godot-ci:4.7.2` ships a default debug keystore:
 
 ```
 keystore/debug=/root/debug.keystore
@@ -12,14 +12,14 @@ keystore/debug_user=androiddebugkey
 keystore/debug_password=android
 ```
 
-`export_presets.cfg` preset **Android** uses it and runs `godot --export-debug`. Fine for sideloading the APK artifact (`kingdom-eternal-debug.apk`). No secrets needed.
+`export_presets.cfg` preset **Android** uses it and runs `godot --export-debug`. Fine for sideloading the APK artifact (`kingdoms-unfolded-debug.apk`). No secrets needed.
 
 ## Release (Play Store AAB)
 
 Preset **Android Release** (`export_format=1` / AAB, `gradle_build/export_format=1`, `version/code=2`) is prepared for `--export-release`:
 
 ```
-export_path=build/kingdom-eternal-release.aab
+export_path=build/kingdoms-unfolded-release.aab
 package/export_format=1
 gradle_build/export_format=1
 package/signed=true
@@ -70,7 +70,7 @@ Add before the export step in `.github/workflows/build.yml`:
 - name: Export release AAB
   run: |
     mkdir -p build
-    godot --headless --path . --export-release "Android Release" build/kingdom-eternal-release.aab
+    godot --headless --path . --export-release "Android Release" build/kingdoms-unfolded-release.aab
 ```
 
 See `docs/BUILD.md` traps for the required `android/build` template install and `$HOME` template copy — keep that order.
@@ -81,7 +81,7 @@ See `docs/BUILD.md` traps for the required `android/build` template install and 
 mkdir -p keystore build
 cp /path/to/release.keystore keystore/release.keystore
 # edit export_presets.cfg keystore/release_user/password or pass via env
-godot --headless --path . --export-release "Android Release" build/kingdom-eternal-release.aab
+godot --headless --path . --export-release "Android Release" build/kingdoms-unfolded-release.aab
 ```
 
 ## Checklist

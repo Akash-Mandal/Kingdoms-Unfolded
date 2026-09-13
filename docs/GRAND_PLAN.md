@@ -1,10 +1,10 @@
-# Kingdom Eternal 3D — Grand Plan (GDD + TDD)
+# Kingdoms Unfolded — Grand Plan (GDD + TDD)
 
 > The single source of truth for design and engineering. A living document — update it per
 > phase so it never drifts from the code.
 >
-> **Engine:** Godot 4.4 / GDScript · **Platform:** Android APK · **Build:** GitHub Actions
-> (`godot-ci:4.4`), no PC required · **Status:** Phase 6 Launch stub (Phases 0-5 done, full MVP loop: build→grow→fight→narrate). Next: device perf profiling + Play Store AAB.
+> **Engine:** Godot 4.7.2 / GDScript · **Platform:** Android APK · **Build:** GitHub Actions
+> (`godot-ci:4.7.2`), no PC required · **Status:** Phase 6 Launch (content-complete 2026-09-14: Full Bible + real CC0 art/audio + Sfx/Music engine + strict gates). Next: device perf profiling + Play Store AAB.
 
 ---
 
@@ -466,7 +466,7 @@ catalogs to validate JSON schema.
 
 ## 22. Save System & Migration
 
-Format (JSON; see `KingdomUnfolded.md`):
+Format (JSON; see `KingdomsUnfolded.md`):
 ```json
 { "meta": {…}, "gameState": {…}, "eventHistory": […], "missionLog": […],
   "storyProgress": {…}, "chronicle": […], "settings": {…}, "ceState": {…} }
@@ -482,7 +482,7 @@ Format (JSON; see `KingdomUnfolded.md`):
 ```
 Termux phone:  write .gd code → git push
       ↓
-GitHub Actions (godot-ci:4.4 Docker):
+GitHub Actions (godot-ci:4.7.2 Docker):
    import → copy templates+editor settings to $HOME
           → unzip android_source.zip into android/build
           → godot --export-debug "Android" → signed APK
@@ -556,8 +556,8 @@ unless the player exports a save to share.
 | **2 · The People** ✅ | NPC agents, needs/utility-AI, jobs, schedules, households/relations, crowd LOD | you recognize individual citizens and their stories — **DONE 2026-08-20** |
 | **3 · Systems** ✅ | military 18 units + auto-resolve + season upkeep, diplomacy rival AI + 6 treaties, tech 36 nodes + visible tint/fog, events 20 weighted + main quest 10 acts + missions | full strategy loop is engaging — **DONE 2026-08-20** |
 | **4 · AI Soul** ✅ | NarrativeProvider + LocalEngine + Gemini/OpenAI/Ollama adapters + Chronicle + KeyVault + settings UI + governance fallback | AI narration feels like a living chronicle — **DONE 2026-08-20** |
-| **5 · Depth** ✅ | side stories 6×4ch + side games 7 + scenarios 8 + Court/Succession stub + scenario panel | parity with `KingdomUnfolded.md` reached — **DONE 2026-08-20** |
-| **6 · Launch** ✅ | debug overlay, tutorial advisor, 5-slot saves + autosave, accessibility (slow-mode×0.5, haptics, text scale), WorkerThreadPool cap 800 | release-quality personal build — **STUB DONE 2026-08-20** |
+| **5 · Depth** ✅ | side stories 6×4ch + side games 7 + scenarios 8 + Court/Succession stub + scenario panel | parity with `KingdomsUnfolded.md` reached — **DONE 2026-08-20** |
+| **6 · Launch** ✅ | debug overlay, tutorial advisor, 5-slot saves + autosave, accessibility (slow-mode×0.5, haptics, text scale, music/SFX sliders), WorkerThreadPool cap 800, real CC0 art/audio + Sfx/Music engine | release-quality personal build — **CONTENT-COMPLETE 2026-09-14** |
 
 **MVP definition:** end of Phase 3 = a complete, if unpolished, strategy game loop:
 generate kingdom → build → grow → fight → lose. Phases 4–6 are depth + polish, not core.
@@ -598,7 +598,7 @@ generate kingdom → build → grow → fight → lose. Phases 4–6 are depth +
 
 ### Phase 5 — Depth
 Side stories, scenarios, minigames (tournament/duel/battle-sim in-world), Court &
-succession, espionage. Full `KingdomUnfolded.md` parity.
+succession, espionage. Full `KingdomsUnfolded.md` parity.
 
 ### Phase 6 — Launch
 Perf hardening, tutorial, onboarding, icon/splash, signed AAB, Play Store sideload.
@@ -628,8 +628,7 @@ Perf hardening, tutorial, onboarding, icon/splash, signed AAB, Play Store sidelo
 - **Reign / Dynasty** — one ruler's lifetime / chain of reigns via succession.
 
 ## 32. Decision Log (ADR-style)
-
-- **ADR-001** Godot 4.4 + Mobile renderer — mobile-first 3D, text-friendly dev, broad device support.
+- **ADR-001** Godot 4.7.2 + Mobile renderer — mobile-first 3D, text-friendly dev, broad device support.
 - **ADR-002** CI-as-PC (GitHub Actions godot-ci) — no PC available; proven 2026-08-20.
 - **ADR-003** Hybrid AI (Local + multi-provider) — fully playable offline; cloud = polish, never a gate.
 - **ADR-004** Dual-clock (real-time micro + monthly macro) — coherence over faking it.
@@ -639,6 +638,7 @@ Perf hardening, tutorial, onboarding, icon/splash, signed AAB, Play Store sidelo
 
 ## 33. Changelog
 
+- **2026-09-14 — Full Bible + real audio/art** — buildings 4→40, tech 36→60, events 20→120, missions 12→48, traits.json 24 + names/ 5 cultures (Catalog loaders + start-screen picker aligned); Kenney Fantasy Town (167 GLB) + Castle (76 GLB) + Medieval RTS 2D + RPG Audio SFX + OGA CC0 4-layer music + rain bed (~9 MB, APK budget holds); new `Sfx`/`Music` autoloads (pooled clicks, adaptive tension/mourning, battle stingers, weather rain, volume sliders); smoke_test WARN→FAIL gates (18/60/100/40/48/24).
 - **2026-08-20e — 1.0 RC** — Release candidate: balance.json canonical (seasonal yield 1.15/1.25/0.9/0.35, difficulty prod/cons, winter 1.3, cap by territory), graphics_settings 4 presets + auto-detect + vault (potato/balanced/high/ultra), perf hardened (WorkerThreadPool cap 800 tier-A, MultiMesh, viewport render_scale, shadow atlas 1024–4096, <400 draw calls, 30 FPS floor), bug fixes (Variant inference, Array[Dictionary] restore, HUD/touch/landscape/snow), art stubs (CC0 Quaternius/Kenney documented under assets/, <80 MB release target), AAB stub (gradle, orientation 0, keystore placeholder), 5 slots + autosave/5 + export .kingdom verified, smoke_test now gates units (18) + tech (36) + events (20) catalogs — **Ready for device perf profiling → signed AAB → Play Store internal track.**
 - **2026-08-20d** — Long-run swarm Phases 3-6: Military 18 units + battle_scene + auto-resolve + season upkeep, Diplomacy rival AI + treaties + panel, Tech 36 nodes + research tick + tint/fog upgrade, Events 20 + main quest 10 + missions 12 + catalog loaders, AI Soul (NarrativeProvider/LocalEngine/Gemini/OpenAI/Ollama + Chronicle + KeyVault), Depth (side stories/games/scenarios/Court/Succession), Launch stub (debug overlay/tutorial/slots/accessibility).
 - **2026-08-20b** — Phase 1 & trash-fix complete: landscape 1280×720, HUD 92px bar+radial, orbit touch fix (distance 55, pinch, gui_hit), ghost preview, snow shader smoothstep + winter 0.32, seasonal yield & chain clamping, StartScreen 4-step wizard, difficulty mults, fog tuning, smoke_test season-aware.

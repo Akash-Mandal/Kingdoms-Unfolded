@@ -76,15 +76,31 @@ func _init() -> void:
 
 	var cat = load("res://scripts/core/catalog.gd").new()
 	cat._load_all()
-	print("CAT: units %d tech %d events %d" % [cat.units.size(), cat.tech.size(), cat.events.size()])
-	if cat.units.is_empty():
-		printerr("WARN: units catalog empty - not failing")
+	print("CAT: units %d tech %d events %d buildings %d missions %d traits %d" % [cat.units.size(), cat.tech.size(), cat.events.size(), cat.buildings.size(), cat.missions.size(), cat.traits.size()])
 	if cat.units.size() < 18:
-		printerr("WARN: units %d < 18" % cat.units.size())
-	if cat.tech.is_empty() or cat.tech.size() < 36:
-		printerr("WARN: tech %d < 36" % cat.tech.size())
-	if cat.events.is_empty() or cat.events.size() < 20:
-		printerr("WARN: events %d < 20" % cat.events.size())
+		printerr("FAIL: units %d < 18" % cat.units.size())
+		quit(1)
+		return
+	if cat.tech.size() < 60:
+		printerr("FAIL: tech %d < 60" % cat.tech.size())
+		quit(1)
+		return
+	if cat.events.size() < 100:
+		printerr("FAIL: events %d < 100" % cat.events.size())
+		quit(1)
+		return
+	if cat.buildings.size() < 40:
+		printerr("FAIL: buildings %d < 40" % cat.buildings.size())
+		quit(1)
+		return
+	if cat.missions.size() < 48:
+		printerr("FAIL: missions %d < 48" % cat.missions.size())
+		quit(1)
+		return
+	if cat.traits.size() < 24:
+		printerr("FAIL: traits %d < 24" % cat.traits.size())
+		quit(1)
+		return
 	var bal_path := "res://data/catalog/balance.json"
 	if not FileAccess.file_exists(bal_path):
 		printerr("WARN: balance.json missing")

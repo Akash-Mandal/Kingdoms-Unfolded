@@ -4,8 +4,7 @@ A living medieval kingdom simulation for Android — deep strategy sim + individ
 rendered as a 3D world in **Godot 4.7.2 (GDScript)**, with a hybrid AI narrative layer
 (local-first, optional cloud LLM providers).
 
-**Status: Phase 0 (Foundations)** — procedural terrain, orbit camera, HUD, and the
-Coordination Engine monthly-turn skeleton are in place. CI builds are manual-only to save costs.
+**Status: Phase 6 (Launch — content-complete + real audio/art)** — full Content Bible (40 buildings, 60 tech, ~120 events, 48 missions, 24 traits), Kenney 3D + CC0 adaptive music/SFX wired, strict smoke gates. CI builds are manual-only to save costs.
 
 ## Folder layout
 

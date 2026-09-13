@@ -36,10 +36,11 @@ var _apply_btn: Button
 var _title_lbl: Label
 
 const TRAITS_24: PackedStringArray = [
-	"Brave","Wise","Just","Merciful","Wrathful","Cunning",
-	"Charismatic","Pious","Stubborn","Generous","Greedy","Loyal",
-	"Ambitious","Humble","Diligent","Slothful","Honest","Deceitful",
-	"Valiant","Craven","Temperate","Proud","Patient","Zealous"
+	"Industrious","Charismatic","Scholarly","Warlord","Just","Pious",
+	"Merchant's Eye","Diplomat","Hardy","Wise","Brave","Generous",
+	"Master Builder","Horse Lord","Iron Will","Weaver's Friend",
+	"Cruel","Greedy","Paranoid","Sickly","Slothful","Arrogant",
+	"Wasteful","Cowardly"
 ]
 
 const RES_KEYS_8: PackedStringArray = ["food","gold","wood","stone","iron","cloth","horses","knowledge"]

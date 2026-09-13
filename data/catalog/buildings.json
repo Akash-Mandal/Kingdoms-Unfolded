@@ -38,5 +38,365 @@
 		"prod": { "food": 5 },
 		"cons": { "flour": 4 },
 		"capacity": {}
+	},
+	{
+		"id": "granary",
+		"name": "Granary",
+		"icon": "🌽",
+		"cost": { "wood": 14, "stone": 6 },
+		"size": { "w": 2, "d": 2 },
+		"prod": {},
+		"cons": {},
+		"capacity": { "food_stock": 60 }
+	},
+	{
+		"id": "market",
+		"name": "Market",
+		"icon": "🏪",
+		"cost": { "wood": 16, "stone": 8, "gold": 10 },
+		"size": { "w": 3, "d": 2 },
+		"prod": { "gold": 6 },
+		"cons": { "food": 2 },
+		"capacity": {}
+	},
+	{
+		"id": "sawmill",
+		"name": "Sawmill",
+		"icon": "🪚",
+		"cost": { "wood": 10, "stone": 4, "gold": 6 },
+		"size": { "w": 2, "d": 2 },
+		"prod": { "wood": 8 },
+		"cons": {},
+		"capacity": {}
+	},
+	{
+		"id": "fishery",
+		"name": "Fishery",
+		"icon": "🎣",
+		"cost": { "wood": 10 },
+		"size": { "w": 2, "d": 2 },
+		"prod": { "food": 4 },
+		"cons": {},
+		"capacity": {}
+	},
+	{
+		"id": "apiary",
+		"name": "Apiary",
+		"icon": "🍯",
+		"cost": { "wood": 8, "gold": 4 },
+		"size": { "w": 2, "d": 2 },
+		"prod": { "food": 3, "gold": 2 },
+		"cons": {},
+		"capacity": {}
+	},
+	{
+		"id": "barracks",
+		"name": "Barracks",
+		"icon": "⚔️",
+		"cost": { "wood": 20, "stone": 12, "gold": 10 },
+		"size": { "w": 3, "d": 2 },
+		"prod": {},
+		"cons": { "food": 2 },
+		"capacity": { "housing": 4 }
+	},
+	{
+		"id": "archery_range",
+		"name": "Archery Range",
+		"icon": "🏹",
+		"cost": { "wood": 16, "gold": 8 },
+		"size": { "w": 3, "d": 2 },
+		"prod": {},
+		"cons": { "wood": 2 },
+		"capacity": {}
+	},
+	{
+		"id": "stable",
+		"name": "Stable",
+		"icon": "🐴",
+		"cost": { "wood": 18, "gold": 10 },
+		"size": { "w": 3, "d": 2 },
+		"prod": { "horses": 3 },
+		"cons": { "grain": 3 },
+		"capacity": {}
+	},
+	{
+		"id": "siege_workshop",
+		"name": "Siege Workshop",
+		"icon": "💥",
+		"cost": { "wood": 24, "stone": 16, "iron": 8 },
+		"size": { "w": 3, "d": 3 },
+		"prod": {},
+		"cons": { "wood": 3, "iron": 2 },
+		"capacity": {}
+	},
+	{
+		"id": "walls",
+		"name": "Walls",
+		"icon": "🧱",
+		"cost": { "stone": 30, "gold": 8 },
+		"size": { "w": 4, "d": 1 },
+		"prod": {},
+		"cons": {},
+		"capacity": {}
+	},
+	{
+		"id": "watchtower",
+		"name": "Watchtower",
+		"icon": "🗼",
+		"cost": { "wood": 12, "stone": 10 },
+		"size": { "w": 1, "d": 1 },
+		"prod": {},
+		"cons": {},
+		"capacity": {}
+	},
+	{
+		"id": "garrison",
+		"name": "Garrison",
+		"icon": "🛡️",
+		"cost": { "stone": 20, "wood": 10, "gold": 12 },
+		"size": { "w": 2, "d": 2 },
+		"prod": {},
+		"cons": { "food": 3 },
+		"capacity": { "housing": 6 }
+	},
+	{
+		"id": "drydock",
+		"name": "Drydock",
+		"icon": "⚓",
+		"cost": { "wood": 30, "stone": 12, "gold": 14 },
+		"size": { "w": 3, "d": 3 },
+		"prod": {},
+		"cons": { "wood": 4 },
+		"capacity": {}
+	},
+	{
+		"id": "armory",
+		"name": "Armory",
+		"icon": "🔨",
+		"cost": { "wood": 14, "stone": 10, "iron": 10 },
+		"size": { "w": 2, "d": 2 },
+		"prod": {},
+		"cons": { "iron": 2 },
+		"capacity": {}
+	},
+	{
+		"id": "war_college",
+		"name": "War College",
+		"icon": "🎖️",
+		"cost": { "stone": 22, "gold": 20, "knowledge": 6 },
+		"size": { "w": 3, "d": 2 },
+		"prod": { "knowledge": 3 },
+		"cons": { "gold": 3 },
+		"capacity": {}
+	},
+	{
+		"id": "school",
+		"name": "School",
+		"icon": "🏫",
+		"cost": { "wood": 14, "stone": 8, "gold": 6 },
+		"size": { "w": 2, "d": 2 },
+		"prod": { "knowledge": 4 },
+		"cons": { "gold": 1 },
+		"capacity": {}
+	},
+	{
+		"id": "library",
+		"name": "Library",
+		"icon": "📚",
+		"cost": { "stone": 16, "wood": 10, "gold": 10 },
+		"size": { "w": 2, "d": 2 },
+		"prod": { "knowledge": 5 },
+		"cons": { "gold": 2 },
+		"capacity": {}
+	},
+	{
+		"id": "town_hall",
+		"name": "Town Hall",
+		"icon": "🏛️",
+		"cost": { "stone": 24, "wood": 16, "gold": 16 },
+		"size": { "w": 3, "d": 3 },
+		"prod": { "gold": 4 },
+		"cons": {},
+		"capacity": { "housing": 2 }
+	},
+	{
+		"id": "courthouse",
+		"name": "Courthouse",
+		"icon": "⚖️",
+		"cost": { "stone": 18, "gold": 12 },
+		"size": { "w": 2, "d": 2 },
+		"prod": { "gold": 3 },
+		"cons": {},
+		"capacity": {}
+	},
+	{
+		"id": "hospital",
+		"name": "Hospital",
+		"icon": "🏥",
+		"cost": { "stone": 18, "wood": 12, "gold": 14 },
+		"size": { "w": 2, "d": 2 },
+		"prod": {},
+		"cons": { "food": 2, "gold": 2 },
+		"capacity": { "housing": 4 }
+	},
+	{
+		"id": "tavern",
+		"name": "Tavern",
+		"icon": "🍺",
+		"cost": { "wood": 12, "gold": 8 },
+		"size": { "w": 2, "d": 2 },
+		"prod": { "gold": 5 },
+		"cons": { "food": 3 },
+		"capacity": {}
+	},
+	{
+		"id": "bathhouse",
+		"name": "Bathhouse",
+		"icon": "🛁",
+		"cost": { "stone": 14, "wood": 8, "gold": 8 },
+		"size": { "w": 2, "d": 2 },
+		"prod": {},
+		"cons": { "wood": 1 },
+		"capacity": { "housing": 2 }
+	},
+	{
+		"id": "chapel",
+		"name": "Chapel",
+		"icon": "⛪",
+		"cost": { "wood": 12, "stone": 8 },
+		"size": { "w": 2, "d": 2 },
+		"prod": {},
+		"cons": {},
+		"capacity": { "housing": 2 }
+	},
+	{
+		"id": "temple",
+		"name": "Temple",
+		"icon": "🛕",
+		"cost": { "stone": 20, "gold": 12 },
+		"size": { "w": 3, "d": 2 },
+		"prod": { "gold": 3 },
+		"cons": {},
+		"capacity": {}
+	},
+	{
+		"id": "monastery",
+		"name": "Monastery",
+		"icon": "📿",
+		"cost": { "stone": 18, "wood": 12, "gold": 8 },
+		"size": { "w": 3, "d": 2 },
+		"prod": { "knowledge": 4 },
+		"cons": { "food": 2 },
+		"capacity": { "housing": 4 }
+	},
+	{
+		"id": "shrine",
+		"name": "Shrine",
+		"icon": "🗿",
+		"cost": { "stone": 8, "gold": 4 },
+		"size": { "w": 1, "d": 1 },
+		"prod": {},
+		"cons": {},
+		"capacity": {}
+	},
+	{
+		"id": "cathedral",
+		"name": "Cathedral",
+		"icon": "💒",
+		"cost": { "stone": 34, "gold": 24 },
+		"size": { "w": 3, "d": 3 },
+		"prod": { "gold": 5 },
+		"cons": {},
+		"capacity": { "housing": 2 }
+	},
+	{
+		"id": "pilgrim_rest",
+		"name": "Pilgrim Rest",
+		"icon": "🧳",
+		"cost": { "wood": 10, "stone": 6, "gold": 6 },
+		"size": { "w": 2, "d": 2 },
+		"prod": { "gold": 3 },
+		"cons": { "food": 2 },
+		"capacity": { "housing": 6, "food_stock": 20 }
+	},
+	{
+		"id": "festival_ground",
+		"name": "Festival Ground",
+		"icon": "🎪",
+		"cost": { "wood": 16, "gold": 10 },
+		"size": { "w": 3, "d": 3 },
+		"prod": { "gold": 4 },
+		"cons": { "food": 3 },
+		"capacity": {}
+	},
+	{
+		"id": "lighthouse",
+		"name": "Lighthouse",
+		"icon": "🗼",
+		"cost": { "stone": 26, "gold": 14 },
+		"size": { "w": 2, "d": 2 },
+		"prod": { "gold": 4 },
+		"cons": {},
+		"capacity": {}
+	},
+	{
+		"id": "observatory",
+		"name": "Observatory",
+		"icon": "🔭",
+		"cost": { "stone": 20, "gold": 16 },
+		"size": { "w": 2, "d": 2 },
+		"prod": { "knowledge": 6 },
+		"cons": { "gold": 2 },
+		"capacity": {}
+	},
+	{
+		"id": "guild_hall",
+		"name": "Guild Hall",
+		"icon": "🤝",
+		"cost": { "stone": 18, "wood": 14, "gold": 14 },
+		"size": { "w": 3, "d": 2 },
+		"prod": { "gold": 5 },
+		"cons": {},
+		"capacity": {}
+	},
+	{
+		"id": "trading_post",
+		"name": "Trading Post",
+		"icon": "🧭",
+		"cost": { "wood": 14, "gold": 10 },
+		"size": { "w": 2, "d": 2 },
+		"prod": { "gold": 5 },
+		"cons": { "cloth": 1 },
+		"capacity": { "food_stock": 20 }
+	},
+	{
+		"id": "park",
+		"name": "Park",
+		"icon": "🌳",
+		"cost": { "wood": 8, "gold": 6 },
+		"size": { "w": 2, "d": 2 },
+		"prod": {},
+		"cons": {},
+		"capacity": { "housing": 2 }
+	},
+	{
+		"id": "monument",
+		"name": "Monument",
+		"icon": "🏰",
+		"cost": { "stone": 30, "gold": 18 },
+		"size": { "w": 2, "d": 2 },
+		"prod": { "gold": 2 },
+		"cons": {},
+		"capacity": {}
+	},
+	{
+		"id": "windmill",
+		"name": "Windmill",
+		"icon": "🌬️",
+		"cost": { "wood": 16, "stone": 8, "gold": 6 },
+		"size": { "w": 2, "d": 2 },
+		"prod": { "flour": 5 },
+		"cons": { "grain": 5 },
+		"capacity": {}
 	}
 ]

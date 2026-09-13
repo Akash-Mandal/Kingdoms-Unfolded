@@ -1,4 +1,4 @@
-# Kingdom Eternal — Master Game Design Plan
+# Kingdoms Unfolded — Master Game Design Plan
 
 ## Vision Statement
 
@@ -23,7 +23,7 @@ A deeply immersive, AI-driven text-based kingdom simulation where every decision
 
 ```
 ┌─────────────────────────────────────────────┐
-│              KINGDOM ETERNAL                │
+│              KINGDOMS UNFOLDED               │
 │                                             │
 │  ┌─────────────┐    ┌──────────────────┐   │
 │  │ Coordination│◄──►│  Gemini AI Layer │   │

@@ -10,6 +10,7 @@ var side_stories: Dictionary = {}
 var side_games: Dictionary = {}
 var scenarios: Dictionary = {}
 var balance: Dictionary = {}
+var traits: Dictionary = {}
 var _loaded := false
 
 func _ready() -> void:
@@ -27,6 +28,7 @@ func _load_all() -> void:
 	_load_side_games()
 	_load_scenarios()
 	_load_balance()
+	_load_traits()
 	_loaded = true
 
 func _load_buildings() -> void:
@@ -370,6 +372,38 @@ func _load_balance() -> void:
 	f.close()
 	if typeof(parsed) == TYPE_DICTIONARY:
 		balance = parsed as Dictionary
+
+func _load_traits() -> void:
+	var path := "res://data/catalog/traits.json"
+	if not FileAccess.file_exists(path):
+		return
+	var f := FileAccess.open(path, FileAccess.READ)
+	if f == null:
+		return
+	var parsed: Variant = JSON.parse_string(f.get_as_text())
+	f.close()
+	if typeof(parsed) != TYPE_ARRAY:
+		push_warning("Catalog: traits.json malformed")
+		return
+	traits.clear()
+	for entry in parsed as Array:
+		if typeof(entry) == TYPE_DICTIONARY:
+			var id: String = str(entry.get("id", ""))
+			if id != "":
+				traits[id] = entry
+
+func get_trait(id: String) -> Dictionary:
+	return traits.get(id, {})
+
+func trait_ids() -> Array:
+	return traits.keys()
+
+func traits_by_kind(kind: String) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for k in traits:
+		if str(traits[k].get("kind", "")) == kind:
+			out.append(traits[k])
+	return out
 
 func get_balance(path: String = "") -> Variant:
 	if path == "":

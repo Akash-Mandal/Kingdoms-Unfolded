@@ -34,6 +34,8 @@ Chronicle="*res://scripts/net/chronicle.gd"
 NarrativeProvider="*res://scripts/net/narrative_provider.gd"
 GraphicsSettings="*res://scripts/core/graphics_settings.gd"
 SaveSlots="*res://scripts/core/save_slots.gd"
+Sfx="*res://scripts/audio/sfx.gd"
+Music="*res://scripts/audio/music.gd"
 
 [display]
 

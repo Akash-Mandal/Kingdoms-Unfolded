@@ -73,6 +73,9 @@ func _add_pressed_feedback(btn: Button) -> void:
 		tw.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		tw.tween_property(btn, "scale", Vector2(0.93, 0.93), 0.08)
 		btn.modulate = Color(0.9, 0.9, 0.95)
+		var sx: Node = get_node_or_null("/root/Sfx")
+		if sx != null and sx.has_method("click"):
+			sx.call("click")
 	)
 	btn.button_up.connect(func() -> void:
 		var tw2 := create_tween()
@@ -610,6 +613,9 @@ func _try_research(id: String) -> void:
 	if ok:
 		_show_toast("🔬 Researching %s" % id)
 		_refresh_tech_tree()
+		var sx: Node = get_node_or_null("/root/Sfx")
+		if sx != null and sx.has_method("play"):
+			sx.call("play", "book", 1.2)
 	else:
 		_show_toast("Cannot research: prereqs or cost")
 func _toggle_tech_panel() -> void:
@@ -684,8 +690,11 @@ func _select_building(id: String) -> void:
 		_build_mgr.selected_id = id
 	_update_build_buttons()
 	_haptic("tap")
+	var sx: Node = get_node_or_null("/root/Sfx")
 	if id == "":
 		_show_toast("Selection cleared")
+		if sx != null and sx.has_method("play"):
+			sx.call("play", "ui_click", 0.8)
 	else:
 		var def: Dictionary = Catalog.get_building(id) if Catalog != null else {}
 		_show_toast("Selected %s — %s" % [String(def.get("name", id)), _cost_tooltip(id)])
@@ -857,11 +866,14 @@ func _show_month_card() -> void:
 	var t := get_tree().create_timer(2.4)
 	t.timeout.connect(func() -> void: _month_card.visible = false)
 func _trigger_battle() -> void:
+	var sx: Node = get_node_or_null("/root/Sfx")
 	var main: Node = get_parent()
 	if main != null and main.has_method("trigger_test_battle"):
 		main.trigger_test_battle()
 		_show_toast("⚔️ Battle marching…")
 		_haptic("danger")
+		if sx != null and sx.has_method("play"):
+			sx.call("play", "sword_draw", 1.0)
 	else:
 		_show_toast("Battle unavailable")
 func _on_narrative(event: Dictionary, result: Dictionary) -> void:

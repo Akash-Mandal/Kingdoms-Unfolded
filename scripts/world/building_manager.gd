@@ -221,6 +221,9 @@ func try_place(id: String, pos: Vector3) -> bool:
 		if not r.is_empty():
 			r["stock"] = maxf(0.0, float(r.get("stock", 0.0)) - float(cost[key]))
 	_spawn(id, pos, true, true)
+	var sx: Node = get_node_or_null("/root/Sfx")
+	if sx != null and sx.has_method("play"):
+		sx.call("play", "build_place", 1.0)
 	return true
 
 func _acquire_from_pool(id: String) -> Node3D:

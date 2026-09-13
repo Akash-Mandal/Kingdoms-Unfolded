@@ -3,6 +3,9 @@ var _panel: PanelContainer
 var _scale_opt: OptionButton
 var _slow_check: CheckBox
 var _haptics_check: CheckBox
+var _music_slider: HSlider
+var _sfx_slider: HSlider
+var _mute_check: CheckBox
 const SCALE_KEYS: PackedStringArray = ["small", "normal", "large", "xlarge"]
 const SCALE_LABELS: PackedStringArray = ["×0.8 Small", "×1.0 Normal", "×1.3 Large", "×1.6 X-Large"]
 
@@ -55,6 +58,38 @@ func _build() -> void:
 	_haptics_check.button_pressed = true
 	_haptics_check.toggled.connect(_on_haptics)
 	hap_row.add_child(_haptics_check)
+	var mus_row := HBoxContainer.new()
+	v.add_child(mus_row)
+	var mus_lab := Label.new()
+	mus_lab.text = "Music"
+	mus_lab.custom_minimum_size = Vector2(120, 36)
+	mus_row.add_child(mus_lab)
+	_music_slider = HSlider.new()
+	_music_slider.min_value = -30.0
+	_music_slider.max_value = 0.0
+	_music_slider.step = 1.0
+	_music_slider.custom_minimum_size = Vector2(160, 36)
+	_music_slider.value_changed.connect(_on_audio)
+	mus_row.add_child(_music_slider)
+	var sfx_row := HBoxContainer.new()
+	v.add_child(sfx_row)
+	var sfx_lab := Label.new()
+	sfx_lab.text = "SFX"
+	sfx_lab.custom_minimum_size = Vector2(120, 36)
+	sfx_row.add_child(sfx_lab)
+	_sfx_slider = HSlider.new()
+	_sfx_slider.min_value = -24.0
+	_sfx_slider.max_value = 6.0
+	_sfx_slider.step = 1.0
+	_sfx_slider.custom_minimum_size = Vector2(160, 36)
+	_sfx_slider.value_changed.connect(_on_audio)
+	sfx_row.add_child(_sfx_slider)
+	var mute_row := HBoxContainer.new()
+	v.add_child(mute_row)
+	_mute_check = CheckBox.new()
+	_mute_check.text = "Mute all audio"
+	_mute_check.toggled.connect(_on_audio_mute)
+	mute_row.add_child(_mute_check)
 	var close := UITheme.make_button("Close", "danger", Vector2(120, 44))
 	close.pressed.connect(func() -> void: visible = false)
 	v.add_child(close)
@@ -70,6 +105,14 @@ func _sync() -> void:
 		_slow_check.button_pressed = bool(ac.get("slow_mode"))
 	if "haptics_enabled" in ac:
 		_haptics_check.button_pressed = bool(ac.get("haptics_enabled"))
+	var sx: Node = get_node_or_null("/root/Sfx")
+	if sx != null:
+		if "music_db" in sx:
+			_music_slider.set_value_no_signal(float(sx.get("music_db")))
+		if "sfx_db" in sx:
+			_sfx_slider.set_value_no_signal(float(sx.get("sfx_db")))
+		if "muted" in sx:
+			_mute_check.set_pressed_no_signal(bool(sx.get("muted")))
 
 func _on_scale(idx: int) -> void:
 	var key: String = SCALE_KEYS[idx]
@@ -81,12 +124,23 @@ func _on_slow(pressed: bool) -> void:
 	var ac: Node = get_node_or_null("/root/Main/Accessibility")
 	if ac == null: ac = get_node_or_null("/root/Accessibility")
 	if ac != null and ac.has_method("set_slow_mode"): ac.call("set_slow_mode", pressed)
-
 func _on_haptics(pressed: bool) -> void:
-	var ac: Node = get_node_or_null("/root/Main/Accessibility")
-	if ac == null: ac = get_node_or_null("/root/Accessibility")
-	if ac != null and ac.has_method("set_haptics"): ac.call("set_haptics", pressed)
+	var ac2: Node = get_node_or_null("/root/Main/Accessibility")
+	if ac2 == null:
+		ac2 = get_node_or_null("/root/Accessibility")
+	if ac2 != null and ac2.has_method("set_haptics"):
+		ac2.call("set_haptics", pressed)
 
+func _on_audio(_val: float) -> void:
+	_push_audio()
+
+func _on_audio_mute(_pressed: bool) -> void:
+	_push_audio()
+
+func _push_audio() -> void:
+	var sx: Node = get_node_or_null("/root/Sfx")
+	if sx != null and sx.has_method("set_volumes"):
+		sx.call("set_volumes", float(_music_slider.value), float(_sfx_slider.value), _mute_check.button_pressed)
 func open() -> void:
 	_sync()
 	visible = true

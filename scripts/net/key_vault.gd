@@ -29,7 +29,7 @@ func _save() -> void:
 func _device_salt() -> String:
 	var uid := OS.get_unique_id()
 	if uid == "":
-		uid = "kingdom-eternal-salt-v1"
+		uid = "kingdoms-unfolded-salt-v1"
 	return uid
 func _xor_cipher(text: String, salt: String) -> String:
 	var out := PackedByteArray()

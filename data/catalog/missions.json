@@ -44,6 +44,138 @@
     "repeatable": false
   },
   {
+    "id": "political_tax_reform",
+    "category": "political",
+    "name": "The Tax Reform",
+    "description": "Your chancellor proposes a new tithe. Nobles grumble, peasants hope.",
+    "weight": 9,
+    "conditions": [
+      {"kind": "resource", "key": "gold", "op": "<", "value": 60, "weight_mult": 1.5},
+      {"kind": "turn", "op": ">", "value": 6, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "gold_50", "label": "Hold 50 gold during reform", "track": "resource_gold", "op": ">=", "value": 50},
+      {"id": "happiness_50", "label": "Keep happiness above 0.5", "track": "happiness", "op": ">=", "value": 0.5}
+    ],
+    "choices": [
+      {"id": "reform", "label": "Enact reform", "hint": "Gold up, nobles angry", "effects": {"gold": 30, "happiness": -0.04, "knowledge": 4}, "follow_up": null},
+      {"id": "delay", "label": "Delay reform", "hint": "Keep the peace", "effects": {"happiness": 0.05, "gold": -5}, "follow_up": null}
+    ],
+    "rewards": {"gold": 20, "knowledge": 4},
+    "expiry_turns": 12,
+    "repeatable": true
+  },
+  {
+    "id": "political_council_feud",
+    "category": "political",
+    "name": "Feud in the Council",
+    "description": "Two councillors brawl over grain rights. Pick a side or silence both.",
+    "weight": 8,
+    "conditions": [
+      {"kind": "happiness", "op": "<", "value": 0.6, "weight_mult": 1.3},
+      {"kind": "turn", "op": ">", "value": 5, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "knowledge_25", "label": "Arbitrate wisely (25 knowledge)", "track": "resource_knowledge", "op": ">=", "value": 25},
+      {"id": "gold_30", "label": "Hold 30 gold for bribes", "track": "resource_gold", "op": ">=", "value": 30}
+    ],
+    "choices": [
+      {"id": "side_a", "label": "Back Marshal", "hint": "Military favor", "effects": {"happiness": -0.03, "iron": 8}, "follow_up": null},
+      {"id": "side_b", "label": "Back Steward", "hint": "Economic favor", "effects": {"gold": 15, "happiness": 0.03}, "follow_up": null}
+    ],
+    "rewards": {"happiness": 0.05, "gold": 10},
+    "expiry_turns": 10,
+    "repeatable": true
+  },
+  {
+    "id": "political_border_claim",
+    "category": "political",
+    "name": "The Border Claim",
+    "description": "A neighbor claims your eastern hamlets by an old charter. Answer firmly.",
+    "weight": 7,
+    "conditions": [
+      {"kind": "turn", "op": ">", "value": 12, "weight_mult": 1.4},
+      {"kind": "pop", "op": ">", "value": 70, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "knowledge_30", "label": "Study charters (30 knowledge)", "track": "resource_knowledge", "op": ">=", "value": 30},
+      {"id": "gold_45", "label": "Fund envoys (45 gold)", "track": "resource_gold", "op": ">=", "value": 45}
+    ],
+    "choices": [
+      {"id": "assert", "label": "Assert the claim", "hint": "Risk tension, gain land", "effects": {"food": 15, "happiness": 0.04, "gold": -10}, "follow_up": null},
+      {"id": "cede", "label": "Cede hamlets", "hint": "Peace at a price", "effects": {"food": -10, "happiness": -0.05, "gold": 10}, "follow_up": null}
+    ],
+    "rewards": {"knowledge": 6, "happiness": 0.04},
+    "expiry_turns": 16,
+    "repeatable": false
+  },
+  {
+    "id": "political_petition_court",
+    "category": "political",
+    "name": "Petitioners at Court",
+    "description": "A line of commoners waits at your gates with grievances and gifts.",
+    "weight": 9,
+    "conditions": [
+      {"kind": "happiness", "op": "<", "value": 0.65, "weight_mult": 1.3},
+      {"kind": "resource", "key": "food", "op": ">", "value": 20, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "food_40", "label": "Hold 40 food for alms", "track": "resource_food", "op": ">=", "value": 40},
+      {"id": "happiness_55", "label": "Keep happiness above 0.55", "track": "happiness", "op": ">=", "value": 0.55}
+    ],
+    "choices": [
+      {"id": "hear", "label": "Hear them all", "hint": "Loved but costly", "effects": {"food": -15, "happiness": 0.1, "gold": -5}, "follow_up": null},
+      {"id": "dismiss", "label": "Dismiss most", "hint": "Save stores, lose love", "effects": {"food": 5, "happiness": -0.07}, "follow_up": null}
+    ],
+    "rewards": {"happiness": 0.07, "food": 8},
+    "expiry_turns": 8,
+    "repeatable": true
+  },
+  {
+    "id": "political_vassal_tribute",
+    "category": "political",
+    "name": "The Vassal's Tribute",
+    "description": "A hill lord arrives with iron and excuses. His tribute is light again.",
+    "weight": 8,
+    "conditions": [
+      {"kind": "resource", "key": "iron", "op": "<", "value": 20, "weight_mult": 1.5},
+      {"kind": "turn", "op": ">", "value": 8, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "iron_12", "label": "Extract 12 iron tribute", "track": "resource_iron", "op": ">=", "value": 12},
+      {"id": "gold_40", "label": "Hold 40 gold as leverage", "track": "resource_gold", "op": ">=", "value": 40}
+    ],
+    "choices": [
+      {"id": "demand", "label": "Demand full tribute", "hint": "Iron gain, resentment", "effects": {"iron": 12, "happiness": -0.05}, "follow_up": null},
+      {"id": "forgive", "label": "Forgive the shortfall", "hint": "Loyalty over iron", "effects": {"happiness": 0.08, "iron": 4}, "follow_up": null}
+    ],
+    "rewards": {"iron": 8, "happiness": 0.03},
+    "expiry_turns": 12,
+    "repeatable": true
+  },
+  {
+    "id": "political_succession_law",
+    "category": "political",
+    "name": "Law of Succession",
+    "description": "Clerks urge you to codify who inherits. Every house watches your quill.",
+    "weight": 6,
+    "conditions": [
+      {"kind": "turn", "op": ">", "value": 20, "weight_mult": 1.5},
+      {"kind": "resource", "key": "knowledge", "op": ">", "value": 35, "weight_mult": 1.4}
+    ],
+    "objectives": [
+      {"id": "knowledge_50", "label": "Draft the law (50 knowledge)", "track": "resource_knowledge", "op": ">=", "value": 50},
+      {"id": "gold_50", "label": "Pay the scribes (50 gold)", "track": "resource_gold", "op": ">=", "value": 50}
+    ],
+    "choices": [
+      {"id": "primogeniture", "label": "Eldest inherits all", "hint": "Stable, nobles split", "effects": {"happiness": 0.05, "gold": -10}, "follow_up": null},
+      {"id": "elective", "label": "Council elects heir", "hint": "Nobles pleased, risk feud", "effects": {"happiness": 0.02, "knowledge": 6}, "follow_up": null}
+    ],
+    "rewards": {"knowledge": 8, "happiness": 0.05},
+    "expiry_turns": 24,
+    "repeatable": false
+  },
+  {
     "id": "military_defend_village",
     "category": "military",
     "name": "Defend Greenhollow",
@@ -85,6 +217,138 @@
     ],
     "rewards": {"horses": 3, "happiness": 0.05},
     "expiry_turns": 20,
+    "repeatable": false
+  },
+  {
+    "id": "military_first_campaign",
+    "category": "military",
+    "name": "First Campaign",
+    "description": "Your new guard thirsts for trial. A bandit nest festers in the hills.",
+    "weight": 8,
+    "conditions": [
+      {"kind": "resource", "key": "iron", "op": ">", "value": 10, "weight_mult": 1.4},
+      {"kind": "turn", "op": ">", "value": 15, "weight_mult": 1.3}
+    ],
+    "objectives": [
+      {"id": "iron_15", "label": "Equip troops (15 iron)", "track": "resource_iron", "op": ">=", "value": 15},
+      {"id": "horses_4", "label": "Muster 4 horses", "track": "resource_horses", "op": ">=", "value": 4}
+    ],
+    "choices": [
+      {"id": "attack", "label": "Storm the nest", "hint": "Glory and loot", "effects": {"gold": 25, "happiness": 0.07, "iron": -6}, "follow_up": null},
+      {"id": "besiege", "label": "Starve them out", "hint": "Safe but slow", "effects": {"food": -10, "gold": 15, "happiness": 0.03}, "follow_up": null}
+    ],
+    "rewards": {"gold": 20, "happiness": 0.05},
+    "expiry_turns": 14,
+    "repeatable": false
+  },
+  {
+    "id": "military_border_raid",
+    "category": "military",
+    "name": "Night Raid Repelled",
+    "description": "Torches on the border. Raiders strike granaries under moonlight.",
+    "weight": 9,
+    "conditions": [
+      {"kind": "resource", "key": "food", "op": ">", "value": 40, "weight_mult": 1.3},
+      {"kind": "happiness", "op": "<", "value": 0.6, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "iron_10", "label": "Arm watch (10 iron)", "track": "resource_iron", "op": ">=", "value": 10},
+      {"id": "gold_35", "label": "Pay night watch (35 gold)", "track": "resource_gold", "op": ">=", "value": 35}
+    ],
+    "choices": [
+      {"id": "ambush", "label": "Ambush the raiders", "hint": "Decisive, some losses", "effects": {"food": -8, "gold": 12, "happiness": 0.06}, "follow_up": null},
+      {"id": "hide", "label": "Hide stores", "hint": "Cautious, lose some", "effects": {"food": -15, "happiness": -0.02}, "follow_up": null}
+    ],
+    "rewards": {"food": 10, "happiness": 0.05},
+    "expiry_turns": 6,
+    "repeatable": true
+  },
+  {
+    "id": "military_mercenary_offer",
+    "category": "military",
+    "name": "The Mercenary Offer",
+    "description": "A sellsword company offers blades for coin. Their loyalty lasts while gold does.",
+    "weight": 7,
+    "conditions": [
+      {"kind": "resource", "key": "gold", "op": ">", "value": 90, "weight_mult": 1.5},
+      {"kind": "turn", "op": ">", "value": 10, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "gold_100", "label": "Hold 100 gold to hire", "track": "resource_gold", "op": ">=", "value": 100},
+      {"id": "food_50", "label": "Feed them (50 food)", "track": "resource_food", "op": ">=", "value": 50}
+    ],
+    "choices": [
+      {"id": "hire", "label": "Hire the company", "hint": "Power now, cost upkeep", "effects": {"gold": -50, "food": -15, "happiness": -0.02}, "follow_up": null},
+      {"id": "refuse", "label": "Refuse politely", "hint": "No cost, no swords", "effects": {"happiness": 0.02, "knowledge": 3}, "follow_up": null}
+    ],
+    "rewards": {"iron": 6, "horses": 2},
+    "expiry_turns": 12,
+    "repeatable": true
+  },
+  {
+    "id": "military_fortress_walls",
+    "category": "military",
+    "name": "Raise the Walls",
+    "description": "Masons beg stone for the crumbling east wall before winter sieges.",
+    "weight": 8,
+    "conditions": [
+      {"kind": "resource", "key": "stone", "op": ">", "value": 30, "weight_mult": 1.5},
+      {"kind": "resource", "key": "wood", "op": ">", "value": 20, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "stone_40", "label": "Quarry 40 stone", "track": "resource_stone", "op": ">=", "value": 40},
+      {"id": "wood_20", "label": "Frame scaffolds (20 wood)", "track": "resource_wood", "op": ">=", "value": 20}
+    ],
+    "choices": [
+      {"id": "build", "label": "Build high walls", "hint": "Safety for years", "effects": {"stone": -20, "wood": -10, "happiness": 0.08}, "follow_up": null},
+      {"id": "patch", "label": "Patch cheaply", "hint": "Quick fix", "effects": {"stone": -8, "happiness": 0.02}, "follow_up": null}
+    ],
+    "rewards": {"happiness": 0.06, "stone": 10},
+    "expiry_turns": 18,
+    "repeatable": false
+  },
+  {
+    "id": "military_deserter_crisis",
+    "category": "military",
+    "name": "Deserters in the Woods",
+    "description": "Hungry levies melt into the woods. The captain demands examples or bread.",
+    "weight": 8,
+    "conditions": [
+      {"kind": "resource", "key": "food", "op": "<", "value": 45, "weight_mult": 1.6},
+      {"kind": "happiness", "op": "<", "value": 0.55, "weight_mult": 1.3}
+    ],
+    "objectives": [
+      {"id": "food_55", "label": "Restore rations (55 food)", "track": "resource_food", "op": ">=", "value": 55},
+      {"id": "gold_30", "label": "Pay arrears (30 gold)", "track": "resource_gold", "op": ">=", "value": 30}
+    ],
+    "choices": [
+      {"id": "pardon", "label": "Pardon and feed", "hint": "Loyalty regained", "effects": {"food": -15, "happiness": 0.08}, "follow_up": null},
+      {"id": "punish", "label": "Hang the ringleaders", "hint": "Fear restores order", "effects": {"happiness": -0.08, "food": 5}, "follow_up": null}
+    ],
+    "rewards": {"happiness": 0.05, "food": 10},
+    "expiry_turns": 8,
+    "repeatable": true
+  },
+  {
+    "id": "military_war_horses",
+    "category": "military",
+    "name": "War Horses",
+    "description": "A steppe trader offers prime destriers. Cavalry dreams gallop in your marshals.",
+    "weight": 6,
+    "conditions": [
+      {"kind": "resource", "key": "gold", "op": ">", "value": 70, "weight_mult": 1.4},
+      {"kind": "resource", "key": "food", "op": ">", "value": 50, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "gold_80", "label": "Hold 80 gold for herd", "track": "resource_gold", "op": ">=", "value": 80},
+      {"id": "food_60", "label": "Fodder stores (60 food)", "track": "resource_food", "op": ">=", "value": 60}
+    ],
+    "choices": [
+      {"id": "buy", "label": "Buy the herd", "hint": "Cavalry strength", "effects": {"gold": -45, "horses": 6, "food": -10}, "follow_up": null},
+      {"id": "breed", "label": "Breed locally", "hint": "Slow and cheap", "effects": {"horses": 2, "food": -8, "gold": -10}, "follow_up": null}
+    ],
+    "rewards": {"horses": 3, "happiness": 0.04},
+    "expiry_turns": 16,
     "repeatable": false
   },
   {
@@ -132,6 +396,138 @@
     "repeatable": true
   },
   {
+    "id": "economic_grain_speculators",
+    "category": "economic",
+    "name": "Grain Speculators",
+    "description": "Merchants hoard grain to spike prices. Intervene or let the market bite?",
+    "weight": 8,
+    "conditions": [
+      {"kind": "resource", "key": "food", "op": ">", "value": 30, "weight_mult": 1.3},
+      {"kind": "resource", "key": "gold", "op": ">", "value": 50, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "grain_30", "label": "Secure 30 grain", "track": "resource_grain", "op": ">=", "value": 30},
+      {"id": "gold_60", "label": "Hold 60 gold reserve", "track": "resource_gold", "op": ">=", "value": 60}
+    ],
+    "choices": [
+      {"id": "seize", "label": "Seize hoards", "hint": "Food fast, merchants angry", "effects": {"food": 20, "happiness": 0.05, "gold": -10}, "follow_up": null},
+      {"id": "buy_out", "label": "Buy them out", "hint": "Costly but calm", "effects": {"gold": -25, "food": 15, "happiness": 0.02}, "follow_up": null}
+    ],
+    "rewards": {"food": 12, "gold": 10},
+    "expiry_turns": 10,
+    "repeatable": true
+  },
+  {
+    "id": "economic_iron_shortage",
+    "category": "economic",
+    "name": "Silent Hammers",
+    "description": "Smithies idle for lack of iron. Tools break, plows wait, soldiers drill with sticks.",
+    "weight": 8,
+    "conditions": [
+      {"kind": "resource", "key": "iron", "op": "<", "value": 12, "weight_mult": 1.8},
+      {"kind": "turn", "op": ">", "value": 6, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "iron_15", "label": "Secure 15 iron", "track": "resource_iron", "op": ">=", "value": 15},
+      {"id": "gold_50", "label": "Fund mine crews (50 gold)", "track": "resource_gold", "op": ">=", "value": 50}
+    ],
+    "choices": [
+      {"id": "reopen", "label": "Reopen old mine", "hint": "Iron flow restored", "effects": {"gold": -30, "iron": 12, "happiness": -0.02}, "follow_up": null},
+      {"id": "import_iron", "label": "Import at premium", "hint": "Fast but dear", "effects": {"gold": -40, "iron": 15}, "follow_up": null}
+    ],
+    "rewards": {"iron": 8, "gold": 8},
+    "expiry_turns": 12,
+    "repeatable": true
+  },
+  {
+    "id": "economic_craftsmen_guild",
+    "category": "economic",
+    "name": "The Weavers' Guild",
+    "description": "Weavers seek a charter and looms. Cloth could clothe the realm — and fill coffers.",
+    "weight": 7,
+    "conditions": [
+      {"kind": "resource", "key": "wood", "op": ">", "value": 25, "weight_mult": 1.3},
+      {"kind": "happiness", "op": ">", "value": 0.5, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "wood_30", "label": "Build looms (30 wood)", "track": "resource_wood", "op": ">=", "value": 30},
+      {"id": "gold_45", "label": "Charter fee (45 gold)", "track": "resource_gold", "op": ">=", "value": 45}
+    ],
+    "choices": [
+      {"id": "charter", "label": "Grant charter", "hint": "Cloth boom", "effects": {"cloth": 15, "gold": 10, "happiness": 0.05}, "follow_up": null},
+      {"id": "tax_guild", "label": "Charter with heavy dues", "hint": "Gold now, slower craft", "effects": {"gold": 25, "cloth": 6}, "follow_up": null}
+    ],
+    "rewards": {"cloth": 10, "gold": 12},
+    "expiry_turns": 16,
+    "repeatable": false
+  },
+  {
+    "id": "economic_river_tolls",
+    "category": "economic",
+    "name": "River Tolls",
+    "description": "Barges crowd your river. A toll chain could pay for itself by autumn.",
+    "weight": 7,
+    "conditions": [
+      {"kind": "resource", "key": "wood", "op": ">", "value": 20, "weight_mult": 1.2},
+      {"kind": "turn", "op": ">", "value": 8, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "wood_25", "label": "Build toll posts (25 wood)", "track": "resource_wood", "op": ">=", "value": 25},
+      {"id": "stone_15", "label": "Anchor chains (15 stone)", "track": "resource_stone", "op": ">=", "value": 15}
+    ],
+    "choices": [
+      {"id": "toll_high", "label": "High tolls", "hint": "Rich, resented", "effects": {"gold": 35, "happiness": -0.06}, "follow_up": null},
+      {"id": "toll_low", "label": "Modest tolls", "hint": "Steady and liked", "effects": {"gold": 20, "happiness": 0.03}, "follow_up": null}
+    ],
+    "rewards": {"gold": 18, "wood": 8},
+    "expiry_turns": 14,
+    "repeatable": true
+  },
+  {
+    "id": "economic_winter_stores",
+    "category": "economic",
+    "name": "Winter Stores",
+    "description": "Snow comes early to the high passes. Cellars must be full or bellies empty.",
+    "weight": 9,
+    "conditions": [
+      {"kind": "resource", "key": "food", "op": "<", "value": 60, "weight_mult": 1.6},
+      {"kind": "turn", "op": ">", "value": 4, "weight_mult": 1.1}
+    ],
+    "objectives": [
+      {"id": "food_70", "label": "Fill cellars (70 food)", "track": "resource_food", "op": ">=", "value": 70},
+      {"id": "wood_30", "label": "Stock firewood (30 wood)", "track": "resource_wood", "op": ">=", "value": 30}
+    ],
+    "choices": [
+      {"id": "stockpile", "label": "Stockpile hard", "hint": "Safe winter", "effects": {"food": 12, "wood": -10, "happiness": 0.06}, "follow_up": null},
+      {"id": "gamble", "label": "Gamble on mild winter", "hint": "Save now, risk later", "effects": {"gold": 15, "happiness": -0.02}, "follow_up": null}
+    ],
+    "rewards": {"food": 12, "happiness": 0.06},
+    "expiry_turns": 8,
+    "repeatable": true
+  },
+  {
+    "id": "economic_coin_debasement",
+    "category": "economic",
+    "name": "Debased Coin",
+    "description": "The mint master whispers: lighter coins, fuller treasury. None will notice — at first.",
+    "weight": 6,
+    "conditions": [
+      {"kind": "resource", "key": "gold", "op": "<", "value": 50, "weight_mult": 1.5},
+      {"kind": "resource", "key": "knowledge", "op": ">", "value": 20, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "gold_40", "label": "Hold 40 gold", "track": "resource_gold", "op": ">=", "value": 40},
+      {"id": "knowledge_30", "label": "Cook the books (30 knowledge)", "track": "resource_knowledge", "op": ">=", "value": 30}
+    ],
+    "choices": [
+      {"id": "debase", "label": "Debase the coin", "hint": "Gold now, trust later", "effects": {"gold": 45, "happiness": -0.07}, "follow_up": null},
+      {"id": "honest", "label": "Keep honest coin", "hint": "Trust over treasure", "effects": {"happiness": 0.06, "gold": 5}, "follow_up": null}
+    ],
+    "rewards": {"gold": 15, "knowledge": 4},
+    "expiry_turns": 12,
+    "repeatable": false
+  },
+  {
     "id": "cultural_great_work",
     "category": "cultural",
     "name": "A Great Work",
@@ -174,6 +570,138 @@
     ],
     "rewards": {"knowledge": 8, "happiness": 0.06},
     "expiry_turns": 12,
+    "repeatable": true
+  },
+  {
+    "id": "cultural_bard_college",
+    "category": "cultural",
+    "name": "College of Bards",
+    "description": "Wandering singers seek patronage for a school of song and story.",
+    "weight": 7,
+    "conditions": [
+      {"kind": "happiness", "op": ">", "value": 0.5, "weight_mult": 1.3},
+      {"kind": "resource", "key": "gold", "op": ">", "value": 50, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "gold_60", "label": "Endow college (60 gold)", "track": "resource_gold", "op": ">=", "value": 60},
+      {"id": "knowledge_30", "label": "Gather lore (30 knowledge)", "track": "resource_knowledge", "op": ">=", "value": 30}
+    ],
+    "choices": [
+      {"id": "patron", "label": "Become patron", "hint": "Joy and tales", "effects": {"gold": -25, "happiness": 0.1, "knowledge": 6}, "follow_up": null},
+      {"id": "decline_bards", "label": "Send them on", "hint": "Save coin", "effects": {"gold": 5, "happiness": -0.02}, "follow_up": null}
+    ],
+    "rewards": {"happiness": 0.07, "knowledge": 6},
+    "expiry_turns": 18,
+    "repeatable": false
+  },
+  {
+    "id": "cultural_harvest_festival",
+    "category": "cultural",
+    "name": "Harvest Festival",
+    "description": "Barns bulge and the people ache for music, ale, and a bonfire.",
+    "weight": 9,
+    "conditions": [
+      {"kind": "resource", "key": "food", "op": ">", "value": 55, "weight_mult": 1.5},
+      {"kind": "happiness", "op": ">", "value": 0.45, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "food_65", "label": "Feast stores (65 food)", "track": "resource_food", "op": ">=", "value": 65},
+      {"id": "gold_30", "label": "Fund revels (30 gold)", "track": "resource_gold", "op": ">=", "value": 30}
+    ],
+    "choices": [
+      {"id": "grand_feast", "label": "Grand feast", "hint": "Beloved, costly", "effects": {"food": -20, "gold": -15, "happiness": 0.14}, "follow_up": null},
+      {"id": "modest_feast", "label": "Modest feast", "hint": "Cheer on budget", "effects": {"food": -10, "happiness": 0.08}, "follow_up": null}
+    ],
+    "rewards": {"happiness": 0.08, "food": 5},
+    "expiry_turns": 6,
+    "repeatable": true
+  },
+  {
+    "id": "cultural_old_shrine",
+    "category": "cultural",
+    "name": "Shrine of the Old Gods",
+    "description": "Moss covers stones where grandparents prayed. Restore them or let them sleep?",
+    "weight": 6,
+    "conditions": [
+      {"kind": "resource", "key": "stone", "op": ">", "value": 20, "weight_mult": 1.3},
+      {"kind": "turn", "op": ">", "value": 8, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "stone_25", "label": "Restore stones (25 stone)", "track": "resource_stone", "op": ">=", "value": 25},
+      {"id": "wood_15", "label": "Raise beams (15 wood)", "track": "resource_wood", "op": ">=", "value": 15}
+    ],
+    "choices": [
+      {"id": "restore", "label": "Restore the shrine", "hint": "Faith and calm", "effects": {"stone": -12, "happiness": 0.09, "knowledge": 3}, "follow_up": null},
+      {"id": "abandon_shrine", "label": "Let it crumble", "hint": "Save stone", "effects": {"happiness": -0.03, "stone": 5}, "follow_up": null}
+    ],
+    "rewards": {"happiness": 0.06, "knowledge": 4},
+    "expiry_turns": 20,
+    "repeatable": false
+  },
+  {
+    "id": "cultural_library_scribes",
+    "category": "cultural",
+    "name": "The Scriptorium",
+    "description": "Monks offer to copy every scroll in the realm — if you feed and house them.",
+    "weight": 7,
+    "conditions": [
+      {"kind": "resource", "key": "knowledge", "op": ">", "value": 30, "weight_mult": 1.4},
+      {"kind": "resource", "key": "food", "op": ">", "value": 40, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "knowledge_45", "label": "Assemble scrolls (45 knowledge)", "track": "resource_knowledge", "op": ">=", "value": 45},
+      {"id": "food_50", "label": "Feed scribes (50 food)", "track": "resource_food", "op": ">=", "value": 50}
+    ],
+    "choices": [
+      {"id": "fund_scribes", "label": "Fund the scriptorium", "hint": "Knowledge blooms", "effects": {"food": -15, "gold": -15, "knowledge": 15}, "follow_up": null},
+      {"id": "limit", "label": "Limit their scope", "hint": "Cheaper, smaller gain", "effects": {"food": -8, "knowledge": 7}, "follow_up": null}
+    ],
+    "rewards": {"knowledge": 10, "happiness": 0.04},
+    "expiry_turns": 20,
+    "repeatable": false
+  },
+  {
+    "id": "cultural_tournament_glory",
+    "category": "cultural",
+    "name": "Tournament of Banners",
+    "description": "Knights polish armor and egos. A tourney would thrill the realm.",
+    "weight": 8,
+    "conditions": [
+      {"kind": "resource", "key": "horses", "op": ">", "value": 5, "weight_mult": 1.5},
+      {"kind": "happiness", "op": ">", "value": 0.5, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "horses_6", "label": "Muster mounts (6 horses)", "track": "resource_horses", "op": ">=", "value": 6},
+      {"id": "gold_55", "label": "Prize purse (55 gold)", "track": "resource_gold", "op": ">=", "value": 55}
+    ],
+    "choices": [
+      {"id": "grand_tourney", "label": "Grand tourney", "hint": "Glory and joy", "effects": {"gold": -30, "happiness": 0.12, "horses": -1}, "follow_up": null},
+      {"id": "local_games", "label": "Local games only", "hint": "Modest cheer", "effects": {"gold": -10, "happiness": 0.06}, "follow_up": null}
+    ],
+    "rewards": {"happiness": 0.08, "horses": 1},
+    "expiry_turns": 12,
+    "repeatable": true
+  },
+  {
+    "id": "cultural_plague_saints",
+    "category": "cultural",
+    "name": "Procession of Saints",
+    "description": "Fever stalks the low town. Priests propose a procession to lift hearts.",
+    "weight": 7,
+    "conditions": [
+      {"kind": "happiness", "op": "<", "value": 0.5, "weight_mult": 1.5},
+      {"kind": "resource", "key": "food", "op": ">", "value": 25, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "happiness_50b", "label": "Calm the town (0.5 happiness)", "track": "happiness", "op": ">=", "value": 0.5},
+      {"id": "gold_30b", "label": "Alms and candles (30 gold)", "track": "resource_gold", "op": ">=", "value": 30}
+    ],
+    "choices": [
+      {"id": "procession", "label": "Bless the procession", "hint": "Hope amid fever", "effects": {"happiness": 0.09, "gold": -12, "food": -5}, "follow_up": null},
+      {"id": "quarantine", "label": "Forbid gatherings", "hint": "Prudent, unpopular", "effects": {"happiness": -0.05, "food": 5, "knowledge": 4}, "follow_up": null}
+    ],
+    "rewards": {"happiness": 0.06, "knowledge": 3},
+    "expiry_turns": 8,
     "repeatable": true
   },
   {
@@ -221,6 +749,138 @@
     "repeatable": true
   },
   {
+    "id": "espionage_poisoned_cup",
+    "category": "espionage",
+    "name": "The Poisoned Cup",
+    "description": "Your taster collapses at supper. Someone in your own hall wants you dead.",
+    "weight": 7,
+    "conditions": [
+      {"kind": "turn", "op": ">", "value": 12, "weight_mult": 1.3},
+      {"kind": "happiness", "op": "<", "value": 0.6, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "knowledge_35b", "label": "Investigate (35 knowledge)", "track": "resource_knowledge", "op": ">=", "value": 35},
+      {"id": "gold_45b", "label": "Pay informers (45 gold)", "track": "resource_gold", "op": ">=", "value": 45}
+    ],
+    "choices": [
+      {"id": "purge", "label": "Purge the household", "hint": "Safe but feared", "effects": {"happiness": -0.08, "gold": -10}, "follow_up": null},
+      {"id": "trap", "label": "Set a trap", "hint": "Clever, patient", "effects": {"knowledge": 10, "gold": -15, "happiness": 0.02}, "follow_up": null}
+    ],
+    "rewards": {"knowledge": 8, "happiness": 0.04},
+    "expiry_turns": 10,
+    "repeatable": true
+  },
+  {
+    "id": "espionage_double_agent",
+    "category": "espionage",
+    "name": "The Turned Courier",
+    "description": "A captured courier offers to feed lies to your enemy — for gold and mercy.",
+    "weight": 7,
+    "conditions": [
+      {"kind": "resource", "key": "gold", "op": ">", "value": 60, "weight_mult": 1.4},
+      {"kind": "turn", "op": ">", "value": 10, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "gold_65", "label": "Pay the asset (65 gold)", "track": "resource_gold", "op": ">=", "value": 65},
+      {"id": "knowledge_30c", "label": "Craft lies (30 knowledge)", "track": "resource_knowledge", "op": ">=", "value": 30}
+    ],
+    "choices": [
+      {"id": "turn_him", "label": "Turn the courier", "hint": "Deception advantage", "effects": {"gold": -25, "knowledge": 8, "iron": 5}, "follow_up": null},
+      {"id": "hang_him", "label": "Hang him as warning", "hint": "Fear, no deception", "effects": {"happiness": -0.04, "gold": 5}, "follow_up": null}
+    ],
+    "rewards": {"knowledge": 8, "gold": 10},
+    "expiry_turns": 12,
+    "repeatable": true
+  },
+  {
+    "id": "espionage_smuggler_ring",
+    "category": "espionage",
+    "name": "Smugglers in the Marsh",
+    "description": "Boats without lanterns move cloth and iron through the marsh. Tax them or join them?",
+    "weight": 8,
+    "conditions": [
+      {"kind": "resource", "key": "cloth", "op": ">", "value": 10, "weight_mult": 1.3},
+      {"kind": "resource", "key": "gold", "op": ">", "value": 40, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "cloth_20", "label": "Track contraband (20 cloth)", "track": "resource_cloth", "op": ">=", "value": 20},
+      {"id": "gold_50c", "label": "Fund watchers (50 gold)", "track": "resource_gold", "op": ">=", "value": 50}
+    ],
+    "choices": [
+      {"id": "bust", "label": "Bust the ring", "hint": "Law and loot", "effects": {"gold": 25, "cloth": 10, "happiness": -0.02}, "follow_up": null},
+      {"id": "cut", "label": "Take a cut", "hint": "Quiet gold", "effects": {"gold": 35, "happiness": -0.05}, "follow_up": null}
+    ],
+    "rewards": {"gold": 18, "cloth": 6},
+    "expiry_turns": 12,
+    "repeatable": true
+  },
+  {
+    "id": "espionage_forged_letters",
+    "category": "espionage",
+    "name": "Forged Letters",
+    "description": "Your seal-master can imitate any hand. Whose orders shall you rewrite?",
+    "weight": 6,
+    "conditions": [
+      {"kind": "resource", "key": "knowledge", "op": ">", "value": 35, "weight_mult": 1.4},
+      {"kind": "turn", "op": ">", "value": 14, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "knowledge_40b", "label": "Forge masterfully (40 knowledge)", "track": "resource_knowledge", "op": ">=", "value": 40},
+      {"id": "gold_55b", "label": "Bribe carriers (55 gold)", "track": "resource_gold", "op": ">=", "value": 55}
+    ],
+    "choices": [
+      {"id": "sow_discord", "label": "Sow enemy discord", "hint": "Weaken rivals", "effects": {"knowledge": 8, "gold": -15, "happiness": 0.03}, "follow_up": null},
+      {"id": "burn", "label": "Burn the forgeries", "hint": "Honor intact", "effects": {"happiness": 0.04}, "follow_up": null}
+    ],
+    "rewards": {"knowledge": 10, "gold": 8},
+    "expiry_turns": 14,
+    "repeatable": false
+  },
+  {
+    "id": "espionage_watchtower_spies",
+    "category": "espionage",
+    "name": "Eyes on the Towers",
+    "description": "Signal fires blink where no orders were given. Spies use your own towers.",
+    "weight": 8,
+    "conditions": [
+      {"kind": "resource", "key": "wood", "op": ">", "value": 20, "weight_mult": 1.2},
+      {"kind": "turn", "op": ">", "value": 8, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "wood_25b", "label": "Rebuild signals (25 wood)", "track": "resource_wood", "op": ">=", "value": 25},
+      {"id": "knowledge_30d", "label": "New ciphers (30 knowledge)", "track": "resource_knowledge", "op": ">=", "value": 30}
+    ],
+    "choices": [
+      {"id": "codes", "label": "Change all codes", "hint": "Secure, costly", "effects": {"wood": -10, "gold": -15, "knowledge": 6}, "follow_up": null},
+      {"id": "feed_false", "label": "Feed false signals", "hint": "Trap the spies", "effects": {"knowledge": 10, "happiness": 0.03}, "follow_up": null}
+    ],
+    "rewards": {"knowledge": 8, "wood": 8},
+    "expiry_turns": 10,
+    "repeatable": true
+  },
+  {
+    "id": "espionage_rebel_whispers",
+    "category": "espionage",
+    "name": "Whispers of Revolt",
+    "description": "In taverns they toast a nameless 'true king'. Find him before the toast becomes a march.",
+    "weight": 9,
+    "conditions": [
+      {"kind": "happiness", "op": "<", "value": 0.5, "weight_mult": 1.6},
+      {"kind": "turn", "op": ">", "value": 10, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "gold_50d", "label": "Pay tavern ears (50 gold)", "track": "resource_gold", "op": ">=", "value": 50},
+      {"id": "happiness_45", "label": "Calm realm to 0.45", "track": "happiness", "op": ">=", "value": 0.45}
+    ],
+    "choices": [
+      {"id": "arrest", "label": "Arrest the whisperers", "hint": "Order through fear", "effects": {"happiness": -0.07, "gold": 8}, "follow_up": null},
+      {"id": "address", "label": "Address grievances", "hint": "Costly reconciliation", "effects": {"gold": -20, "food": -8, "happiness": 0.1}, "follow_up": null}
+    ],
+    "rewards": {"happiness": 0.06, "gold": 10},
+    "expiry_turns": 8,
+    "repeatable": true
+  },
+  {
     "id": "personal_family_legacy",
     "category": "personal",
     "name": "Heir's Tutelage",
@@ -263,6 +923,138 @@
       {"id": "sage", "label": "Sage's ambition", "hint": "Knowledge bloom", "effects": {"knowledge": 18, "happiness": 0.05}, "follow_up": null}
     ],
     "rewards": {"happiness": 0.07, "gold": 15},
+    "expiry_turns": 20,
+    "repeatable": false
+  },
+  {
+    "id": "personal_old_friend",
+    "category": "personal",
+    "name": "An Old Friend",
+    "description": "A muddy rider from your youth begs audience — and, likely, a favor.",
+    "weight": 8,
+    "conditions": [
+      {"kind": "turn", "op": ">", "value": 6, "weight_mult": 1.2},
+      {"kind": "happiness", "op": ">", "value": 0.45, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "gold_35c", "label": "Spare 35 gold gift", "track": "resource_gold", "op": ">=", "value": 35},
+      {"id": "happiness_50c", "label": "Keep happiness above 0.5", "track": "happiness", "op": ">=", "value": 0.5}
+    ],
+    "choices": [
+      {"id": "welcome", "label": "Welcome warmly", "hint": "Heart over coffers", "effects": {"gold": -15, "happiness": 0.08}, "follow_up": null},
+      {"id": "formal", "label": "Receive formally", "hint": "Dignity kept", "effects": {"happiness": 0.02, "knowledge": 4}, "follow_up": null}
+    ],
+    "rewards": {"happiness": 0.06, "gold": 5},
+    "expiry_turns": 10,
+    "repeatable": true
+  },
+  {
+    "id": "personal_hunting_accident",
+    "category": "personal",
+    "name": "The Boar's Charge",
+    "description": "A boar gores your huntsman saving you. The court holds its breath.",
+    "weight": 7,
+    "conditions": [
+      {"kind": "turn", "op": ">", "value": 5, "weight_mult": 1.1},
+      {"kind": "resource", "key": "food", "op": ">", "value": 30, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "food_40b", "label": "Hold 40 food for feast", "track": "resource_food", "op": ">=", "value": 40},
+      {"id": "gold_30d", "label": "Reward the savior (30 gold)", "track": "resource_gold", "op": ">=", "value": 30}
+    ],
+    "choices": [
+      {"id": "honor", "label": "Honor the huntsman", "hint": "Loved by commons", "effects": {"gold": -15, "happiness": 0.09, "food": 8}, "follow_up": null},
+      {"id": "downplay", "label": "Downplay it", "hint": "Pride over gratitude", "effects": {"happiness": -0.04}, "follow_up": null}
+    ],
+    "rewards": {"happiness": 0.05, "food": 8},
+    "expiry_turns": 8,
+    "repeatable": true
+  },
+  {
+    "id": "personal_queen_illness",
+    "category": "personal",
+    "name": "The Queen's Fever",
+    "description": "Your spouse burns with fever. Physickers argue leeches versus herbs.",
+    "weight": 6,
+    "conditions": [
+      {"kind": "turn", "op": ">", "value": 12, "weight_mult": 1.3},
+      {"kind": "resource", "key": "knowledge", "op": ">", "value": 20, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "knowledge_35e", "label": "Find a cure (35 knowledge)", "track": "resource_knowledge", "op": ">=", "value": 35},
+      {"id": "gold_50e", "label": "Pay physickers (50 gold)", "track": "resource_gold", "op": ">=", "value": 50}
+    ],
+    "choices": [
+      {"id": "herbs", "label": "Trust the herbalist", "hint": "Gentle cure", "effects": {"gold": -15, "happiness": 0.08, "knowledge": 3}, "follow_up": null},
+      {"id": "leeches", "label": "Trust the leechers", "hint": "Old ways, risk", "effects": {"gold": -10, "happiness": -0.02, "knowledge": 5}, "follow_up": null}
+    ],
+    "rewards": {"happiness": 0.08, "knowledge": 4},
+    "expiry_turns": 8,
+    "repeatable": false
+  },
+  {
+    "id": "personal_bastard_claim",
+    "category": "personal",
+    "name": "A Bastard's Claim",
+    "description": "A youth with your eyes demands recognition at the gates. The court snickers.",
+    "weight": 6,
+    "conditions": [
+      {"kind": "turn", "op": ">", "value": 16, "weight_mult": 1.3},
+      {"kind": "happiness", "op": ">", "value": 0.45, "weight_mult": 1.1}
+    ],
+    "objectives": [
+      {"id": "gold_55c", "label": "Settle estate (55 gold)", "track": "resource_gold", "op": ">=", "value": 55},
+      {"id": "happiness_50d", "label": "Keep calm (0.5 happiness)", "track": "happiness", "op": ">=", "value": 0.5}
+    ],
+    "choices": [
+      {"id": "acknowledge", "label": "Acknowledge the child", "hint": "Honor, scandal", "effects": {"happiness": -0.03, "gold": -15, "knowledge": 2}, "follow_up": null},
+      {"id": "deny", "label": "Deny and pay off", "hint": "Quiet, costly", "effects": {"gold": -25, "happiness": 0.02}, "follow_up": null}
+    ],
+    "rewards": {"happiness": 0.03, "gold": 5},
+    "expiry_turns": 14,
+    "repeatable": false
+  },
+  {
+    "id": "personal_pilgrimage_vow",
+    "category": "personal",
+    "name": "A Pilgrim's Vow",
+    "description": "In a dream the saints call you to walk barefoot to the white shrine.",
+    "weight": 7,
+    "conditions": [
+      {"kind": "happiness", "op": "<", "value": 0.6, "weight_mult": 1.2},
+      {"kind": "turn", "op": ">", "value": 10, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "happiness_55b", "label": "Find peace (0.55 happiness)", "track": "happiness", "op": ">=", "value": 0.55},
+      {"id": "knowledge_25b", "label": "Study the path (25 knowledge)", "track": "resource_knowledge", "op": ">=", "value": 25}
+    ],
+    "choices": [
+      {"id": "walk", "label": "Walk the pilgrimage", "hint": "Soul refreshed", "effects": {"happiness": 0.12, "gold": -10, "knowledge": 5}, "follow_up": null},
+      {"id": "send_proxy", "label": "Send a proxy", "hint": "Duties first", "effects": {"happiness": 0.04, "gold": -5}, "follow_up": null}
+    ],
+    "rewards": {"happiness": 0.08, "knowledge": 5},
+    "expiry_turns": 16,
+    "repeatable": false
+  },
+  {
+    "id": "personal_coronation_oath",
+    "category": "personal",
+    "name": "The Oath Renewed",
+    "description": "Years on the throne dull vows. The clergy offers a renewal before the realm.",
+    "weight": 7,
+    "conditions": [
+      {"kind": "turn", "op": ">", "value": 22, "weight_mult": 1.5},
+      {"kind": "happiness", "op": ">", "value": 0.5, "weight_mult": 1.2}
+    ],
+    "objectives": [
+      {"id": "gold_70", "label": "Fund ceremony (70 gold)", "track": "resource_gold", "op": ">=", "value": 70},
+      {"id": "happiness_60b", "label": "Realm content (0.6 happiness)", "track": "happiness", "op": ">=", "value": 0.6}
+    ],
+    "choices": [
+      {"id": "grand_oath", "label": "Grand renewal", "hint": "Beloved sovereign", "effects": {"gold": -30, "happiness": 0.13, "food": -8}, "follow_up": null},
+      {"id": "quiet_oath", "label": "Quiet renewal", "hint": "Humble and cheap", "effects": {"gold": -8, "happiness": 0.06}, "follow_up": null}
+    ],
+    "rewards": {"happiness": 0.09, "gold": 10},
     "expiry_turns": 20,
     "repeatable": false
   }

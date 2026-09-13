@@ -6,10 +6,15 @@
 
 | Pack | Author | License | Intended Use | Status |
 |---|---|---|---|---|
-| Medieval UltraPack | Quaternius | CC0 | buildings, props, characters, vegetation | **stub — not yet downloaded** |
+| Medieval UltraPack | Quaternius | CC0 | buildings, props, characters, vegetation | **deferred — Drive-only download, manual** |
 | Kenney packs (Medieval / Prototype / Nature) | Kenney | CC0 | prototyping, UI icons, supplementary props | **stub — not yet downloaded** |
+| Fantasy Town Kit 2.0 | Kenney | CC0 | medieval buildings/props (GLB) | **imported 2026-09-14 — assets/models/kenney_fantasy_town/ (167 GLB, 2.8 MB)** |
+| Castle Kit | Kenney | CC0 | walls, gates, siege engines (GLB) | **imported 2026-09-14 — assets/models/kenney_castle/ (76 GLB, 2.2 MB)** |
+| Medieval RTS | Kenney | CC0 | 2D spritesheets/tilesheets for UI + minimap | **imported 2026-09-14 — assets/textures/medieval_rts/ (564 KB)** |
+| RPG Audio (SFX subset) | Kenney | CC0 | UI/click/coin/build/sword/door/steps | **imported 2026-09-14 — assets/audio/sfx/ (15 OGG, ~220 KB)** |
+| Medieval music loops | OpenGameArt (Woli34/JaggedStone/hernandack/Ylmir) | CC0 | 4-layer adaptive score + rain bed | **imported 2026-09-14 — assets/audio/*.ogg + ambience/ (3.4 MB)** |
 
-No binaries committed yet — placeholders keep clone & APK small.
+Real CC0 binaries committed since 2026-09-14 (~9 MB total, APK budget <80 MB holds).
 
 ## Procedural Assembly Note
 
