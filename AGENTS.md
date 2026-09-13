@@ -7,7 +7,6 @@
 ## Agent commit/push behavior
 1. Work locally, batch all edits for a whole task into minimal commits.
 2. Do NOT `git push` until the whole task is finished.
-3. Before any push that could cost (tag push, Run workflow), ASK the user via question tool: "Run APK build now? Yes / No".
-4. If user says no / not needed: commit locally only (use `[skip ci]` in message if pushing docs/config that might match a tag pattern).
-5. Only trigger a build yourself if essential (e.g. user asked to test on device, release tag requested).
+3. Only trigger a build if essential (user asked to test on device, release requested). Do NOT ask every time — run yourself only when essential.
+4. If no build needed: commit locally, push with `[skip ci]` when pushing docs/config.
 6. NEVER auto-push after every small edit.
