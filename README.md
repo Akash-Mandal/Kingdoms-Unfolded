@@ -1,12 +1,11 @@
-# Kingdom Eternal 3D
+# Kingdoms Unfolded
 
 A living medieval kingdom simulation for Android — deep strategy sim + individual NPC lives,
-rendered as a 3D world in **Godot 4.4 (GDScript)**, with a hybrid AI narrative layer
+rendered as a 3D world in **Godot 4.7.2 (GDScript)**, with a hybrid AI narrative layer
 (local-first, optional cloud LLM providers).
 
 **Status: Phase 0 (Foundations)** — procedural terrain, orbit camera, HUD, and the
-Coordination Engine monthly-turn skeleton are in place. Every commit is CI-built into an
-installable Android APK.
+Coordination Engine monthly-turn skeleton are in place. CI builds are manual-only to save costs.
 
 ## Folder layout
 
@@ -22,15 +21,15 @@ installable Android APK.
 │   └── tests/smoke_test.gd  Headless CE test (runs in CI)
 ├── assets/                CC0 art packs (tracked in INSTALL_LOG.md)
 ├── data/saves/            Save files (user:// at runtime; exports go here if saved manually)
-├── .github/workflows/     CI: build + smoke-test on every push
+├── .github/workflows/     CI: manual-only build + smoke-test (no auto-build on push)
 └── INSTALL_LOG.md         Download/install ledger (reversible setup)
 ```
 
 ## Dev workflow (no PC needed)
 
 1. **Edit code on this phone** (Termux: `nano scripts/...`).
-2. **Commit & push** to your GitHub repo.
-3. **GitHub Actions** imports assets and exports a signed **debug APK** automatically.
+2. **Commit locally, batch work** — do NOT push until a whole task is done.
+3. **Only build when needed:** Actions tab → "Run workflow", or push a `v...` tag.
 4. **Download the artifact** from the Actions run page on your phone browser.
 5. Install: `adb install` or open the APK file.
 
@@ -38,20 +37,20 @@ installable Android APK.
 phone: write code → git push → GitHub Actions (godot in Docker) → APK artifact → install on phone
 ```
 
-To trigger a build: push to `main`, push a `v...` tag, or use the **"Run workflow"** button
-(Actions tab) — no commit needed.
+To trigger a build: push a `v...` tag, or use the **"Run workflow"** button
+(Actions tab) — pushes to `main` never trigger a build (cost-saving).
 
 ## First-time GitHub setup (one-time)
 
 ```bash
-git remote add origin https://github.com/YOUR_USER/kingdom-eternal.git
+git remote add origin https://github.com/YOUR_USER/Kingdoms-Unfolded.git
 git branch -M main
 git push -u origin main
 ```
 
 Then open the **Actions** tab → run the workflow → grab the APK from the run page.
 
-## Running the CE test (headless, anywhere Godot 4.4 exists)
+## Running the CE test (headless, anywhere Godot 4.7.2 exists)
 
 ```bash
 godot --headless --path . --script res://scripts/tests/smoke_test.gd
