@@ -221,6 +221,25 @@ func tribute_income() -> float:
 				total += 1.0
 	return total
 
+func _apply_raid_damage(kingdom_id: String) -> void:
+	if not has_node("/root/Game"):
+		return
+	var g: Variant = get_node("/root/Game")
+	if not ("resources" in g and g.resources is Dictionary):
+		return
+	# Small raid: steal 4-10 gold, 2-6 food if undefended.
+	var mil: Node = get_node_or_null("/root/Military")
+	var power: float = 0.0
+	if mil != null and mil.has_method("total_strength"):
+		power = float(mil.call("total_strength"))
+	var scale: float = clampf(1.0 - power / 200.0, 0.3, 1.0)
+	var gold_hit: float = float(_rng.randi_range(4, 10)) * scale
+	var food_hit: float = float(_rng.randi_range(2, 6)) * scale
+	if g.resources.has("gold"):
+		g.resources["gold"]["stock"] = maxf(0.0, float(g.resources["gold"]["stock"]) - gold_hit)
+	if g.resources.has("food"):
+		g.resources["food"]["stock"] = maxf(0.0, float(g.resources["food"]["stock"]) - food_hit)
+
 func _normalize_treaty(t: String) -> String:
 	match t:
 		"nap": return "non_aggression_pact"
@@ -437,6 +456,7 @@ func _apply_ai_action(kingdom_id: String, action: String) -> void:
 			r["trust"] = clampf(float(r["trust"]) - _rng.randf_range(0.08, 0.15), -1.0, 1.0)
 			_push_memory(r, {"turn": _turn_cache, "tag": "war_threat", "score_delta": -12})
 			_emit_diplo_event(kingdom_id, "war", "%s rattles sabres at our borders!" % String(k.get("name", kingdom_id)))
+			_apply_raid_damage(kingdom_id)
 		"trade":
 			if String(r["treaty"]) == "trade_agreement":
 				return
