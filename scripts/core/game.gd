@@ -64,6 +64,7 @@ var _crisis_survived: int = 0
 var game_over_result: Dictionary = {}
 var _miserable_streak: int = 0
 var scenario_start_turn: int = 0
+var story_flags: Dictionary = {}
 
 func _get_balance() -> Dictionary:
 	if not _balance_cache.is_empty():
@@ -592,6 +593,9 @@ func apply_event_choice(event_id: Variant, choice_id: String) -> bool:
 				r["stock"] = maxf(0.0, float(r.get("stock", 0.0)) + float(v))
 		resources_changed.emit()
 		population_changed.emit()
+	var flag: String = str(chosen.get("flag", chosen.get("set_flag", "")))
+	if flag != "":
+		story_flags[flag] = true
 	var cat: String = str(ev.get("category", ""))
 	if cat in ["plague", "revolt", "disaster"]:
 		_crisis_survived += 1

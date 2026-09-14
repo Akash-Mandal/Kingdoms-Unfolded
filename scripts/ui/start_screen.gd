@@ -127,6 +127,9 @@ func _build_ui() -> void:
 		var cont := _btn("Continue", func() -> void: continue_requested.emit(), "gold")
 		cont.custom_minimum_size = Vector2(130, 48)
 		nav.add_child(cont)
+	var quick := _btn("Quick Start", func() -> void: _quick_start(), "gold")
+	quick.custom_minimum_size = Vector2(130, 48)
+	nav.add_child(quick)
 	_next_btn = _btn("Next →", func() -> void: _go(1))
 	_next_btn.custom_minimum_size = Vector2(130, 48)
 	nav.add_child(_next_btn)
@@ -347,6 +350,21 @@ func _refresh_nav() -> void:
 func _apply() -> void:
 	var cfg := _collect()
 	start_requested.emit(cfg)
+
+func _quick_start() -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.randomize()
+	start_requested.emit({
+		"world_seed": rng.randi_range(1, 999999),
+		"era": "medieval", "difficulty": "peaceful",
+		"kingdom_name": "Eterna", "banner_color": "#4a6fa5",
+		"sigil": "eagle", "gov": "feudal", "religion": "old_gods",
+		"culture": "highland", "ruler_name": "Aurelia",
+		"ruler_age": 28, "ruler_gender": "male", "traits": [],
+		"legacy_path": "builder", "territory_size": "medium",
+		"rivals": 3, "scenario": "default", "starting_season": "spring",
+		"resources": {},
+	})
 
 func _collect() -> Dictionary:
 	var seed_text: String = _seed_edit.text.strip_edges()
