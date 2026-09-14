@@ -539,6 +539,8 @@ Manus AI: manual/interactive exports as fallback
 | Catalogs | JSON-schema validator | all `data/catalog/*.json` load cleanly |
 | WC agent logic | property-based tests | needs converge, no degenerate schedules |
 | Smoke (headless) | `smoke_test.gd` (CI today) | CE turn advance + save/load |
+| Catalogs (headless) | `test_catalogs.gd` (CI gate) | all JSON parse; quest branches, follow_up chains, balance keys, counts |
+| Systems (headless) | `test_systems.gd` (CI gate) | difficulty mults, act fail-branch, diplomacy tick, event flags, tech mults, flag save |
 | Visual playtest | per-phase checklist | fun + perf gate |
 | Regression | per-phase FPS capture | hold 30 FPS on reference device |
 
