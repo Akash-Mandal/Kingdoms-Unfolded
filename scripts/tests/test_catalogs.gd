@@ -42,7 +42,10 @@ func _check_main_quest() -> void:
 			_fail("act missing branch: " + String(ad.get("id", "?")))
 			continue
 		for key in ["success", "fail"]:
-			var target: String = str((br as Dictionary).get(key, ""))
+			var raw: Variant = (br as Dictionary).get(key, "")
+			if raw == null:
+				continue
+			var target: String = str(raw)
 			if target != "" and not ids.has(target):
 				_fail("act %s branch.%s -> unknown %s" % [String(ad.get("id", "?")), key, target])
 	var trial: Dictionary = {}
@@ -79,7 +82,10 @@ func _check_missions() -> void:
 			for ch in choices as Array:
 				if typeof(ch) != TYPE_DICTIONARY:
 					continue
-				var fu: String = str((ch as Dictionary).get("follow_up", ""))
+				var raw_fu: Variant = (ch as Dictionary).get("follow_up", "")
+				if raw_fu == null:
+					continue
+				var fu: String = str(raw_fu)
 				if fu != "":
 					chains += 1
 					if not ids.has(fu):
