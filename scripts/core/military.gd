@@ -153,6 +153,9 @@ func calc_power(side: Dictionary, terrain: String = "plains") -> float:
 		var cmult: float = float(COMMANDER_BONUS.get(commander, 1.0))
 		var exp_mult: float = 1.0 + exp * 0.5
 		total += float(count) * strength * clampf(morale, 0.1, 1.5) * clampf(supply, 0.2, 1.0) * exp_mult * cmult * tmult * (0.9 + speed * 0.1)
+	var tn: Node = get_node_or_null("/root/Tech")
+	if tn != null and tn.has_method("get_military_mult"):
+		total *= float(tn.call("get_military_mult"))
 	return total
 
 func calc_power_simple(attacker_power: float, defender_power: float) -> Dictionary:

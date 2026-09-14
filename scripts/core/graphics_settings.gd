@@ -46,10 +46,10 @@ const PRESETS := {
 		"msaa": 4,
 		"shadows": "soft",
 		"fog_density_mult": 1.15,
-		"lod_tier_a": 45.0,
-		"lod_tier_b": 180.0,
-		"max_tier_a": 1200,
-		"tree_count": 400,
+		"lod_tier_a": 60.0,
+		"lod_tier_b": 240.0,
+		"max_tier_a": 1600,
+		"tree_count": 560,
 		"shadow_atlas": 4096,
 		"glow_enabled": true,
 		"vsync": 0
@@ -227,8 +227,9 @@ func _apply_viewport(cfg: Dictionary) -> void:
 			0: mode = Viewport.MSAA_DISABLED
 			1: mode = Viewport.MSAA_2X
 			2: mode = Viewport.MSAA_4X
+			3: mode = Viewport.MSAA_8X
 			4: mode = Viewport.MSAA_8X
-			_: mode = Viewport.MSAA_2X if msaa == 1 else Viewport.MSAA_DISABLED
+			_: mode = Viewport.MSAA_4X
 		vp.msaa_3d = mode
 		vp.use_taa = false
 	var vsync: int = int(cfg.get("vsync", 1))

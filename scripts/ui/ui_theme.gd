@@ -185,8 +185,12 @@ static func press_feedback(btn: Button) -> void:
 	if btn.has_meta("_press_fb"):
 		return
 	btn.set_meta("_press_fb", true)
-	btn.resized.connect(func() -> void:
+	var cb := func() -> void:
 		if is_instance_valid(btn):
 			btn.pivot_offset = btn.size * 0.5
+	btn.resized.connect(cb)
+	btn.tree_exiting.connect(func() -> void:
+		if is_instance_valid(btn) and btn.resized.is_connected(cb):
+			btn.resized.disconnect(cb)
 	)
 	btn.pivot_offset = btn.size * 0.5

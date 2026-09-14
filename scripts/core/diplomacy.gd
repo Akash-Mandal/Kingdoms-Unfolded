@@ -561,7 +561,7 @@ func serialize() -> Dictionary:
 			"memory": arr,
 			"last_event": int(r.get("last_event", 0)),
 		}
-	return {"kingdoms": kingdoms.duplicate(true), "relations": rel_out, "rng_state": _rng.state}
+	return {"kingdoms": kingdoms.duplicate(true), "relations": rel_out, "rng_state": str(_rng.state)}
 
 func restore(data: Dictionary) -> void:
 	var kd: Variant = data.get("kingdoms", {})
@@ -585,5 +585,5 @@ func restore(data: Dictionary) -> void:
 			}
 	var rs: Variant = data.get("rng_state", null)
 	if rs != null:
-		_rng.state = int(rs)
+		_rng.state = int(str(rs))
 	diplomacy_changed.emit()

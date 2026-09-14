@@ -183,6 +183,15 @@ func get_trade_mult() -> float:
 		if v != null:
 			m *= float(v)
 	return m
+
+func get_spoilage_mult() -> float:
+	var m := 1.0
+	for tid in unlocked:
+		var e: Dictionary = catalog.get(tid, {})
+		var v: Variant = e.get("bonuses", {}).get("spoilage_mult", null)
+		if v != null:
+			m *= float(v)
+	return clampf(m, 0.2, 1.0)
 func branch_of(id: String) -> String:
 	return String(catalog.get(id, {}).get("branch", ""))
 func ids_for_branch(branch: String) -> Array:

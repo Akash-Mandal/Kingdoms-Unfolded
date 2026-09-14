@@ -59,10 +59,20 @@ func slot_info(idx: int) -> Dictionary:
 	var f := FileAccess.open(path, FileAccess.READ)
 	if f == null:
 		return {"exists": false, "idx": i}
-	var parsed: Variant = JSON.parse_string(f.get_as_text())
+	var txt: String = f.get_as_text()
 	f.close()
+	var parsed: Variant = JSON.parse_string(txt)
 	if typeof(parsed) != TYPE_DICTIONARY:
-		return {"exists": false, "idx": i}
+		# Recovery: try .bak written by atomic save.
+		if FileAccess.file_exists(path + ".bak"):
+			var b := FileAccess.open(path + ".bak", FileAccess.READ)
+			if b != null:
+				var bp: Variant = JSON.parse_string(b.get_as_text())
+				b.close()
+				if typeof(bp) == TYPE_DICTIONARY:
+					parsed = bp
+	if typeof(parsed) != TYPE_DICTIONARY:
+		return {"exists": false, "idx": i, "corrupt": true}
 	var d: Dictionary = parsed as Dictionary
 	var meta: Dictionary = d.get("meta", {})
 	var settings: Dictionary = d.get("settings", {})
@@ -155,8 +165,13 @@ func quick_save() -> bool:
 	return save_slot(0, "")
 
 func quick_load() -> bool:
-	if slot_exists(0):
-		return load_slot(0)
-	if FileAccess.file_exists(autosave_path()):
-		return Game.load_from_file(autosave_path())
-	return false
+	# Prefer newest of slot_0 vs autosave (was: always slot_0).
+	var s0 := slot_path(0)
+	var auto := autosave_path()
+	var s0t: int = int(FileAccess.get_modified_time(s0)) if FileAccess.file_exists(s0) else -1
+	var autot: int = int(FileAccess.get_modified_time(auto)) if FileAccess.file_exists(auto) else -1
+	if s0t < 0 and autot < 0:
+		return false
+	if autot > s0t:
+		return Game.load_from_file(auto)
+	return load_slot(0)

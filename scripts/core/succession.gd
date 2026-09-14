@@ -29,8 +29,8 @@ func _init_from_game() -> void:
 		heir = _generate_heir(ruler, 0)
 
 func _generate_heir(parent: Dictionary, age: int = 0) -> Dictionary:
-	var names_m: PackedStringArray = ["Aric","Cael","Darian","Edric","Joren"]
-	var names_f: PackedStringArray = ["Aurelia","Lyssa","Mira","Seren","Yara"]
+	var names_m: PackedStringArray = ["Aric","Cael","Darian","Edric","Joren","Tam","Borin","Oswin"]
+	var names_f: PackedStringArray = ["Aurelia","Lyssa","Mira","Seren","Yara","Elswyth","Rowan","Isolde"]
 	var g: String = "male" if _rng.randi() % 2 == 0 else "female"
 	var pool: PackedStringArray = names_m if g == "male" else names_f
 	var nm: String = pool[_rng.randi() % pool.size()]
@@ -83,7 +83,8 @@ func trigger_death(cause: String = "natural") -> Dictionary:
 	var old: Dictionary = ruler.duplicate(true)
 	lineage.append(old)
 	ruler_died.emit(old, cause)
-	_push_event("Death of %s, aged %d — %s. Heir %s ascends." % [String(old.get("name", "?")), int(old.get("age", 0)), cause, String(heir.get("name", "?"))])
+	# Neutral phrasing: no binary-gendered titles, ruler/heir terms only.
+	_push_event("Death of ruler %s, aged %d — %s. Heir %s ascends." % [String(old.get("name", "?")), int(old.get("age", 0)), cause, String(heir.get("name", "?"))])
 	if is_child_heir():
 		is_regency = true
 		regent = _pick_regent()
@@ -114,7 +115,7 @@ func _resolve_regency() -> void:
 	regent.clear()
 	regency_ended.emit()
 	heir_ascended.emit(ruler.duplicate(true))
-	_push_event("Regency ends. %s crowned at age %d." % [String(ruler.get("name", "?")), int(ruler.get("age", 0))])
+	_push_event("Regency ends. %s crowned at age %d; the council swears fealty." % [String(ruler.get("name", "?")), int(ruler.get("age", 0))])
 	_sync_to_game()
 
 func force_succession(new_name: String = "") -> void:

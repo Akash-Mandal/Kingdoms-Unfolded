@@ -338,13 +338,6 @@ func tax_rate() -> float:
 	# Stub pluggable tax rate (0 = no tax). Future: policy slider.
 	return 0.0
 
-func military_power() -> float:
-	var m: Node = get_node_or_null("/root/Military")
-	if m != null and m.has_method("total_strength"):
-		return float(m.call("total_strength"))
-	var pop: float = pop_count
-	return pop * 1.2 + float(get_stock("gold")) * 0.35
-
 func _tech_prod_mult(key: String) -> float:
 	var tn: Node = get_node_or_null("/root/Tech")
 	if tn != null and tn.has_method("get_total_prod_mult"):
@@ -367,6 +360,9 @@ func _apply_tribute() -> void:
 	if dip == null or not dip.has_method("tribute_income"):
 		return
 	var inc: float = float(dip.call("tribute_income"))
+	var tn0: Node = get_node_or_null("/root/Tech")
+	if tn0 != null and tn0.has_method("get_trade_mult"):
+		inc *= float(tn0.call("get_trade_mult"))
 	# Building maintenance sink: 0.1 gold per placed building.
 	inc -= float(placed_buildings.size()) * 0.1
 	if inc != 0.0 and resources.has("gold"):
@@ -412,6 +408,12 @@ func _apply_flows() -> void:
 	resources["grain"]["stock"] = clampf(grain_avail - grain_cons_eff, 0.0, 999999.0)
 	resources["flour"]["stock"] = clampf(flour_avail - flour_cons_eff, 0.0, 999999.0)
 	resources["food"]["stock"] = clampf(float(resources["food"]["stock"]) + food_prod_eff - food_cons_raw, 0.0, 999999.0)
+	# Spoilage (was orphan bonus): 2% food decay, reduced by tech spoilage_mult.
+	var tn_s: Node = get_node_or_null("/root/Tech")
+	var spoil: float = 0.02
+	if tn_s != null and tn_s.has_method("get_spoilage_mult"):
+		spoil *= float(tn_s.call("get_spoilage_mult"))
+	resources["food"]["stock"] = maxf(0.0, float(resources["food"]["stock"]) * (1.0 - spoil))
 	for key in ALL_KEYS:
 		if key == "grain" or key == "flour" or key == "food":
 			continue
@@ -744,6 +746,8 @@ func military_train(type: String, n: int) -> bool:
 
 func military_power(terrain: String = "plains") -> float:
 	var mil: Node = get_node_or_null("/root/Military")
+	if mil != null and mil.has_method("total_strength"):
+		return float(mil.call("total_strength"))
 	if mil != null and mil.has_method("calc_power"):
 		return mil.calc_power(military, terrain)
 	var s: float = 0.0
@@ -937,10 +941,11 @@ func serialize() -> Dictionary:
 		"succession": succession_data,
 		"scenarioState": scenario_data,
 		"sideStories": sidestory_data,
+		"storyFlags": story_flags.duplicate(true),
 		"settings": settings,
 		"ceState": {
 			"nextEventId": events.size(),
-			"rngState": _rng.state,
+			"rngState": str(_rng.state),
 			"buildingProd": building_prod,
 			"buildingCons": building_cons,
 			"buildingCap": building_cap,
@@ -992,6 +997,13 @@ func load_from_file(path: String = "user://saves/slot_0.json") -> bool:
 	return true
 
 func _restore(data: Dictionary) -> void:
+	# Hardening: clear live transient state first so missing keys can't leak.
+	game_over_result = {}
+	_miserable_streak = 0
+	scenario_start_turn = 0
+	story_flags = {}
+	events.clear()
+	placed_buildings.clear()
 	var meta: Dictionary = data.get("meta", {})
 	var ver: int = int(meta.get("version", 1))
 	if ver < SAVE_VERSION:
@@ -1048,7 +1060,7 @@ func _restore(data: Dictionary) -> void:
 	_crisis_survived = int(ce.get("crisisSurvived", 0))
 	var rngs: Variant = ce.get("rngState", null)
 	if rngs != null:
-		var rs: int = int(rngs)
+		var rs: int = int(str(rngs))
 		_rng.state = rs if rs != 0 else 1
 		if _rng.state == 0:
 			_rng.state = 1
@@ -1106,6 +1118,9 @@ func _restore(data: Dictionary) -> void:
 		var sst_n: Node = get_node("/root/SideStories")
 		if sst_n.has_method("restore"):
 			sst_n.call("restore", sst_data)
+	var sf_data: Variant = data.get("storyFlags", data.get("story_flags", {}))
+	if typeof(sf_data) == TYPE_DICTIONARY:
+		story_flags = (sf_data as Dictionary).duplicate(true)
 	resources_changed.emit()
 	population_changed.emit()
 	military_changed.emit()
