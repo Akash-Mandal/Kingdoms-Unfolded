@@ -85,6 +85,23 @@ func _process(delta: float) -> void:
 	var warn_sim := "⚠" if _sim_ms > 4.0 else "✓"
 	_label.text = "FPS %d %s | DC %d %s (obj %d prim %d) | Agents %d | Sim %.2f ms %s (peak %.1f) | Frame %.1f ms | VRAM %.0f MB (tex %.0f)" % [fps, warn_fps, dc, warn_dc, objs, primitives, agents, _sim_ms, warn_sim, _peak_sim, _frame_ms, vram, vram_tex]
 	_peak_sim = lerp(_peak_sim, _sim_ms, 0.05)
+	_auto_degrade(fps, dc)
+
+var _low_streak: int = 0
+func _auto_degrade(fps: int, dc: int) -> void:
+	if fps <= 0:
+		return
+	if fps < 25 or dc > 500:
+		_low_streak += 1
+	else:
+		_low_streak = 0
+	if _low_streak < 10:
+		return
+	_low_streak = 0
+	var gs: Node = get_node_or_null("/root/GraphicsSettings")
+	if gs != null and gs.has_method("apply_preset"):
+		if str(gs.get("current_preset")) != "potato":
+			gs.call("apply_preset", "potato")
 
 func _agent_count() -> int:
 	var m: Node = get_parent().get_node_or_null("AgentManager") if get_parent() != null else null
