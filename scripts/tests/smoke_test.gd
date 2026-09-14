@@ -7,7 +7,8 @@ func _init() -> void:
 	ce.reset()
 	ce._rng.seed = 42
 	var cfg: Dictionary = {
-		"world_seed": 12345, "era": "medieval", "difficulty": "peaceful",
+		# iron = neutral baseline (all difficulty mults 1.0) so custom stocks assert exact.
+		"world_seed": 12345, "era": "medieval", "difficulty": "iron",
 		"kingdom_name": "Testia", "banner_color": "#ff0000", "sigil": "lion",
 		"gov": "feudal", "religion": "old_gods", "culture": "highland",
 		"ruler_name": "Test", "ruler_age": 30, "ruler_gender": "male",

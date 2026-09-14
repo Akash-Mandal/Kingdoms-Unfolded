@@ -78,7 +78,7 @@ textures/vram_compression/import_etc2_astc=true
 [boot_splash]
 
 bg_color=Color(0.10196, 0.07059, 0.03137, 1)
-show_image=true
+show_image=false
 image="res://assets/splash/splash.png"
 fullsize=true
 use_filter=false

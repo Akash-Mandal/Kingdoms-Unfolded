@@ -153,7 +153,8 @@ func modify_trust(kingdom_id: String, delta: float) -> void:
 	diplomacy_changed.emit()
 
 func set_treaty(kingdom_id: String, treaty_id: String) -> bool:
-	var valid: PackedStringArray = ["none", "non_aggression_pact", "nap", "trade_agreement", "royal_marriage", "marriage", "alliance", "vassalage", "confederation"]	if not valid.has(treaty_id):
+	var valid: PackedStringArray = ["none", "non_aggression_pact", "nap", "trade_agreement", "royal_marriage", "marriage", "alliance", "vassalage", "confederation"]
+	if not valid.has(treaty_id):
 		return false
 	var norm: String = _normalize_treaty(treaty_id)
 	var r: Dictionary = _relation_for(kingdom_id)
