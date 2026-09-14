@@ -111,8 +111,21 @@
         {"id": "year_2", "label": "Reach year 2", "track": "year", "op": ">=", "value": 2}
       ],
       "rewards": {"gold": 40, "happiness": 0.1, "knowledge": 10},
-      "branch": {"success": "act_09_dominion", "fail": null},
+      "branch": {"success": "act_09_dominion", "fail": "act_08_fail_recovery"},
       "on_complete_text": "Fire did not take you. It tempered you."
+    },
+    {
+      "id": "act_08_fail_recovery",
+      "title": "Ashes and Resolve",
+      "narrative": "The trial broke you — but not beyond repair. Regather the scattered, rebuild trust, and earn a second chance.",
+      "era": "any",
+      "objectives": [
+        {"id": "recover_pop", "label": "Regrow to 60 souls", "track": "pop_count", "op": ">=", "value": 60},
+        {"id": "recover_happy", "label": "Raise happiness to 0.4", "track": "happiness", "op": ">=", "value": 0.4}
+      ],
+      "rewards": {"food": 20, "happiness": 0.05},
+      "branch": {"success": "act_09_dominion", "fail": null},
+      "on_complete_text": "From ashes, Eterna rises again."
     },
     {
       "id": "act_09_dominion",

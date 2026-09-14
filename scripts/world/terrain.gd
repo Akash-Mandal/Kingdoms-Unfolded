@@ -274,6 +274,10 @@ func build_water() -> void:
 	water.visibility_range_end = TERRAIN_CULL_DIST
 	add_child(water)
 
+func build_trees_deferred() -> void:
+	# P1-5: defer heavy tree rebuild past first frame to avoid spike.
+	call_deferred("build_trees")
+
 func build_trees() -> void:
 	for c in get_children():
 		if c is MultiMeshInstance3D and String(c.name).begins_with("MM_Trees"):

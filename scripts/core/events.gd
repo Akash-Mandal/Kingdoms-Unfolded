@@ -31,6 +31,24 @@ func _load() -> void:
 
 func evaluate_weight(tpl: Dictionary, state: Dictionary) -> float:
 	var w: float = float(tpl.get("weight", 10))
+	# Story-flag coherence (P1-1): boost if prereq flag present.
+	var flags: Dictionary = {}
+	var g1: Node = get_node_or_null("/root/Game")
+	if g1 != null:
+		var sf: Variant = g1.get("story_flags")
+		if typeof(sf) == TYPE_DICTIONARY:
+			flags = sf as Dictionary
+	var prereq: String = str(tpl.get("flag_prereq", ""))
+	if prereq != "" and bool(flags.get(prereq, false)):
+		w *= 2.5
+	# Hardcoded coherence: priest-sparing boosts religious follow-ups.
+	if bool(flags.get("spared_priests", false)) and str(tpl.get("category", "")) == "religious":
+		w *= 1.8
+	if bool(flags.get("patron_scholars", false)) and str(tpl.get("category", "")) == "discovery":
+		w *= 1.8
+	# Plague frequency wiring.
+	if str(tpl.get("category", "")) == "plague" and g1 != null and g1.has_method("difficulty_plague_mult"):
+		w *= float(g1.call("difficulty_plague_mult"))
 	var conds: Variant = tpl.get("conditions", [])
 	if typeof(conds) != TYPE_ARRAY:
 		return w
@@ -74,6 +92,13 @@ func _check_condition(c: Dictionary, state: Dictionary) -> bool:
 			return _compare(float(state.get("month", 1)), str(c.get("op", "==")), float(c.get("value", 0)))
 		"year":
 			return _compare(float(state.get("year", 0)), str(c.get("op", ">")), float(c.get("value", 0)))
+		"flag":
+			var gf: Node = get_node_or_null("/root/Game")
+			if gf != null:
+				var sff: Variant = gf.get("story_flags")
+				if typeof(sff) == TYPE_DICTIONARY:
+					return bool((sff as Dictionary).get(str(c.get("key", c.get("value", ""))), false))
+			return false
 		_:
 			return false
 
@@ -151,6 +176,12 @@ func roll(state: Dictionary = {}) -> Dictionary:
 		"chaos": base_chance *= 1.3
 		"legendary": base_chance *= 1.6
 		_: pass
+	# Difficulty plague/event severity wiring (P0-3): balance.json authoritative.
+	var g0: Node = get_node_or_null("/root/Game")
+	if g0 != null and g0.has_method("difficulty_event_mult"):
+		base_chance *= float(g0.call("difficulty_event_mult"))
+		if g0.has_method("tax_rate"):
+			_track("happiness_tick", {"tax": float(g0.call("tax_rate")), "happiness": float(g0.get("pop_happiness"))})
 	if _rng.randf() > base_chance:
 		return {}
 	var tpl: Dictionary = weighted_pick(state)
@@ -203,6 +234,18 @@ func apply_choice(event: Dictionary, choice_id: String) -> bool:
 	var rs: Variant = g.get("resources")
 	var happy: Variant = g.get("pop_happiness")
 	var edict: Dictionary = effects as Dictionary
+	# Story-flag write (P1-1): choice may set flag, e.g. flag: spared_priests.
+	var flag_set: String = str(chosen.get("flag", ""))
+	if flag_set == "":
+		match choice_id:
+			"tolerate", "back_abbot", "endorse_vis", "sponsor_rel":
+				flag_set = "spared_priests"
+			"debate", "reform_tithe", "copy":
+				flag_set = "patron_scholars"
+	if flag_set != "":
+		var sf2: Variant = g.get("story_flags")
+		if typeof(sf2) == TYPE_DICTIONARY:
+			(sf2 as Dictionary)[flag_set] = true
 	for k in edict.keys():
 		var v: Variant = edict[k]
 		if k == "happiness":
@@ -213,6 +256,7 @@ func apply_choice(event: Dictionary, choice_id: String) -> bool:
 			var r: Dictionary = (rs as Dictionary)[k] as Dictionary
 			r["stock"] = maxf(0.0, float(r.get("stock", 0.0)) + float(v))
 	choice_applied.emit(str(event.get("id", "")), choice_id)
+	_track("event_choice", {"event": str(event.get("id", "")), "choice": choice_id, "flag": flag_set})
 	if g.has_signal("resources_changed"):
 		g.emit_signal("resources_changed")
 	if g.has_signal("population_changed"):
@@ -240,3 +284,8 @@ func count_by_category() -> Dictionary:
 		var c: String = str(t.get("category", ""))
 		m[c] = int(m.get(c, 0)) + 1
 	return m
+
+func _track(name: String, props: Dictionary = {}) -> void:
+	var a: Node = get_node_or_null("/root/Analytics")
+	if a != null and a.has_method("track"):
+		a.call("track", name, props)

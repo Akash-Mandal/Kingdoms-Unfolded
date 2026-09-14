@@ -225,19 +225,39 @@ func _check_game_over() -> void:
 		if r.is_empty() and h.is_empty():
 			_end_game(false, "no_heir", "The line is extinct. No heir remains.")
 			return
+	# Defeat: trial fail-branch — 3 crises without survival.
+	var mn0: Node = get_node_or_null("/root/Missions")
+	if mn0 != null and int(mn0.get("crisis_failed")) >= 3:
+		_end_game(false, "trial_failed", "Three crises broke the realm. The trial is failed.")
+		return
 	# Victory: main quest complete.
 	var mn: Node = get_node_or_null("/root/Missions")
 	if mn != null and mn.has_method("is_main_quest_complete"):
 		if bool(mn.call("is_main_quest_complete")):
 			_end_game(true, "legacy", "Your legacy is sealed in the chronicles. Victory.")
 			return
-	# Victory: scenario survival duration.
+	# Scenario duration enforcement: win on survive, lose on ruin checks.
 	var scn: Node = get_node_or_null("/root/Scenarios")
 	if scn != null and scn.has_method("get_active"):
 		var active: Dictionary = scn.call("get_active") as Dictionary
 		var dur: int = int(active.get("duration_turns", 0))
 		if dur > 0 and (turn - scenario_start_turn) >= dur:
-			_end_game(true, "survived", "You endured: %s." % str(active.get("name", "the trial")))
+			var sid: String = str(active.get("id", ""))
+			var lost := false
+			match sid:
+				"plague", "mongol_tide":
+					if pop_count < 20.0:
+						lost = true
+				"renaissance":
+					if int(active.get("wars_suffered", 0)) > 0:
+						lost = true
+				"merchant_republic":
+					if float(get_stock("gold")) <= 0.0:
+						lost = true
+			if lost:
+				_end_game(false, "scenario_failed", "The trial ended in ruin: %s." % str(active.get("name", "the trial")))
+			else:
+				_end_game(true, "survived", "You endured: %s." % str(active.get("name", "the trial")))
 			return
 
 func _end_game(won: bool, kind: String, text: String) -> void:
@@ -301,6 +321,29 @@ func _difficulty_cons_mult() -> float:
 		"chaos": return 1.1
 		"legendary": return 1.2
 		_: return 1.0
+
+func difficulty_plague_mult() -> float:
+	var v: Variant = _bal("difficulty." + str(settings.get("difficulty", "peaceful")) + ".plague_frequency", null)
+	return float(v) if v != null else 1.0
+
+func difficulty_aggression_mult() -> float:
+	var v: Variant = _bal("difficulty." + str(settings.get("difficulty", "peaceful")) + ".rival_aggression", null)
+	return float(v) if v != null else 1.0
+
+func difficulty_event_mult() -> float:
+	var v: Variant = _bal("difficulty." + str(settings.get("difficulty", "peaceful")) + ".event_severity", null)
+	return float(v) if v != null else 1.0
+
+func tax_rate() -> float:
+	# Stub pluggable tax rate (0 = no tax). Future: policy slider.
+	return 0.0
+
+func military_power() -> float:
+	var m: Node = get_node_or_null("/root/Military")
+	if m != null and m.has_method("total_strength"):
+		return float(m.call("total_strength"))
+	var pop: float = pop_count
+	return pop * 1.2 + float(get_stock("gold")) * 0.35
 
 func _tech_prod_mult(key: String) -> float:
 	var tn: Node = get_node_or_null("/root/Tech")
@@ -931,6 +974,7 @@ func save_to_file(path: String = "user://saves/slot_0.json") -> bool:
 	if err != OK:
 		push_error("Save rename failed: %s" % path)
 		return false
+	_track("game_saved", {"path": path, "turn": turn})
 	return true
 
 func load_from_file(path: String = "user://saves/slot_0.json") -> bool:
@@ -944,6 +988,7 @@ func load_from_file(path: String = "user://saves/slot_0.json") -> bool:
 	if typeof(parsed) != TYPE_DICTIONARY:
 		return false
 	_restore(parsed)
+	_track("game_loaded", {"path": path, "turn": turn})
 	return true
 
 func _restore(data: Dictionary) -> void:

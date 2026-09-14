@@ -13,6 +13,7 @@ var failed: Array[Dictionary] = []
 var current_act_idx: int = 0
 var act_history: Array[Dictionary] = []
 var crisis_survived: int = 0
+var crisis_failed: int = 0
 var _rng := RandomNumberGenerator.new()
 var _loaded := false
 
@@ -174,11 +175,40 @@ func _apply_rewards(rewards: Dictionary) -> void:
 	if g.has_signal("population_changed"):
 		g.emit_signal("population_changed")
 
+func is_act_failed(state: Dictionary = {}) -> bool:
+	var act: Dictionary = get_current_act()
+	if act.is_empty():
+		return false
+	if state.is_empty():
+		state = _snapshot_state()
+	# Fail path: trial act fails after 3 un-survived crises (pop collapse / misery).
+	if str(act.get("id", "")) == "act_08_trial" and crisis_failed >= 3:
+		return true
+	return false
+
 func advance_act() -> bool:
 	var act: Dictionary = get_current_act()
 	if act.is_empty():
 		return false
 	var state: Dictionary = _snapshot_state()
+	# Fail-branch: crisis collapse routes to fail act instead of stalling.
+	if is_act_failed(state):
+		crisis_failed = 0
+		var branch_f: Variant = act.get("branch", {})
+		var fail_id: String = ""
+		if typeof(branch_f) == TYPE_DICTIONARY:
+			fail_id = str((branch_f as Dictionary).get("fail", ""))
+		if fail_id != "":
+			act_history.append({"id": str(act.get("id", "")) + ":failed", "turn": int(state.get("turn", 0)), "title": str(act.get("title", ""))})
+			var acts_f: Array = get_acts()
+			for i in acts_f.size():
+				if str((acts_f[i] as Dictionary).get("id", "")) == fail_id:
+					current_act_idx = i
+					var fail_act: Dictionary = acts_f[current_act_idx] as Dictionary
+					act_advanced.emit(fail_act)
+					_track("act_failed", {"act": str(act.get("id", "")), "fail_act": fail_id})
+					return true
+		return false
 	if not is_act_complete(state):
 		return false
 	var rewards: Variant = act.get("rewards", {})
@@ -231,6 +261,10 @@ func _is_mission_complete(m: Dictionary, state: Dictionary) -> bool:
 func tick(state: Dictionary = {}) -> void:
 	if state.is_empty():
 		state = _snapshot_state()
+	# Fail-branch takes priority over success stall.
+	if is_act_failed(state):
+		advance_act()
+		state = _snapshot_state()
 	while is_act_complete(state):
 		if not advance_act():
 			break
@@ -271,6 +305,9 @@ func complete_mission(mission_id: String, choice_id: String) -> bool:
 					var fu: String = str((ch as Dictionary).get("follow_up", ""))
 					if fu != "":
 						start_mission(fu)
+						# Follow-up chain reward: small bonus proving path.
+						_apply_rewards({"gold": 10.0, "happiness": 0.02})
+						_track("mission_follow_up", {"from": mission_id, "to": fu})
 					break
 	var rewards: Variant = m.get("rewards", {})
 	if typeof(rewards) == TYPE_DICTIONARY:
@@ -279,6 +316,9 @@ func complete_mission(mission_id: String, choice_id: String) -> bool:
 	m["choice"] = choice_id
 	completed.append(m)
 	mission_completed.emit(m)
+	_track("mission_completed", {"id": mission_id, "choice": choice_id})
+	if str(m.get("id", "")) == get_current_act().get("id", ""):
+		_track("act_completed", {"id": mission_id})
 	return true
 
 func fail_mission(mission_id: String) -> bool:
@@ -394,6 +434,16 @@ func auto_offer(state: Dictionary = {}) -> Dictionary:
 func on_crisis_event_survived() -> void:
 	crisis_survived += 1
 
+func on_crisis_event_failed() -> void:
+	crisis_failed += 1
+	# Probe fail-branch immediately so recovery act can load mid-trial.
+	advance_act()
+
+func _track(name: String, props: Dictionary = {}) -> void:
+	var a: Node = get_node_or_null("/root/Analytics")
+	if a != null and a.has_method("track"):
+		a.call("track", name, props)
+
 func get_progress() -> Dictionary:
 	var act: Dictionary = get_current_act()
 	var total: int = get_acts().size()
@@ -415,6 +465,7 @@ func serialize() -> Dictionary:
 		"failed": failed.duplicate(true),
 		"act_history": act_history.duplicate(true),
 		"crisis_survived": crisis_survived,
+		"crisis_failed": crisis_failed,
 	}
 
 func restore(data: Dictionary) -> void:
@@ -444,6 +495,7 @@ func restore(data: Dictionary) -> void:
 			if typeof(e) == TYPE_DICTIONARY:
 				act_history.append(e as Dictionary)
 	crisis_survived = int(data.get("crisis_survived", 0))
+	crisis_failed = int(data.get("crisis_failed", 0))
 
 func templates_by_category(cat: String) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []

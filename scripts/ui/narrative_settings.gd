@@ -150,8 +150,12 @@ func _build_ui() -> void:
 	_save_btn = UITheme.make_button("Save", "primary", Vector2(100, 48))
 	_save_btn.pressed.connect(_on_save)
 	btn_row.add_child(_save_btn)
+	var clear_btn := UITheme.make_button("Clear Keys", "ghost", Vector2(110, 48))
+	clear_btn.tooltip_text = "Delete all stored API keys from this device"
+	clear_btn.pressed.connect(_on_clear_keys)
+	btn_row.add_child(clear_btn)
 	var hint := Label.new()
-	hint.text = "Keys encrypted on-device, never in saves or git. Offline prose always works."
+	hint.text = "Keys encrypted on-device, never in saves or git. Offline prose always works. Privacy: https://pexel.github.io/kingdoms-unfolded/privacy.html"
 	hint.add_theme_font_size_override("font_size", 11)
 	hint.add_theme_color_override("font_color", Color(0.6, 0.6, 0.65))
 	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -293,6 +297,14 @@ func _on_save() -> void:
 				ad.set("base_url", base_url)
 	_update_status()
 	_status.text += " — Saved."
+const PRIVACY_URL := "https://pexel.github.io/kingdoms-unfolded/privacy.html"
+
+func _on_clear_keys() -> void:
+	var vault: Node = get_node_or_null("/root/KeyVault")
+	if vault != null and vault.has_method("clear_all"):
+		vault.call("clear_all")
+		_status.text = "Keys cleared. Privacy: %s" % PRIVACY_URL
+
 func _on_test() -> void:
 	_on_save()
 	_status.text = "Testing %s…" % _current_provider

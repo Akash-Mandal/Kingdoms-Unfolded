@@ -16,7 +16,7 @@ keystore/debug_password=android
 
 ## Release (Play Store AAB)
 
-Preset **Android Release** (`export_format=1` / AAB, `gradle_build/export_format=1`, `version/code=2`) is prepared for `--export-release`:
+Preset **Android Release** (`export_format=1` / AAB, `gradle_build/export_format=1`, `version/code=4`, debug preset `version/code=3`) is prepared for `--export-release` (policy: version/code AAB-only incrementing, debug APK never uploaded):
 
 ```
 export_path=build/kingdoms-unfolded-release.aab

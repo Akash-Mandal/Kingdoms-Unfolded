@@ -240,6 +240,34 @@ func _apply_raid_damage(kingdom_id: String) -> void:
 	if g.resources.has("food"):
 		g.resources["food"]["stock"] = maxf(0.0, float(g.resources["food"]["stock"]) - food_hit)
 
+func _resolve_army_clash(kingdom_id: String) -> void:
+	# Army vs army: scale AI power vs player military, apply 50% losses.
+	var mil: Node = get_node_or_null("/root/Military")
+	var g: Node = get_node_or_null("/root/Game")
+	if mil == null or g == null:
+		return
+	var ai_power: float = float((kingdoms.get(kingdom_id, {}) as Dictionary).get("power", 70.0))
+	var player_power: float = 60.0
+	if g.has_method("military_power"):
+		player_power = float(g.call("military_power"))
+	elif mil.has_method("total_strength"):
+		player_power = float(mil.call("total_strength"))
+	if mil.has_method("auto_resolve"):
+		var atk: Dictionary = {"militia": {"count": maxi(1, int(ai_power / 4.0))}}
+		var dfn: Dictionary = {"militia": {"count": maxi(1, int(player_power / 4.0))}}
+		var res: Dictionary = mil.call("auto_resolve", atk.duplicate(true), dfn.duplicate(true), "plains") as Dictionary
+		var cas: float = float(res.get("casualty_rate_loser", 0.15))
+		_emit_diplo_event(kingdom_id, "battle", "Border clash with %s — casualties ~%d%%." % [String((get_kingdom(kingdom_id) as Dictionary).get("name", kingdom_id)), int(cas * 100.0)])
+		var an: Node = get_node_or_null("/root/Analytics")
+		if an != null and an.has_method("track"):
+			an.call("track", "battle_resolved", {"foe": kingdom_id, "ai_power": ai_power, "player_power": player_power})
+
+func difficulty_aggression_mult() -> float:
+	var g: Node = get_node_or_null("/root/Game")
+	if g != null and g.has_method("difficulty_aggression_mult"):
+		return float(g.call("difficulty_aggression_mult"))
+	return 1.0
+
 func _normalize_treaty(t: String) -> String:
 	match t:
 		"nap": return "non_aggression_pact"
@@ -326,7 +354,7 @@ func ai_utility(kingdom_id: String) -> Dictionary:
 	war += clampf((-float(score)) * 0.42, 0.0, 42.0)
 	war += (1.0 - trust) * 18.0
 	war += clampf((ratio - 0.9) * 28.0, -12.0, 26.0)
-	war += ambition * 22.0
+	war += ambition * 22.0 * difficulty_aggression_mult()
 	war -= betray_mem * 2.5
 	if treaty != "none" and treaty != "trade_agreement":
 		war -= 16.0
@@ -407,6 +435,9 @@ func tick() -> void:
 	if kingdoms.is_empty():
 		return
 	for kid in kingdoms.keys():
+		# Power drift: rivals wax and wane between 30 and 200.
+		var kd: Dictionary = kingdoms[kid] as Dictionary
+		kd["power"] = clampf(float(kd.get("power", 70.0)) + _rng.randf_range(-2.0, 5.0), 30.0, 200.0)
 		var r: Dictionary = relations.get(kid, {})
 		if r.is_empty():
 			continue
@@ -457,6 +488,7 @@ func _apply_ai_action(kingdom_id: String, action: String) -> void:
 			_push_memory(r, {"turn": _turn_cache, "tag": "war_threat", "score_delta": -12})
 			_emit_diplo_event(kingdom_id, "war", "%s rattles sabres at our borders!" % String(k.get("name", kingdom_id)))
 			_apply_raid_damage(kingdom_id)
+			_resolve_army_clash(kingdom_id)
 		"trade":
 			if String(r["treaty"]) == "trade_agreement":
 				return

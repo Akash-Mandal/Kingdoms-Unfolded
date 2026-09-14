@@ -12,9 +12,12 @@ var _await_advance := false
 var _await_event := false
 const MAX_SECONDS := 300.0
 const STEPS: Array[Dictionary] = [
-	{"title": "Welcome, Ruler", "hint": "Your village awaits. Advisor: tap 🎣 Farm then place it on plains — green ghost = can afford."},
+	{"title": "Welcome, Ruler", "hint": "Your village awaits. Advisor: tap Farm then place it on plains — green ghost = can afford."},
 	{"title": "Place a Farm", "hint": "Tap the field where ghost is green. Farms feed the realm — grain→flour→bread."},
-	{"title": "Advance Time", "hint": "Great! Now press ► End Turn or ▶×1 to let a month pass. Watch seasons change."},
+	{"title": "Mill & Bakery chain", "hint": "Next build a Mill then Bakery: grain→flour→food. Chain keeps winter alive."},
+	{"title": "Tech & Build menu", "hint": "Open Build menu for housing, then Tech: unlocks boost yield. Try one research."},
+	{"title": "Advance Time", "hint": "Great! Now press End Turn to let a month pass. Watch seasons change."},
+	{"title": "Diplomacy & Help", "hint": "Rivals watch. Open ? Help (Build Chain / Tech / Diplomacy tabs) anytime."},
 	{"title": "First Event", "hint": "The realm stirs… Resolve your first event by choosing an option when the banner appears."},
 	{"title": "You’re Ready", "hint": "Basics mastered! Build mills & bakeries, research Tech, trade & rule. Hints fade now — good reign!"},
 ]
@@ -105,26 +108,26 @@ func _show_step(idx: int) -> void:
 	_next_btn.text = "Done" if _step == STEPS.size() - 1 else "Next →"
 	visible = true
 
+func show_help() -> void:
+	# Simple 3-tab help/codex: Build Chain / Tech / Diplomacy, ~200 words total.
+	var help := "BUILD CHAIN: Farm grows grain, Mill grinds flour, Bakery bakes food. Keep stock >0 in winter (0.35x yield). Housing raises pop cap.\nTECH: Research boosts yield, caps, happiness. Cheap early techs snowball fastest.\nDIPLOMACY: Gifts raise trust, treaties block war 72%. Low army invites bigger raids. Tribute from vassals/trade funds you."
+	_text.text = help
+	_progress.text = "Codex — ? Help"
+	visible = true
+
 func _on_next() -> void:
 	if _step == STEPS.size() - 1:
 		_finish()
 		return
-	if _step == 0:
-		_show_step(1)
-	elif _step == 1:
-		_show_step(2)
-	elif _step == 2:
-		_show_step(3)
-	elif _step == 3:
-		_show_step(4)
+	_show_step(_step + 1)
 
 func _on_turned() -> void:
-	if _step == 2:
-		_show_step(3)
+	if _step == 4:
+		_show_step(5)
 
 func _on_event(_ev: Dictionary) -> void:
-	if _step == 3:
-		_show_step(4)
+	if _step == 6:
+		_show_step(7)
 		var t := get_tree().create_timer(4.0)
 		t.timeout.connect(_finish)
 

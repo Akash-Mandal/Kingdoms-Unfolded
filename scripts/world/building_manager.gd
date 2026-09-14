@@ -35,6 +35,8 @@ signal place_failed(reason: String)
 signal ghost_update(pos: Variant, can_afford: bool)
 
 var _ghost: MeshInstance3D
+var _ghost_mat_ok: StandardMaterial3D = null
+var _ghost_mat_bad: StandardMaterial3D = null
 var _last_hover: Variant = null
 var _last_tap_ms := 0
 var _last_tap_pos := Vector2.ZERO
@@ -189,9 +191,16 @@ func _update_ghost(world_pos: Variant) -> void:
 	ghost_update.emit(world_pos, ok)
 	for i in _ghost.get_surface_override_material_count():
 		_ghost.set_surface_override_material(i, null)
-	var ghost_mat := StandardMaterial3D.new()
-	ghost_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	ghost_mat.albedo_color = Color(0.4, 1.0, 0.4, 0.45) if ok else Color(1.0, 0.35, 0.35, 0.45)
+	# Cached ghost materials (P1-5): no per-frame allocation.
+	if _ghost_mat_ok == null:
+		_ghost_mat_ok = StandardMaterial3D.new()
+		_ghost_mat_ok.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		_ghost_mat_ok.albedo_color = Color(0.4, 1.0, 0.4, 0.45)
+	if _ghost_mat_bad == null:
+		_ghost_mat_bad = StandardMaterial3D.new()
+		_ghost_mat_bad.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		_ghost_mat_bad.albedo_color = Color(1.0, 0.35, 0.35, 0.45)
+	var ghost_mat: StandardMaterial3D = _ghost_mat_ok if ok else _ghost_mat_bad
 	for i in mesh.get_surface_count():
 		_ghost.set_surface_override_material(i, ghost_mat)
 

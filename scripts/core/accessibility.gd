@@ -7,9 +7,11 @@ const SCALES: Dictionary = {"small": 0.8, "normal": 1.0, "large": 1.3, "xlarge":
 var text_scale_key := "normal"
 var slow_mode := false
 var haptics_enabled := true
+var colorblind_mode := false
 
 func _ready() -> void:
 	_load()
+	call_deferred("_apply_to_tree")
 
 func get_scale_factor() -> float:
 	return float(SCALES.get(text_scale_key, 1.0))
@@ -78,8 +80,15 @@ func haptic_for_event(kind: String) -> void:
 		"turn": vibrate(50, "heavy")
 		_: vibrate(30, "tap")
 
+func set_colorblind(enabled: bool) -> void:
+	colorblind_mode = enabled
+	_save()
+
+func is_colorblind() -> bool:
+	return colorblind_mode
+
 func _save() -> void:
-	var d: Dictionary = {"text_scale": text_scale_key, "slow_mode": slow_mode, "haptics": haptics_enabled}
+	var d: Dictionary = {"text_scale": text_scale_key, "slow_mode": slow_mode, "haptics": haptics_enabled, "colorblind": colorblind_mode}
 	var f := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if f != null:
 		f.store_string(JSON.stringify(d))
@@ -99,6 +108,7 @@ func _load() -> void:
 	text_scale_key = str(d.get("text_scale", text_scale_key))
 	slow_mode = bool(d.get("slow_mode", false))
 	haptics_enabled = bool(d.get("haptics", true))
+	colorblind_mode = bool(d.get("colorblind", false))
 	var tc: Node = get_node_or_null("/root/TimeClock")
 	if tc != null and tc.has_method("set_slow_mode"):
 		tc.call("set_slow_mode", slow_mode)

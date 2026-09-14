@@ -4,6 +4,7 @@ var _panel: PanelContainer
 var _label: Label
 var _visible_overlay := false
 var _accum := 0.0
+var _fps_sample_accum := 0.0
 var _sim_ms := 0.0
 var _agent_count_cache := 0
 var _frame_ms := 0.0
@@ -86,6 +87,12 @@ func _process(delta: float) -> void:
 	_label.text = "FPS %d %s | DC %d %s (obj %d prim %d) | Agents %d | Sim %.2f ms %s (peak %.1f) | Frame %.1f ms | VRAM %.0f MB (tex %.0f)" % [fps, warn_fps, dc, warn_dc, objs, primitives, agents, _sim_ms, warn_sim, _peak_sim, _frame_ms, vram, vram_tex]
 	_peak_sim = lerp(_peak_sim, _sim_ms, 0.05)
 	_auto_degrade(fps, dc)
+	_fps_sample_accum += 0.2
+	if _fps_sample_accum >= 10.0:
+		_fps_sample_accum = 0.0
+		var an: Node = get_node_or_null("/root/Analytics")
+		if an != null and an.has_method("track"):
+			an.call("track", "fps_sample", {"fps": fps, "dc": dc})
 
 var _low_streak: int = 0
 func _auto_degrade(fps: int, dc: int) -> void:

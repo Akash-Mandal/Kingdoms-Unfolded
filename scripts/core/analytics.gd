@@ -37,7 +37,13 @@ func flush_to_file() -> void:
 	if not enabled or _events.is_empty():
 		return
 	DirAccess.make_dir_recursive_absolute("user://logs")
-	var f := FileAccess.open("user://logs/analytics.jsonl", FileAccess.WRITE)
+	var f: FileAccess = null
+	if FileAccess.file_exists("user://logs/analytics.jsonl"):
+		f = FileAccess.open("user://logs/analytics.jsonl", FileAccess.READ_WRITE)
+		if f != null:
+			f.seek_end()
+	else:
+		f = FileAccess.open("user://logs/analytics.jsonl", FileAccess.WRITE)
 	if f == null:
 		return
 	for e in _events:
