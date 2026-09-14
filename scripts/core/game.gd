@@ -320,7 +320,7 @@ func _apply_population() -> void:
 
 func _state_snapshot() -> Dictionary:
 	var s: Dictionary = {}
-	s["resources"] = resources
+	s["resources"] = resources.duplicate(true)
 	for k in ALL_KEYS:
 		if resources.has(k):
 			s["resource_" + k] = float(resources[k].get("stock", 0.0))
@@ -572,6 +572,8 @@ func _init_military_defaults() -> void:
 		mil.restore(military)
 
 func military_train(type: String, n: int) -> bool:
+	if n <= 0:
+		return false
 	var mil: Node = get_node_or_null("/root/Military")
 	if mil != null and mil.has_method("train"):
 		var ok: bool = mil.train(type, n)
@@ -755,6 +757,18 @@ func serialize() -> Dictionary:
 	var chron: Node = get_node_or_null("/root/Chronicle")
 	if chron != null and chron.has_method("serialize"):
 		chron_data = chron.call("serialize") as Array
+	var succession_data: Dictionary = {}
+	var suc: Node = get_node_or_null("/root/Succession")
+	if suc != null and suc.has_method("serialize"):
+		succession_data = suc.call("serialize") as Dictionary
+	var scenario_data: Dictionary = {}
+	var scn: Node = get_node_or_null("/root/Scenarios")
+	if scn != null and scn.has_method("serialize"):
+		scenario_data = scn.call("serialize") as Dictionary
+	var sidestory_data: Dictionary = {}
+	var sst: Node = get_node_or_null("/root/SideStories")
+	if sst != null and sst.has_method("serialize"):
+		sidestory_data = sst.call("serialize") as Dictionary
 	return {
 		"meta": {
 			"version": SAVE_VERSION,
@@ -776,8 +790,10 @@ func serialize() -> Dictionary:
 		},
 		"eventHistory": events,
 		"missionLog": mission_data,
-		"storyProgress": mission_data,
 		"chronicle": chron_data,
+		"succession": succession_data,
+		"scenarioState": scenario_data,
+		"sideStories": sidestory_data,
 		"settings": settings,
 		"ceState": {
 			"nextEventId": events.size(),
@@ -786,7 +802,7 @@ func serialize() -> Dictionary:
 			"buildingCons": building_cons,
 			"buildingCap": building_cap,
 			"tech": get_node_or_null("/root/Tech").call("serialize") if has_node("/root/Tech") and get_node("/root/Tech").has_method("serialize") else {},
-			"eventCooldown": event_data.get("cooldown", _event_cooldown),
+			"eventCooldown": _event_cooldown.duplicate(true),
 			"crisisSurvived": _crisis_survived,
 		},
 	}
@@ -827,7 +843,7 @@ func _restore(data: Dictionary) -> void:
 				(res_in as Dictionary)[k] = {"stock": 100.0 if RESOURCE_KEYS.has(k) else 0.0, "prod": _base_production(k), "cons": _base_consumption(k)}
 			else:
 				var rv: Dictionary = (res_in as Dictionary)[k] as Dictionary
-				rv["stock"] = clampf(float(rv.get("stock", 0.0)), 0.0, 99999.0)
+				rv["stock"] = clampf(float(rv.get("stock", 0.0)), 0.0, 999999.0)
 				rv["prod"] = float(rv.get("prod", _base_production(k)))
 				rv["cons"] = float(rv.get("cons", _base_consumption(k)))
 		resources = res_in as Dictionary
@@ -848,18 +864,23 @@ func _restore(data: Dictionary) -> void:
 		for k in settings.keys():
 			if (incoming_settings as Dictionary).has(k):
 				settings[k] = (incoming_settings as Dictionary)[k]
+		if typeof(settings.get("traits", [])) != TYPE_ARRAY:
+			settings["traits"] = []
+		settings["rivals"] = clampi(int(settings.get("rivals", 3)), 2, 5)
 	turn = int(meta.get("turnCount", data.get("turn", 0)))
 	year = turn / TURNS_PER_YEAR
 	month = (turn % TURNS_PER_YEAR) + 1
 	month = clampi(month, 1, 12)
+	var cap_map: Dictionary = _bal("population.capacity_base_by_territory", {"small": 40.0, "medium": 60.0, "large": 90.0, "huge": 120.0}) as Dictionary
+	pop_capacity_base = float(cap_map.get(str(settings.get("territory_size", "medium")), 60.0))
 	var pop: Dictionary = state.get("population", {})
 	pop_count = maxf(0.0, float(pop.get("count", pop_count)))
 	pop_happiness = clampf(float(pop.get("happiness", pop.get("pop_happiness", pop_happiness))), 0.0, 1.0)
 	pop_count = clampf(pop_count, 0.0, 99999.0)
 	var ce: Dictionary = data.get("ceState", {})
-	building_prod = ce.get("buildingProd", {})
-	building_cons = ce.get("buildingCons", {})
-	building_cap = ce.get("buildingCap", {})
+	building_prod = _sanitize_contrib(ce.get("buildingProd", {}))
+	building_cons = _sanitize_contrib(ce.get("buildingCons", {}))
+	building_cap = _sanitize_contrib(ce.get("buildingCap", {}))
 	_event_cooldown = ce.get("eventCooldown", {})
 	if typeof(_event_cooldown) != TYPE_DICTIONARY:
 		_event_cooldown = {}
@@ -909,9 +930,35 @@ func _restore(data: Dictionary) -> void:
 		var chron: Node = get_node("/root/Chronicle")
 		if chron.has_method("restore"):
 			chron.call("restore", chron_data)
+	var suc_data: Variant = data.get("succession", {})
+	if typeof(suc_data) == TYPE_DICTIONARY and has_node("/root/Succession"):
+		var suc_n: Node = get_node("/root/Succession")
+		if suc_n.has_method("restore"):
+			suc_n.call("restore", suc_data)
+	var scn_data: Variant = data.get("scenarioState", {})
+	if typeof(scn_data) == TYPE_DICTIONARY and has_node("/root/Scenarios"):
+		var scn_n: Node = get_node("/root/Scenarios")
+		if scn_n.has_method("restore"):
+			scn_n.call("restore", scn_data)
+	var sst_data: Variant = data.get("sideStories", {})
+	if typeof(sst_data) == TYPE_DICTIONARY and has_node("/root/SideStories"):
+		var sst_n: Node = get_node("/root/SideStories")
+		if sst_n.has_method("restore"):
+			sst_n.call("restore", sst_data)
 	resources_changed.emit()
 	population_changed.emit()
 	military_changed.emit()
+
+func _sanitize_contrib(v: Variant) -> Dictionary:
+	if typeof(v) != TYPE_DICTIONARY:
+		return {}
+	var out: Dictionary = {}
+	for k in (v as Dictionary).keys():
+		var fv: float = float((v as Dictionary)[k])
+		if not is_finite(fv):
+			fv = 0.0
+		out[str(k)] = fv
+	return out
 
 func _migrate_save(data: Dictionary, from_ver: int) -> Dictionary:
 	var v: int = from_ver

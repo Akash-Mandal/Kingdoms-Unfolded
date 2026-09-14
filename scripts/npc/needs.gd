@@ -48,8 +48,9 @@ static func new_needs(rng: RandomNumberGenerator = null) -> Dictionary:
 	return d
 
 static func drift(needs: Dictionary, delta: float) -> void:
+	var step: float = clampf(delta, 0.0, 1.0)
 	for k in NEED_KEYS:
-		needs[k] = clampf(float(needs.get(k, 0.0)) + float(DRIFT_RATES.get(k, 0.0)) * delta, 0.0, 1.0)
+		needs[k] = clampf(float(needs.get(k, 0.0)) + float(DRIFT_RATES.get(k, 0.0)) * step, 0.0, 1.0)
 
 static func apply_action(needs: Dictionary, action: String, delta: float) -> void:
 	var rec: Dictionary = RECOVERY.get(action, {})

@@ -19,6 +19,7 @@ var _accessibility: Node
 
 func _ready() -> void:
 	_show_loading_cover()
+	_start_watchdog()
 	await get_tree().process_frame
 	if Catalog != null and Catalog.get("buildings") is Dictionary and (Catalog.get("buildings") as Dictionary).is_empty():
 		await get_tree().process_frame
@@ -26,8 +27,27 @@ func _ready() -> void:
 		_build_all()
 		_hide_loading_cover()
 		return
-	_build_minimal()
+	_build_minimal_safe()
 	call_deferred("_show_start_screen")
+
+func _start_watchdog() -> void:
+	# Failsafe: never leave the player stuck on "Raising the realm…".
+	await get_tree().create_timer(8.0).timeout
+	if _loading_cover != null and is_instance_valid(_loading_cover):
+		if _start_screen == null or not is_instance_valid(_start_screen):
+			push_warning("Startup watchdog: start screen did not appear in 8s, forcing recovery.")
+			_show_start_screen()
+		# Final guarantee: after recovery attempt, never keep blocking cover.
+		await get_tree().create_timer(4.0).timeout
+		if _loading_cover != null and is_instance_valid(_loading_cover):
+			if _start_screen == null or not is_instance_valid(_start_screen):
+				_show_fatal_error("The start menu failed to load. Restart the app. Saves are kept.")
+			else:
+				_hide_loading_cover()
+
+func _build_minimal_safe() -> void:
+	_build_minimal()
+	_connect_graphics()
 
 var _loading_cover: CanvasLayer = null
 func _show_loading_cover() -> void:
@@ -114,10 +134,11 @@ func _build_all() -> void:
 		_build_sun()
 	if _camera == null:
 		_build_camera()
+	_connect_graphics()
 	if not _has_built_world:
-		_build_terrain()
-		_build_rig()
-		_build_weather()
+		_build_terrain_sync()
+		_build_rig_guarded()
+		_build_weather_guarded()
 		_build_buildings()
 		_build_npcs()
 		_build_military()
@@ -138,19 +159,24 @@ func _build_all() -> void:
 		_build_narrative_settings()
 	if get_node_or_null("GraphicsSettings") == null:
 		_build_graphics_settings()
+	if get_node_or_null("ScenarioPanel") == null:
+		_build_scenario_panel()
+
+func _connect_graphics() -> void:
+	var gs: Node = get_node_or_null("/root/GraphicsSettings")
+	if gs != null and gs.has_signal("graphics_changed"):
+		if not gs.is_connected("graphics_changed", _on_graphics_changed):
+			gs.connect("graphics_changed", _on_graphics_changed)
+	_apply_graphics_to_world()
 
 func _build_graphics_settings() -> void:
 	var pnl := CanvasLayer.new()
 	pnl.name = "GraphicsSettings"
 	pnl.layer = 26
 	pnl.set_script(load("res://scripts/ui/graphics_settings.gd"))
-	add_child(pnl)
 	pnl.visible = false
-	var gs: Node = get_node_or_null("/root/GraphicsSettings")
-	if gs != null and gs.has_signal("graphics_changed"):
-		if not gs.graphics_changed.is_connected(_on_graphics_changed):
-			gs.graphics_changed.connect(_on_graphics_changed)
-	_apply_graphics_to_world()
+	add_child(pnl)
+	_connect_graphics()
 
 func _on_graphics_changed(_preset: String, cfg: Dictionary) -> void:
 	_apply_graphics_to_world_cfg(cfg)
@@ -170,28 +196,43 @@ func _apply_graphics_to_world_cfg(cfg: Dictionary) -> void:
 		_npc_mgr.call("apply_graphics", cfg)
 	if _camera != null and (_camera as Object).has_method("apply_graphics"):
 		(_camera as Object).call("apply_graphics", cfg)
+	if _sun != null:
+		var shadows: String = str(cfg.get("shadows", "soft"))
+		_sun.shadow_enabled = shadows != "off"
+	if _env != null:
+		_env.glow_enabled = bool(cfg.get("glow_enabled", true))
+		var mult: float = float(cfg.get("fog_density_mult", 1.0))
+		if _rig == null or not _rig.has_method("apply_graphics"):
+			_env.fog_density = 0.0004 * mult
 
 func _show_start_screen() -> void:
 	if _start_screen != null and is_instance_valid(_start_screen):
 		_hide_loading_cover()
+		_start_screen.visible = true
 		return
 	var start_script: Script = load("res://scripts/ui/start_screen.gd") as Script
 	if start_script == null:
 		_show_fatal_error("Start screen script failed to load.")
 		return
-	var screen: CanvasLayer = start_script.new() as CanvasLayer
+	var screen: Node = start_script.new() as Node
 	if screen == null:
 		_show_fatal_error("Start screen failed to initialize.")
 		return
-	screen.name = "StartScreen"
-	screen.layer = 100
+	screen.set("name", "StartScreen")
+	screen.set("layer", 100)
+	# Connect before add_child so a _ready() failure can't skip wiring.
+	if screen.has_signal("start_requested"):
+		if not screen.is_connected("start_requested", _on_start_requested):
+			screen.connect("start_requested", _on_start_requested)
+	if screen.has_signal("continue_requested"):
+		if not screen.is_connected("continue_requested", _on_continue_requested):
+			screen.connect("continue_requested", _on_continue_requested)
 	add_child(screen)
 	_start_screen = screen
+	# Always hide the "Raising the realm…" cover once we get here,
+	# even if the start screen UI partially failed to build.
 	_hide_loading_cover()
-	if not screen.start_requested.is_connected(_on_start_requested):
-		screen.start_requested.connect(_on_start_requested)
-	if not screen.continue_requested.is_connected(_on_continue_requested):
-		screen.continue_requested.connect(_on_continue_requested)
+	_start_screen.visible = true
 
 func _on_start_requested(cfg: Dictionary) -> void:
 	Game.apply_start_config(cfg)
@@ -209,6 +250,9 @@ func _on_continue_requested() -> void:
 		return
 	if Game.load_from_file():
 		_build_all()
+	else:
+		_show_fatal_error("Save file could not be loaded.")
+		return
 	if _start_screen != null:
 		_start_screen.queue_free()
 		_start_screen = null
@@ -259,7 +303,7 @@ func _build_camera() -> void:
 	_camera = cam
 	_camera.target = Vector3(0, 0, 0)
 
-func _build_terrain() -> void:
+func _build_terrain_sync() -> void:
 	if _terrain != null and is_instance_valid(_terrain):
 		return
 	var terrain = load("res://scripts/world/terrain.gd").new()
@@ -267,9 +311,15 @@ func _build_terrain() -> void:
 	terrain.world_seed = Game.settings.world_seed
 	add_child(terrain)
 	_terrain = terrain
+
+func _build_terrain() -> void:
+	_build_terrain_sync()
 	await get_tree().process_frame
 
-func _build_rig() -> void:
+func _build_rig_guarded() -> void:
+	if get_node_or_null("EnvironmentRig") != null:
+		_rig = get_node("EnvironmentRig")
+		return
 	var rig = load("res://scripts/world/environment_rig.gd").new()
 	rig.name = "EnvironmentRig"
 	add_child(rig)
@@ -279,7 +329,16 @@ func _build_rig() -> void:
 		mat = _terrain.terrain_material
 	rig.setup(_sun, _hemi, _env, mat)
 
+func _build_rig() -> void:
+	_build_rig_guarded()
+
 var _weather_tween: Tween = null
+func _build_weather_guarded() -> void:
+	if get_node_or_null("Weather") != null:
+		_weather = get_node("Weather")
+		return
+	_build_weather()
+
 func _build_weather() -> void:
 	var w = load("res://scripts/world/weather.gd").new()
 	w.name = "Weather"
@@ -303,8 +362,6 @@ func _build_buildings() -> void:
 	mgr.name = "BuildingManager"
 	add_child(mgr)
 	_build_mgr = mgr
-	if _terrain != null and not _terrain.is_inside_tree():
-		await _terrain.ready
 	mgr.setup(_terrain, _camera as Camera3D)
 
 func _build_npcs() -> void:
@@ -315,8 +372,6 @@ func _build_npcs() -> void:
 	mgr.name = "AgentManager"
 	add_child(mgr)
 	_npc_mgr = mgr
-	if _terrain != null and not _terrain.is_inside_tree():
-		await _terrain.ready
 	mgr.setup(_terrain, _camera as Camera3D)
 
 func _build_hud() -> void:
@@ -324,8 +379,8 @@ func _build_hud() -> void:
 	hud.name = "HUD"
 	hud.layer = 10
 	hud.set_script(load("res://scripts/ui/hud.gd"))
-	add_child(hud)
 	hud.set_meta("build_mgr", _build_mgr)
+	add_child(hud)
 
 func _build_diplomacy_panel() -> void:
 	var pnl := CanvasLayer.new()
@@ -333,6 +388,14 @@ func _build_diplomacy_panel() -> void:
 	pnl.layer = 15
 	pnl.set_script(load("res://scripts/ui/diplomacy_panel.gd"))
 	add_child(pnl)
+
+func _build_scenario_panel() -> void:
+	var pnl := CanvasLayer.new()
+	pnl.name = "ScenarioPanel"
+	pnl.layer = 16
+	pnl.set_script(load("res://scripts/ui/scenario_panel.gd"))
+	add_child(pnl)
+	pnl.visible = false
 
 func _build_narrative_settings() -> void:
 	var pnl := CanvasLayer.new()

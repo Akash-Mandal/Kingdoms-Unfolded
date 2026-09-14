@@ -44,10 +44,8 @@ func apply_volumes() -> void:
 		mdb = float(s.get("music_db")) if "music_db" in s else -6.0
 		mute = bool(s.get("muted")) if "muted" in s else false
 	var base_vol := -80.0 if mute else mdb
-	if _base != null and _base.volume_db < -70.0:
+	if _base != null:
 		_base.volume_db = base_vol
-	elif _base != null and not mute:
-		_base.volume_db = mdb
 	if mute:
 		if _tension != null:
 			_tension.volume_db = -80.0

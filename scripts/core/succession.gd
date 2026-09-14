@@ -132,8 +132,14 @@ func serialize() -> Dictionary:
 	return {"ruler": ruler.duplicate(true), "heir": heir.duplicate(true), "lineage": lineage.duplicate(true), "is_regency": is_regency, "regent": regent.duplicate(true)}
 
 func restore(data: Dictionary) -> void:
-	ruler = data.get("ruler", ruler)
-	heir = data.get("heir", heir)
+	var r: Variant = data.get("ruler", {})
+	if r is Dictionary and not (r as Dictionary).is_empty():
+		ruler = (r as Dictionary).duplicate(true)
+	var h: Variant = data.get("heir", {})
+	if h is Dictionary and not (h as Dictionary).is_empty():
+		heir = (h as Dictionary).duplicate(true)
+	if heir.is_empty():
+		heir = _generate_heir(ruler if not ruler.is_empty() else {"name": "Aurelia"}, 0)
 	var lin: Variant = data.get("lineage", [])
 	if lin is Array:
 		lineage.clear()

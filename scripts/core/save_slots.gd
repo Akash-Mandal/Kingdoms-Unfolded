@@ -92,6 +92,8 @@ func delete_slot(idx: int) -> void:
 		DirAccess.remove_absolute(n)
 
 func autosave_check() -> void:
+	if Game.turn <= 0:
+		return
 	if Game.turn % AUTOSAVE_INTERVAL == 0:
 		_autosave()
 
@@ -102,7 +104,6 @@ func _autosave() -> void:
 	var ok: bool = Game.save_to_file(autosave_path())
 	if ok:
 		autosaved.emit(autosave_path())
-		Game.save_to_file("%s/slot_0.json" % SAVE_DIR)
 
 func export_kingdom(idx: int, out_path: String = "") -> String:
 	var i := clampi(idx, 0, MAX_SLOTS - 1)

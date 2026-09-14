@@ -139,7 +139,7 @@ func fail_story(id: String) -> bool:
 	p["started"] = false
 	progress[id] = p
 	story_failed.emit(id)
-	return false
+	return true
 
 func reset_story(id: String) -> void:
 	if not catalog.has(id):

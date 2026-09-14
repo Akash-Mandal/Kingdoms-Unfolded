@@ -83,7 +83,7 @@ func _focus_building_at(screen_pos: Vector2) -> void:
 	if wp == null:
 		return
 	var cam: Camera3D = _camera
-	if cam != null and cam.has_method("update_camera"):
+	if cam != null and "target" in cam and cam.has_method("update_camera"):
 		cam.target = Vector3(wp.x, _terrain_ground_height(wp.x, wp.z), wp.z)
 		if "distance" in cam:
 			cam.distance = clampf(float(cam.get("distance")) * 0.65, 12.0, 220.0)
@@ -297,7 +297,7 @@ func _spawn(id: String, pos: Vector3, record: bool, recompute: bool) -> void:
 	var notifier := VisibleOnScreenNotifier3D.new()
 	notifier.aabb = AABB(Vector3(-4, 0, -4), Vector3(8, 6, 8))
 	notifier.screen_enter.connect(func() -> void: node.visible = true)
-	notifier.screen_exit.connect(func() -> void: if node.visible: node.visible = true)
+	notifier.screen_exit.connect(func() -> void: node.visible = false)
 	node.add_child(notifier)
 	if not _placed.has(node):
 		_placed.append(node)

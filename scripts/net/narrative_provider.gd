@@ -268,10 +268,13 @@ func _dequeue() -> void:
 			_dequeue()
 			return
 	var t := get_tree().create_timer(TIMEOUT_SEC)
-	t.timeout.connect(func() -> void: _on_timeout(item))
+	t.timeout.connect(func() -> void: _on_timeout(item, _current.get("prompt", {})))
 	adapter.call("generate_async", prompt)
-func _on_timeout(item: Dictionary) -> void:
+func _on_timeout(item: Dictionary, started_prompt: Dictionary = {}) -> void:
 	if not _busy:
+		return
+	# Stale timer from a previous item: ignore once queue advanced.
+	if not started_prompt.is_empty() and started_prompt != _current.get("prompt", {}):
 		return
 	var event: Dictionary = item["event"] as Dictionary
 	var prompt: Dictionary = item["prompt"] as Dictionary
@@ -307,6 +310,8 @@ func _on_adapter_completed(result: Dictionary, provider_key: String) -> void:
 	var res: Dictionary = result.duplicate(true)
 	if not _validate(res):
 		res = _local_engine.call("generate", prompt) as Dictionary
+		res["provider"] = "local-fallback"
+	elif res.has("error"):
 		res["provider"] = "local-fallback"
 	else:
 		res["provider"] = provider_key

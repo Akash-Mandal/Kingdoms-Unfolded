@@ -85,9 +85,12 @@ func train(type: String, n: int) -> bool:
 			if Game.get_stock(k) < float(cost[k]) * float(n):
 				return false
 	for k in cost:
-		var r: Dictionary = Game.resources.get(k, {})
-		if not r.is_empty():
-			r["stock"] = maxf(0.0, float(r["stock"]) - float(cost[k]) * float(n))
+		var need: float = float(cost[k]) * float(n)
+		if typeof(Game.resources.get(k, {})) == TYPE_DICTIONARY:
+			var r: Dictionary = Game.resources[k]
+			r["stock"] = maxf(0.0, float(r.get("stock", 0.0)) - need)
+		else:
+			Game.resources[k] = maxf(0.0, Game.get_stock(k) - need)
 	units[type]["count"] = int(units[type]["count"]) + n
 	units[type]["morale"] = clampf(float(units[type]["morale"]) + 0.02, 0.1, 1.0)
 	Game.resources_changed.emit()
@@ -96,6 +99,8 @@ func train(type: String, n: int) -> bool:
 	return true
 
 func disband(type: String, n: int) -> bool:
+	if n <= 0:
+		return false
 	if not units.has(type):
 		return false
 	var c: int = int(units[type]["count"])
@@ -179,23 +184,24 @@ func resolve_battle(attacker_power: float, defender_power: float, terrain: Strin
 	return result
 
 func auto_resolve(attackers: Dictionary, defenders: Dictionary, terrain: String = "plains") -> Dictionary:
-	var ap: float = calc_power(attackers, terrain)
-	var dp: float = calc_power(defenders, terrain)
+	var atk: Dictionary = attackers.duplicate(true)
+	var dfn: Dictionary = defenders.duplicate(true)
+	var ap: float = calc_power(atk, terrain)
+	var dp: float = calc_power(dfn, terrain)
 	var res: Dictionary = resolve_battle(ap, dp, terrain)
 	var win_side: String = str(res["winner"])
-	var loss_side: String = "defender" if win_side == "attacker" else "attacker"
 	var cr_win: float = float(res["casualty_rate_winner"])
 	var cr_loss: float = float(res["casualty_rate_loser"])
-	var winner_dict: Dictionary = attackers if win_side == "attacker" else defenders
-	var loser_dict: Dictionary = defenders if win_side == "attacker" else attackers
+	var winner_dict: Dictionary = atk if win_side == "attacker" else dfn
+	var loser_dict: Dictionary = dfn if win_side == "attacker" else atk
 	_apply_casualties(winner_dict, cr_win)
 	_apply_casualties(loser_dict, cr_loss)
 	_apply_morale(winner_dict, 0.06, 0.04)
 	_apply_morale(loser_dict, -0.12, -0.08)
 	_gain_experience(winner_dict, 0.08)
 	_gain_experience(loser_dict, 0.03)
-	res["attackers"] = attackers.duplicate(true)
-	res["defenders"] = defenders.duplicate(true)
+	res["attackers"] = atk.duplicate(true)
+	res["defenders"] = dfn.duplicate(true)
 	military_changed.emit()
 	_sync_to_game()
 	return res
@@ -316,10 +322,10 @@ func restore(data: Dictionary) -> void:
 		var v: Variant = data[k]
 		if typeof(v) == TYPE_DICTIONARY:
 			units[k] = {
-				"count": int(v.get("count", 0)),
-				"morale": float(v.get("morale", 0.7)),
-				"supply": float(v.get("supply", 1.0)),
-				"experience": float(v.get("experience", 0.0)),
+				"count": maxi(0, int(v.get("count", 0))),
+				"morale": clampf(float(v.get("morale", 0.7)), 0.1, 1.0),
+				"supply": clampf(float(v.get("supply", 1.0)), 0.2, 1.0),
+				"experience": clampf(float(v.get("experience", 0.0)), 0.0, 1.0),
 				"commander": str(v.get("commander", "none")),
 			}
 	_ensure_defaults()

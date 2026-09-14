@@ -22,8 +22,8 @@ func apply_graphics(cfg: Dictionary) -> void:
 func _ready() -> void:
 	var gs: Node = get_node_or_null("/root/GraphicsSettings")
 	if gs != null:
-		if gs.has_signal("graphics_changed") and not gs.graphics_changed.is_connected(apply_graphics):
-			gs.graphics_changed.connect(apply_graphics)
+		if gs.has_signal("graphics_changed") and not gs.is_connected("graphics_changed", apply_graphics):
+			gs.connect("graphics_changed", apply_graphics)
 		if gs.has_method("get_config"):
 			apply_graphics(gs.call("get_config") as Dictionary)
 	update_camera()

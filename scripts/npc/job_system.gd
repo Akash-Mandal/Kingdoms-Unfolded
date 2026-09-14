@@ -56,17 +56,32 @@ static func compute_demand_from_counts(counts: Dictionary) -> Dictionary:
 	demand["builder"] = builder_need
 	return demand
 
+static func _get_job(a: Variant) -> String:
+	if typeof(a) == TYPE_DICTIONARY:
+		return str((a as Dictionary).get("job", "idle"))
+	if a is RefCounted and "job" in a:
+		return str(a.get("job"))
+	if a is Node and "job" in a:
+		return str(a.get("job"))
+	return "idle"
+
+static func _set_job(a: Variant, job: String) -> void:
+	if typeof(a) == TYPE_DICTIONARY:
+		(a as Dictionary)["job"] = job
+		return
+	if a is RefCounted and "job" in a:
+		a.set("job", job)
+		return
+	if a is Node and "job" in a:
+		a.set("job", job)
+
 static func assign(agents: Array, demand: Dictionary) -> void:
 	if agents.is_empty():
 		return
 	var remaining: Dictionary = demand.duplicate(true)
 	var unassigned: Array = []
 	for a in agents:
-		var j: String = ""
-		if typeof(a) == TYPE_DICTIONARY:
-			j = str(a.get("job", "idle"))
-		elif a is Node and "job" in a:
-			j = str(a.job)
+		var j: String = _get_job(a)
 		if j == "idle" or j == "":
 			unassigned.append(a)
 		else:
@@ -75,27 +90,18 @@ static func assign(agents: Array, demand: Dictionary) -> void:
 				remaining[j] = need - 1
 			else:
 				unassigned.append(a)
-				if typeof(a) == TYPE_DICTIONARY:
-					a["job"] = "idle"
-				elif a is Node and "job" in a:
-					a.job = "idle"
+				_set_job(a, "idle")
 	for job in JOBS:
 		if job == "idle":
 			continue
 		var need: int = int(remaining.get(job, 0))
 		while need > 0 and not unassigned.is_empty():
 			var ag: Variant = unassigned.pop_front()
-			if typeof(ag) == TYPE_DICTIONARY:
-				ag["job"] = job
-			elif ag is Node and "job" in ag:
-				ag.job = job
+			_set_job(ag, job)
 			need -= 1
 		remaining[job] = need
 	for ag in unassigned:
-		if typeof(ag) == TYPE_DICTIONARY:
-			ag["job"] = "idle"
-		elif ag is Node and "job" in ag:
-			ag.job = "idle"
+		_set_job(ag, "idle")
 
 static func demand_summary(demand: Dictionary) -> String:
 	var parts: PackedStringArray = []

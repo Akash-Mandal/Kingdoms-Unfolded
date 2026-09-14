@@ -239,7 +239,7 @@ func _process(delta: float) -> void:
 	if _tick_accum >= TICK_INTERVAL_NEEDS:
 		_tick_accum = 0.0
 		var t0 := Time.get_ticks_usec()
-		_tick_agents_threaded_v2(delta)
+		_tick_agents_threaded_v2(TICK_INTERVAL_NEEDS)
 		_last_sim_ms = (Time.get_ticks_usec() - t0) / 1000.0
 		_push_sim_ms()
 		_rebuild_hash_if_dirty()
@@ -273,44 +273,17 @@ func _tick_agents(delta: float) -> void:
 func _tick_agents_threaded_v2(delta: float) -> void:
 	if _agents.is_empty():
 		return
-	if _agents.size() <= MAX_TICK_PER_FRAME:
-		if _agents.size() < THREAD_CHUNK * 2 or not OS.has_feature("threads"):
-			_tick_agents(delta)
-			return
-		var hour: float = TimeClock.sim_hour if TimeClock != null else 12.0
-		var n := _agents.size()
-		var chunks := (n + THREAD_CHUNK - 1) / THREAD_CHUNK
-		var tasks: Array[int] = []
-		tasks.resize(chunks)
-		for c in chunks:
-			var start := c * THREAD_CHUNK
-			var end := mini(start + THREAD_CHUNK, n)
-			var task_id := WorkerThreadPool.add_task(_tick_chunk.bind(start, end, hour, delta))
-			tasks[c] = task_id
-		for tid in tasks:
-			WorkerThreadPool.wait_for_task_completion(tid)
-		return
-	var budget := MAX_TICK_PER_FRAME
-	var start_idx := _tick_cursor
-	var end_idx := mini(start_idx + budget, _agents.size())
-	var hour2: float = TimeClock.sim_hour if TimeClock != null else 12.0
-	var n2 := end_idx - start_idx
-	var chunks2 := (n2 + THREAD_CHUNK - 1) / THREAD_CHUNK
-	var tasks2: Array[int] = []
-	tasks2.resize(chunks2)
-	for c in chunks2:
-		var s := start_idx + c * THREAD_CHUNK
-		var e := mini(s + THREAD_CHUNK, end_idx)
-		var tid := WorkerThreadPool.add_task(_tick_chunk.bind(s, e, hour2, delta))
-		tasks2[c] = tid
-	for tid in tasks2:
-		WorkerThreadPool.wait_for_task_completion(tid)
-	_tick_cursor = end_idx
-	if _tick_cursor >= _agents.size():
-		_tick_cursor = 0
+	var step: float = clampf(delta, 0.0, 1.0)
+	# Dictionaries are not thread-safe: run on main thread to avoid torn writes.
+	_tick_agents(step)
 
 func _tick_chunk(start: int, end: int, hour: float, delta: float) -> void:
-	for i in range(start, end):
+	if _agents.is_empty():
+		return
+	var n: int = _agents.size()
+	var s0: int = clampi(start, 0, n)
+	var e0: int = clampi(end, 0, n)
+	for i in range(s0, e0):
 		var ag: Agent = _agents[i]
 		var best: String = Needs.pick_best_deterministic(ag.needs, hour, ag.job)
 		var rec: Dictionary = Needs.RECOVERY.get(best, {}) as Dictionary

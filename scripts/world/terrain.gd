@@ -95,8 +95,8 @@ func build_terrain() -> void:
 	if gs != null:
 		if gs.has_method("get_config"):
 			TREE_COUNT = int((gs.call("get_config") as Dictionary).get("tree_count", TREE_COUNT))
-		if gs.has_signal("graphics_changed") and not gs.graphics_changed.is_connected(apply_graphics):
-			gs.graphics_changed.connect(apply_graphics)
+		if gs.has_signal("graphics_changed") and not gs.is_connected("graphics_changed", apply_graphics):
+			gs.connect("graphics_changed", apply_graphics)
 	for c in _chunks:
 		if is_instance_valid(c):
 			c.queue_free()
@@ -289,8 +289,8 @@ func build_trees() -> void:
 		attempts += 1
 		var wx := randf_range(-half, half)
 		var wz := randf_range(-half, half)
-		var h := height_at(wx / SPACING, wz / SPACING)
-		var m := moisture_at(wx / SPACING, wz / SPACING)
+		var h := height_at((wx + half) / SPACING, (wz + half) / SPACING)
+		var m := moisture_at((wx + half) / SPACING, (wz + half) / SPACING)
 		if h < 0.03 or h > 0.5 or m < -0.05:
 			continue
 		var y := h * AMPLITUDE
