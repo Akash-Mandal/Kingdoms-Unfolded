@@ -174,6 +174,7 @@ func advance() -> void:
 	if month == 1:
 		year += 1
 	_apply_flows()
+	_apply_tribute()
 	_tick_tech()
 	_apply_military_upkeep()
 	_apply_population()
@@ -310,11 +311,28 @@ func _tick_tech() -> void:
 	if tn != null and tn.has_method("tick"):
 		tn.call("tick")
 
+func _apply_tribute() -> void:
+	var dip: Node = get_node_or_null("/root/Diplomacy")
+	if dip == null or not dip.has_method("tribute_income"):
+		return
+	var inc: float = float(dip.call("tribute_income"))
+	if inc != 0.0 and resources.has("gold"):
+		var r: Dictionary = resources["gold"]
+		r["stock"] = clampf(float(r.get("stock", 0.0)) + inc, 0.0, 999999.0)
+
+func _food_cap() -> float:
+	var base: float = 300.0
+	base += float(building_cap.get("food_stock", 0.0))
+	base += float(building_cap.get("housing", 0.0)) * 2.0
+	return maxf(200.0, base)
+
 func _sanitize_resources() -> void:
+	var fcap: float = _food_cap()
 	for k in ALL_KEYS:
 		if resources.has(k):
 			var rr: Dictionary = resources[k] as Dictionary
-			rr["stock"] = clampf(float(rr.get("stock",0.0)), 0.0, 999999.0)
+			var cap: float = fcap if k == "food" or k == "grain" or k == "flour" else 999999.0
+			rr["stock"] = clampf(float(rr.get("stock",0.0)), 0.0, cap)
 func _apply_flows() -> void:
 	var p_mult := _difficulty_prod_mult()
 	var c_mult := _difficulty_cons_mult()

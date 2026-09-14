@@ -153,8 +153,7 @@ func modify_trust(kingdom_id: String, delta: float) -> void:
 	diplomacy_changed.emit()
 
 func set_treaty(kingdom_id: String, treaty_id: String) -> bool:
-	var valid: PackedStringArray = ["none", "non_aggression_pact", "nap", "trade_agreement", "royal_marriage", "marriage", "alliance", "vassalage", "confederation"]
-	if not valid.has(treaty_id):
+	var valid: PackedStringArray = ["none", "non_aggression_pact", "nap", "trade_agreement", "royal_marriage", "marriage", "alliance", "vassalage", "confederation"]	if not valid.has(treaty_id):
 		return false
 	var norm: String = _normalize_treaty(treaty_id)
 	var r: Dictionary = _relation_for(kingdom_id)
@@ -192,8 +191,7 @@ func break_treaty(kingdom_id: String) -> bool:
 
 func gift_to(kingdom_id: String, gold_amount: int = 10) -> bool:
 	var g: Variant = get_node_or_null("/root/Game")
-	var cost: int = clampi(gold_amount, 5, 50)
-	if g != null and "resources" in g and g.resources is Dictionary:
+	var cost: int = clampi(gold_amount, 5, 50)	if g != null and "resources" in g and g.resources is Dictionary:
 		var stock: float = float(g.resources.get("gold", {}).get("stock", 999.0))
 		if stock < float(cost):
 			return false
@@ -209,6 +207,19 @@ func gift_to(kingdom_id: String, gold_amount: int = 10) -> bool:
 	diplomacy_changed.emit()
 	relation_changed.emit(kingdom_id)
 	return true
+
+func tribute_income() -> float:
+	var total: float = 0.0
+	for kid in relations.keys():
+		var r: Dictionary = relations[kid] as Dictionary
+		match str(r.get("treaty", "none")):
+			"vassalage":
+				total += 6.0
+			"trade_agreement":
+				total += 3.0
+			"alliance":
+				total += 1.0
+	return total
 
 func _normalize_treaty(t: String) -> String:
 	match t:
@@ -454,6 +465,9 @@ func _apply_ai_action(kingdom_id: String, action: String) -> void:
 			treaty_changed.emit(kingdom_id, "none")
 			_emit_diplo_event(kingdom_id, "betray", "%s has broken the %s!" % [String(k.get("name", kingdom_id)), old])
 		"gift":
+			if int(r.get("gift_cd", 0)) > _turn_cache:
+				return
+			r["gift_cd"] = _turn_cache + 6
 			var amt: int = _rng.randi_range(6, 14)
 			r["score"] = clampi(int(r["score"]) + _rng.randi_range(3, 7), -100, 100)
 			r["trust"] = clampf(float(r["trust"]) + _rng.randf_range(0.02, 0.05), -1.0, 1.0)
