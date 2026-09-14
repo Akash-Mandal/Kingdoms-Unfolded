@@ -208,6 +208,12 @@ func advance_act() -> bool:
 		act_advanced.emit({})
 	return true
 
+func is_main_quest_complete() -> bool:
+	var acts: Array = get_acts()
+	if acts.is_empty():
+		return false
+	return current_act_idx >= acts.size()
+
 func _is_mission_complete(m: Dictionary, state: Dictionary) -> bool:
 	var objs: Variant = m.get("objectives", [])
 	if typeof(objs) != TYPE_ARRAY or (objs as Array).is_empty():

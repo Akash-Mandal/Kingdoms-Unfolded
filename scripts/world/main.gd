@@ -20,6 +20,9 @@ var _accessibility: Node
 func _ready() -> void:
 	_show_loading_cover()
 	_start_watchdog()
+	if Game != null and Game.has_signal("game_over"):
+		if not Game.is_connected("game_over", _on_game_over):
+			Game.connect("game_over", _on_game_over)
 	await get_tree().process_frame
 	if Catalog != null and Catalog.get("buildings") is Dictionary and (Catalog.get("buildings") as Dictionary).is_empty():
 		await get_tree().process_frame
@@ -91,6 +94,11 @@ func _hide_loading_cover() -> void:
 	if _loading_cover != null and is_instance_valid(_loading_cover):
 		_loading_cover.queue_free()
 		_loading_cover = null
+
+func _on_game_over(result: Dictionary) -> void:
+	var won: bool = bool(result.get("won", false))
+	var title: String = "VICTORY" if won else "DEFEAT"
+	_show_fatal_error("%s\n%s" % [title, str(result.get("text", ""))])
 
 func _show_fatal_error(msg: String) -> void:
 	_hide_loading_cover()

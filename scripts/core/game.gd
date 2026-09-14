@@ -5,6 +5,7 @@ signal resources_changed
 signal population_changed
 signal mission_changed
 signal military_changed
+signal game_over(result: Dictionary)
 
 const TURNS_PER_YEAR := 12
 const SAVE_VERSION := 4
@@ -60,6 +61,9 @@ var _balance_cache: Dictionary = {}
 var _rng := RandomNumberGenerator.new()
 var _event_cooldown: Dictionary = {}
 var _crisis_survived: int = 0
+var game_over_result: Dictionary = {}
+var _miserable_streak: int = 0
+var scenario_start_turn: int = 0
 
 func _get_balance() -> Dictionary:
 	if not _balance_cache.is_empty():
@@ -98,6 +102,9 @@ func reset() -> void:
 	turn = 0
 	month = 1
 	year = 0
+	game_over_result = {}
+	_miserable_streak = 0
+	scenario_start_turn = 0
 	events.clear()
 	placed_buildings.clear()
 	resources.clear()
@@ -172,14 +179,71 @@ func advance() -> void:
 	_apply_population()
 	_roll_events()
 	_tick_missions()
+	_tick_succession_year()
 	turned.emit()
 	resources_changed.emit()
 	population_changed.emit()
 	military_changed.emit()
+	_check_game_over()
 	if has_node("/root/SaveSlots"):
 		var ss: Node = get_node("/root/SaveSlots")
 		if ss.has_method("autosave_check"):
 			ss.call("autosave_check")
+
+func _tick_succession_year() -> void:
+	var suc: Node = get_node_or_null("/root/Succession")
+	if suc != null and suc.has_method("tick"):
+		suc.call("tick")
+		# Natural mortality: age + plague/war pressure.
+		if suc.has_method("roll_mortality"):
+			var res: Variant = suc.call("roll_mortality", season())
+			if typeof(res) == TYPE_DICTIONARY and bool((res as Dictionary).get("died", false)):
+				_crisis_survived += 0
+
+func _check_game_over() -> void:
+	if not game_over_result.is_empty():
+		return
+	# Defeat: collapse.
+	if pop_count <= 1.0:
+		_end_game(false, "collapse", "Your people are gone. The realm falls silent.")
+		return
+	if pop_happiness <= 0.01:
+		_miserable_streak += 1
+	else:
+		_miserable_streak = 0
+	if _miserable_streak >= 3:
+		_end_game(false, "revolt", "Three turns of utter misery. The realm rises and casts you down.")
+		return
+	# Defeat: no ruler and no heir.
+	var suc: Node = get_node_or_null("/root/Succession")
+	if suc != null and suc.has_method("get_ruler") and suc.has_method("get_heir"):
+		var r: Dictionary = suc.call("get_ruler") as Dictionary
+		var h: Dictionary = suc.call("get_heir") as Dictionary
+		if r.is_empty() and h.is_empty():
+			_end_game(false, "no_heir", "The line is extinct. No heir remains.")
+			return
+	# Victory: main quest complete.
+	var mn: Node = get_node_or_null("/root/Missions")
+	if mn != null and mn.has_method("is_main_quest_complete"):
+		if bool(mn.call("is_main_quest_complete")):
+			_end_game(true, "legacy", "Your legacy is sealed in the chronicles. Victory.")
+			return
+	# Victory: scenario survival duration.
+	var scn: Node = get_node_or_null("/root/Scenarios")
+	if scn != null and scn.has_method("get_active"):
+		var active: Dictionary = scn.call("get_active") as Dictionary
+		var dur: int = int(active.get("duration_turns", 0))
+		if dur > 0 and (turn - scenario_start_turn) >= dur:
+			_end_game(true, "survived", "You endured: %s." % str(active.get("name", "the trial")))
+			return
+
+func _end_game(won: bool, kind: String, text: String) -> void:
+	game_over_result = {"won": won, "kind": kind, "text": text, "turn": turn}
+	var ev := {"id": events.size(), "turn": turn, "type": "game_over", "category": "fate", "severity": 3, "text": text}
+	events.push_front(ev)
+	event_occurred.emit(ev)
+	game_over.emit(game_over_result)
+	save_to_file()
 
 func _season_yield_mult(key: String) -> float:
 	var s := season()
@@ -714,10 +778,11 @@ func apply_start_config(cfg: Dictionary) -> void:
 	settings.scenario = str(cfg.get("scenario", settings.scenario)).to_lower()
 	settings.starting_season = str(cfg.get("starting_season", settings.starting_season)).to_lower()
 	var res_cfg: Variant = cfg.get("resources", {})
+	var start_mult: float = float(_bal("difficulty." + str(settings.difficulty) + ".start_resources_multiplier", _bal("difficulty." + str(settings.difficulty) + ".start_resources_mult", 1.0)))
 	if typeof(res_cfg) == TYPE_DICTIONARY:
 		for k in RESOURCE_KEYS:
 			if (res_cfg as Dictionary).has(k):
-				resources[k]["stock"] = clampf(float((res_cfg as Dictionary)[k]), 0.0, 200.0)
+				resources[k]["stock"] = clampf(float((res_cfg as Dictionary)[k]) * start_mult, 0.0, 200.0)
 	var cap_map: Dictionary = _bal("population.capacity_base_by_territory", {"small": 40.0, "medium": 60.0, "large": 90.0, "huge": 120.0}) as Dictionary
 	pop_capacity_base = float(cap_map.get(settings.territory_size, 60.0))
 	pop_count = pop_capacity_base * float(_bal("population.initial_pop_ratio", 0.83))
@@ -736,6 +801,10 @@ func apply_start_config(cfg: Dictionary) -> void:
 	var dip: Node = get_node_or_null("/root/Diplomacy")
 	if dip != null and dip.has_method("generate_rivals"):
 		dip.call("generate_rivals", int(settings.rivals), int(settings.world_seed))
+	scenario_start_turn = turn
+	var scn: Node = get_node_or_null("/root/Scenarios")
+	if scn != null and scn.has_method("apply_scenario"):
+		scn.call("apply_scenario", str(settings.scenario))
 	resources_changed.emit()
 	population_changed.emit()
 
@@ -809,12 +878,19 @@ func serialize() -> Dictionary:
 
 func save_to_file(path: String = "user://saves/slot_0.json") -> bool:
 	DirAccess.make_dir_recursive_absolute(path.get_base_dir())
-	var f := FileAccess.open(path, FileAccess.WRITE)
+	var tmp: String = path + ".tmp"
+	var f := FileAccess.open(tmp, FileAccess.WRITE)
 	if f == null:
 		push_error("Save failed: %s" % path)
 		return false
 	f.store_string(JSON.stringify(serialize(), "\t"))
 	f.close()
+	if FileAccess.file_exists(path):
+		DirAccess.remove_absolute(path)
+	var err: int = DirAccess.rename_absolute(tmp, path)
+	if err != OK:
+		push_error("Save rename failed: %s" % path)
+		return false
 	return true
 
 func load_from_file(path: String = "user://saves/slot_0.json") -> bool:

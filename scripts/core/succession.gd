@@ -59,6 +59,24 @@ func tick() -> void:
 		if is_regency and int(heir.get("age", 0)) >= 16:
 			_resolve_regency()
 
+func roll_mortality(season: String = "") -> Dictionary:
+	if ruler.is_empty():
+		return {"died": false}
+	var age: int = int(ruler.get("age", 28))
+	var p: float = 0.0
+	if age >= 70:
+		p = 0.08
+	elif age >= 60:
+		p = 0.03
+	elif age >= 50:
+		p = 0.01
+	if season == "winter":
+		p += 0.005
+	if _rng.randf() < p:
+		trigger_death("natural causes at age %d" % age)
+		return {"died": true}
+	return {"died": false}
+
 func trigger_death(cause: String = "natural") -> Dictionary:
 	if ruler.is_empty():
 		_init_from_game()
