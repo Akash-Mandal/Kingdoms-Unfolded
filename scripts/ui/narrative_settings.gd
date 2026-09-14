@@ -64,7 +64,7 @@ func _build_ui() -> void:
 	plab.custom_minimum_size = Vector2(90, 0)
 	row1.add_child(plab)
 	_provider_opt = OptionButton.new()
-	_provider_opt.custom_minimum_size = Vector2(220, 36)
+	_provider_opt.custom_minimum_size = Vector2(220, 44)
 	for p in ["local", "gemini", "openai", "ollama"]:
 		_provider_opt.add_item(p.capitalize())
 	_provider_opt.item_selected.connect(_on_provider_picked)
@@ -97,7 +97,7 @@ func _build_ui() -> void:
 	mlab.custom_minimum_size = Vector2(90, 0)
 	row3.add_child(mlab)
 	_model_opt = OptionButton.new()
-	_model_opt.custom_minimum_size = Vector2(260, 36)
+	_model_opt.custom_minimum_size = Vector2(260, 44)
 	row3.add_child(_model_opt)
 	_model_opt.item_selected.connect(_on_model_picked)
 	var row4 := HBoxContainer.new()

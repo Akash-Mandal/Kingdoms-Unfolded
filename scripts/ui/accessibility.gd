@@ -37,10 +37,10 @@ func _build() -> void:
 	v.add_child(row1)
 	var lab := Label.new()
 	lab.text = "Text Scale"
-	lab.custom_minimum_size = Vector2(120, 36)
+	lab.custom_minimum_size = Vector2(120, 44)
 	row1.add_child(lab)
 	_scale_opt = OptionButton.new()
-	_scale_opt.custom_minimum_size = Vector2(160, 36)
+	_scale_opt.custom_minimum_size = Vector2(160, 44)
 	for l in SCALE_LABELS:
 		_scale_opt.add_item(l)
 	row1.add_child(_scale_opt)
@@ -62,26 +62,26 @@ func _build() -> void:
 	v.add_child(mus_row)
 	var mus_lab := Label.new()
 	mus_lab.text = "Music"
-	mus_lab.custom_minimum_size = Vector2(120, 36)
+	mus_lab.custom_minimum_size = Vector2(120, 44)
 	mus_row.add_child(mus_lab)
 	_music_slider = HSlider.new()
 	_music_slider.min_value = -30.0
 	_music_slider.max_value = 0.0
 	_music_slider.step = 1.0
-	_music_slider.custom_minimum_size = Vector2(160, 36)
+	_music_slider.custom_minimum_size = Vector2(160, 44)
 	_music_slider.value_changed.connect(_on_audio)
 	mus_row.add_child(_music_slider)
 	var sfx_row := HBoxContainer.new()
 	v.add_child(sfx_row)
 	var sfx_lab := Label.new()
 	sfx_lab.text = "SFX"
-	sfx_lab.custom_minimum_size = Vector2(120, 36)
+	sfx_lab.custom_minimum_size = Vector2(120, 44)
 	sfx_row.add_child(sfx_lab)
 	_sfx_slider = HSlider.new()
 	_sfx_slider.min_value = -24.0
 	_sfx_slider.max_value = 6.0
 	_sfx_slider.step = 1.0
-	_sfx_slider.custom_minimum_size = Vector2(160, 36)
+	_sfx_slider.custom_minimum_size = Vector2(160, 44)
 	_sfx_slider.value_changed.connect(_on_audio)
 	sfx_row.add_child(_sfx_slider)
 	var mute_row := HBoxContainer.new()

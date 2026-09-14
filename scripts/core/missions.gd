@@ -342,6 +342,11 @@ func auto_offer(state: Dictionary = {}) -> Dictionary:
 				if not bool(tpl.get("repeatable", false)):
 					is_done = true
 					break
+		if not is_done and not bool(tpl.get("repeatable", false)):
+			for fl in failed:
+				if str(fl.get("id", "")) == tid:
+					is_done = true
+					break
 		if is_done:
 			continue
 		if bool(tpl.get("repeatable", false)) and completions >= 3:

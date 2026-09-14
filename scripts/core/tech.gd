@@ -134,6 +134,9 @@ func _complete() -> void:
 	progress = 0.0
 	tech_unlocked.emit(done)
 	_push_visible_event(done)
+	var an: Node = get_node_or_null("/root/Analytics")
+	if an != null and an.has_method("track"):
+		an.call("track", "tech_completed", {"id": done})
 	Game.resources_changed.emit()
 	Game.population_changed.emit()
 func _push_visible_event(id: String) -> void:

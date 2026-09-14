@@ -909,6 +909,15 @@ func serialize() -> Dictionary:
 
 func save_to_file(path: String = "user://saves/slot_0.json") -> bool:
 	DirAccess.make_dir_recursive_absolute(path.get_base_dir())
+	if FileAccess.file_exists(path):
+		var prev := FileAccess.open(path, FileAccess.READ)
+		if prev != null:
+			var txt: String = prev.get_as_text()
+			prev.close()
+			var bak := FileAccess.open(path + ".bak", FileAccess.WRITE)
+			if bak != null:
+				bak.store_string(txt)
+				bak.close()
 	var tmp: String = path + ".tmp"
 	var f := FileAccess.open(tmp, FileAccess.WRITE)
 	if f == null:

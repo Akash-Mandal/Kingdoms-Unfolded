@@ -253,6 +253,9 @@ func _show_start_screen() -> void:
 func _on_start_requested(cfg: Dictionary) -> void:
 	Game.apply_start_config(cfg)
 	_build_all()
+	var tut: Node = get_node_or_null("Tutorial")
+	if tut != null and tut.has_method("reset_tutorial"):
+		tut.call("reset_tutorial")
 	if _start_screen != null:
 		_start_screen.queue_free()
 		_start_screen = null
@@ -501,6 +504,9 @@ func _on_battle_finished(outcome: Dictionary) -> void:
 	var ev := {"id": Game.events.size(), "turn": Game.turn, "type": "battle", "severity": 2, "text": text}
 	Game.events.push_front(ev)
 	Game.event_occurred.emit(ev)
+	var an: Node = get_node_or_null("/root/Analytics")
+	if an != null and an.has_method("track"):
+		an.call("track", "battle_resolved", {"winner": winner})
 	Game.save_to_file()
 
 func _save_early() -> void:
