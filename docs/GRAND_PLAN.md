@@ -84,6 +84,14 @@ The game is **dynastic endurance**, not a single win condition.
 There is no "you win" screen mid-campaign — milestones unlock narrated chronicle chapters;
 the player continues until collapse or chooses to retire the dynasty.
 
+**Shipped (2026-09-14, ex-`leftoverwork_temp.md` P0-1):** main-quest fail paths exist —
+`act_08_trial` fails after 3 un-survived crises (`Missions.crisis_failed`,
+`is_act_failed()`) and routes to recovery act `act_08_fail_recovery` (regrow to 60
+souls + 0.4 happiness → rejoins `act_09_dominion`). `_check_game_over()` adds a
+`trial_failed` defeat plus scenario duration enforcement: surviving `duration_turns`
+wins, but ruin checks (pop < 20 plague/mongol, wars suffered renaissance, gold ≤ 0
+merchant) convert expiry into `scenario_failed` defeat.
+
 ## 5. Session & Reign Structure
 
 - **A turn** = 1 month. **A year** = 12 turns. **A reign** = one ruler's lifetime (≈ 30–60
@@ -102,6 +110,13 @@ the player continues until collapse or chooses to retire the dynasty.
 | Legendary | ×1.8 | ×1.5 | −20% | ×2.0 | −1 |
 
 Difficulty is set at kingdom creation and locked per save (respecced only on New Game).
+
+**Shipped (P0-2/P0-3):** difficulty is fully wired — `plague_frequency` scales plague
+weights, `event_severity` scales the event roll, `rival_aggression` scales AI war
+desire; `tax_rate()` exists as a pluggable stub (0.0) with happiness telemetry. Rival
+`power` drifts ±(−2/+5) clamped 30–200 per tick, and AI `war` actions resolve a real
+army-vs-army `Military.auto_resolve()` clash (casualty event + `battle_resolved`
+analytics) after the army-scaled raid steal.
 
 ## 7. Economy & Balance (formulas)
 
@@ -225,16 +240,21 @@ Never duplicate the same number in three places.
 
 ## 13. Onboarding & Progressive Disclosure
 
-- **First 5 minutes:** you inherit a small village. An advisor overlays contextual hints:
-  place a farm → advance a month → resolve your first event. Then hints fade.
+- **First 5 minutes:** 8-step advisor (welcome → farm → mill/bakery chain → tech/build
+  → end turn → diplomacy/help → first event → ready) with `?` codex
+  (`Tutorial.show_help()`: Build Chain / Tech / Diplomacy). Then hints fade.
 - **Progressive unlock:** tabs unlock as systems become relevant (Research appears when a
   scholar arrives; Diplomacy when first rival is met). Prevents front-loaded overwhelm.
 - **Advisor density slider:** off / hint / hand-hold — player-tunable.
+- **Story-flag coherence (P1-1):** merciful/scholarly choices set `spared_priests` /
+  `patron_scholars` flags; religious/discovery events get ×1.8 weight with the matching
+  flag; mission `follow_up` chains grant a bonus + `mission_follow_up` event.
 
 ## 14. Accessibility
 
-- Text size scaling (×0.8 / ×1 / ×1.3 / ×1.6).
-- Colorblind palettes (deutan/protan/tritan).
+- Text size scaling (×0.8 / ×1 / ×1.3 / ×1.6), applied to the whole tree on load
+  (`_apply_to_tree()` in `_ready()`).
+- Colorblind toggle persisted (`colorblind_mode`); full palette swap still open.
 - Slow-mode (×0.5 sim speed) + full pause.
 - Autoplay-combat toggle (skip real-time battles → auto-resolve).
 - Haptics for events, taps, danger.
@@ -242,9 +262,9 @@ Never duplicate the same number in three places.
 
 ## 15. Localization
 
-- Godot's `res/values-*` already scaffolded by the Android build template.
-- All player-facing strings via `tr()` + CSV translation tables.
-- Ship with English; community translations via CSV PRs.
+- Ship English-only for 1.0 (no `tr()` pass yet — open).
+- Succession prose is gender-neutral (ruler/heir terms only); heir name pools expanded
+  (8 ♂ + 8 ♀) to reduce stereotyping.
 
 ---
 
@@ -420,6 +440,12 @@ queries, baked GI on static geometry, texture atlases, `Mobile` renderer default
 toggle for high-end). Day/night, seasons, weather shader-driven; terrain by seeded heightmap
 + biome splat (`terrain.gd`).
 
+**Shipped (P1-5):** cached ghost materials (no per-frame `StandardMaterial3D.new()`),
+`build_trees_deferred()` past first frame, ultra tier truly above high (LOD 60/240,
+1600 cap, 560 trees), MSAA fallback fixed (unknown → 4X), `press_feedback` disconnects
+on `tree_exiting`. Tech bonuses wired: `military_power_mult` → `calc_power()`,
+`trade_value_mult` → tribute income, `spoilage_mult` → 2% food decay.
+
 **Profiling methodology (per-phase gate):**
 1. Capture `--render-thread` frame time on a reference mid-range device profile.
 2. Record draw-call count, agent count, sim ms via an in-game `DebugOverlay` (F1 toggle).
@@ -476,6 +502,10 @@ Format (JSON; see `KingdomsUnfolded.md`):
 - 5 named slots + autosave every 5 turns.
 - Export/import `.kingdom` JSON for portability.
 - API keys live in an encrypted settings vault, **never** serialized into saves.
+- Hardened (P2): `_restore()` clears live transient state first (no missing-key leak);
+  `slot_info()` falls back to `.bak` on corrupt JSON (`corrupt: true` if both fail);
+  `quick_load()` loads the newest of slot_0 vs autosave; `storyFlags` round-trip in
+  saves; RNG states serialized as strings (JSON float precision).
 
 ## 23. Build & Dev Pipeline (proven working)
 
@@ -490,11 +520,16 @@ GitHub Actions (godot-ci:4.7.2 Docker):
 Phone browser: download artifact → install → playtest
 Manus AI: manual/interactive exports as fallback
 ```
-- Workflow `.github/workflows/build.yml`; triggers: push to `main`, `v*` tags, manual.
+- Workflow `.github/workflows/build.yml`; triggers: **manual-only** (`workflow_dispatch` +
+  `v*` tags — never push-to-main, per `AGENTS.md`).
 - `scripts/tests/smoke_test.gd` gates the APK build on every push.
 - **CI traps fixed & documented in `docs/BUILD.md`** (silent `etc2_astc` failure, HOME
   mismatch, android_source.zip layout, keystore preset fields).
-- Signing: debug today; release keystore as GitHub secret when Play Store targeted.
+- Signing: debug today (preset code 3); release AAB preset (code 4, AAB-only increments,
+  debug APK never uploaded) via `ANDROID_KEYSTORE_*` secrets — see `keystore/README.md`.
+- Store track plan: `docs/STORE.md` (internal → closed → open).
+- Export excludes unused `assets/models/kenney_*` (~5 MB) until a GLB is wired.
+- Privacy: `PRIVACY_URL` constant + Clear Keys button in Narrative Settings.
 
 ## 24. Testing Strategy
 
@@ -532,9 +567,11 @@ typed where cheap; `:=` only for non-Variant inference; warnings-as-errors for
 
 ## 26. Telemetry (opt-in)
 
-Local-only first; exportable. Per-session: turns survived, collapse cause, resource curves,
-time-in-tab. Used for balance hotspots. Off by default; explicit consent; never networked
-unless the player exports a save to share.
+Local-only first; exportable (`user://logs/analytics.jsonl`, append mode). 15 events:
+turn_advanced, game_over, game_saved, game_loaded, building_placed, unit_trained,
+tech_completed, battle_resolved, mission_completed, mission_follow_up, act_completed,
+act_failed, event_choice, happiness_tick, fps_sample (10 s). Off by default; explicit
+consent; never networked unless the player exports a save to share.
 
 ## 27. Versioning & Release Strategy
 
