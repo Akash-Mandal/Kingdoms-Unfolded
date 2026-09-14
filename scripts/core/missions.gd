@@ -335,11 +335,16 @@ func auto_offer(state: Dictionary = {}) -> Dictionary:
 		if is_active:
 			continue
 		var is_done := false
+		var completions: int = 0
 		for c in completed:
-			if str(c.get("id", "")) == tid and not bool(tpl.get("repeatable", false)):
-				is_done = true
-				break
+			if str(c.get("id", "")) == tid:
+				completions += 1
+				if not bool(tpl.get("repeatable", false)):
+					is_done = true
+					break
 		if is_done:
+			continue
+		if bool(tpl.get("repeatable", false)) and completions >= 3:
 			continue
 		var w: float = float(tpl.get("weight", 10))
 		var conds: Variant = tpl.get("conditions", [])

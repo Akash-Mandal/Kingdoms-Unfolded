@@ -187,6 +187,7 @@ func advance() -> void:
 	population_changed.emit()
 	military_changed.emit()
 	_check_game_over()
+	_track("turn_advanced", {"turn": turn})
 	if has_node("/root/SaveSlots"):
 		var ss: Node = get_node("/root/SaveSlots")
 		if ss.has_method("autosave_check"):
@@ -241,11 +242,17 @@ func _check_game_over() -> void:
 
 func _end_game(won: bool, kind: String, text: String) -> void:
 	game_over_result = {"won": won, "kind": kind, "text": text, "turn": turn}
+	_track("game_over", game_over_result)
 	var ev := {"id": events.size(), "turn": turn, "type": "game_over", "category": "fate", "severity": 3, "text": text}
 	events.push_front(ev)
 	event_occurred.emit(ev)
 	game_over.emit(game_over_result)
 	save_to_file()
+
+func _track(name: String, props: Dictionary = {}) -> void:
+	var a: Node = get_node_or_null("/root/Analytics")
+	if a != null and a.has_method("track"):
+		a.call("track", name, props)
 
 func _season_yield_mult(key: String) -> float:
 	var s := season()
