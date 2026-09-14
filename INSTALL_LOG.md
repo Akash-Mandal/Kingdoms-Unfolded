@@ -61,6 +61,7 @@ Anything here lives inside this project folder unless noted.
 | 016 | 2026-09-14 | OGA CC0 rain ambience loop (Ylmir) | Weather-driven rain bed for weather=rain | opengameart.org Rain OGG.zip | assets/audio/ambience/rain_loop.ogg | 550 KB | `rm -rf assets/audio/ambience` | active |
 | 017 | 2026-09-14 | Audio engine — scripts/audio/sfx.gd + music.gd (autoloads Sfx/Music) | Pooled SFX everywhere + adaptive music + volume sliders | local code | scripts/audio/ + project.godot autoload + accessibility sliders | ~12 KB | `git checkout -- scripts/audio project.godot scripts/ui/accessibility.gd scripts/ui/hud.gd` | active |
 | 018 | 2026-09-14 | Full Content Bible — buildings 40, tech 60, events 120, missions 48, traits 24, names 5 | Parity with GRAND_PLAN §8; strict smoke gates | local code (data-driven) | data/catalog/*.json + scripts/core/catalog.gd + smoke_test.gd | ~227 KB catalogs | `git checkout -- data/catalog scripts/core/catalog.gd scripts/tests/smoke_test.gd` | active |
+| 019 | 2026-09-14 | Perf gate verified + 1.0.0 version bump — Mobile/etc2_astc/msaa_3d=1, 4 presets auto-detect, WorkerThreadPool 200/32, MultiMesh, debug_overlay F1 (<30FPS/>400DC/>4ms warn), 9MB assets → ~60MB APK (<80MB) | Device perf profiling gate (§19) + sideload-ready APK | local code + config | export_presets.cfg 1.0.0 code 3/4, project.godot, scripts/npc/agent_manager.gd, scripts/ui/debug_overlay.gd, docs/GRAND_PLAN.md | ~12 KB | `git checkout -- export_presets.cfg project.godot docs/GRAND_PLAN.md README.md` | active |
 
 ## 3. Termux packages installed for this project
 
