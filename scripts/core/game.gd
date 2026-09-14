@@ -8,7 +8,7 @@ signal military_changed
 signal game_over(result: Dictionary)
 
 const TURNS_PER_YEAR := 12
-const SAVE_VERSION := 4
+const SAVE_VERSION := 5
 
 const RESOURCE_KEYS: PackedStringArray = [
 	"food", "gold", "wood", "stone", "iron", "cloth", "horses", "knowledge"
@@ -324,6 +324,8 @@ func _apply_tribute() -> void:
 	if dip == null or not dip.has_method("tribute_income"):
 		return
 	var inc: float = float(dip.call("tribute_income"))
+	# Building maintenance sink: 0.1 gold per placed building.
+	inc -= float(placed_buildings.size()) * 0.1
 	if inc != 0.0 and resources.has("gold"):
 		var r: Dictionary = resources["gold"]
 		r["stock"] = clampf(float(r.get("stock", 0.0)) + inc, 0.0, 999999.0)
@@ -1093,4 +1095,15 @@ func _migrate_save(data: Dictionary, from_ver: int) -> Dictionary:
 		meta2["version"] = SAVE_VERSION
 		data["meta"] = meta2
 		v = 4
+	if v < 5:
+		if not data.has("succession"):
+			data["succession"] = {}
+		if not data.has("scenarioState"):
+			data["scenarioState"] = {}
+		if not data.has("sideStories"):
+			data["sideStories"] = {}
+		var meta3: Dictionary = data.get("meta", {})
+		meta3["version"] = SAVE_VERSION
+		data["meta"] = meta3
+		v = 5
 	return data

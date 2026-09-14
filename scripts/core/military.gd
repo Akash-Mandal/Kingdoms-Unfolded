@@ -96,6 +96,9 @@ func train(type: String, n: int) -> bool:
 	Game.resources_changed.emit()
 	military_changed.emit()
 	_sync_to_game()
+	var an: Node = get_node_or_null("/root/Analytics")
+	if an != null and an.has_method("track"):
+		an.call("track", "unit_trained", {"type": type, "n": n})
 	return true
 
 func disband(type: String, n: int) -> bool:
