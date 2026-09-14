@@ -214,6 +214,9 @@ func can_afford(id: String) -> bool:
 func try_place(id: String, pos: Vector3) -> bool:
 	if not can_afford(id):
 		return false
+	for n in _placed:
+		if is_instance_valid(n) and n.global_position.distance_to(pos) < 4.0:
+			return false
 	var def: Dictionary = Catalog.get_building(id)
 	var cost: Dictionary = def.get("cost", {})
 	for key in cost:
@@ -224,6 +227,9 @@ func try_place(id: String, pos: Vector3) -> bool:
 	var sx: Node = get_node_or_null("/root/Sfx")
 	if sx != null and sx.has_method("play"):
 		sx.call("play", "build_place", 1.0)
+	var an: Node = get_node_or_null("/root/Analytics")
+	if an != null and an.has_method("track"):
+		an.call("track", "building_placed", {"id": id})
 	return true
 
 func _acquire_from_pool(id: String) -> Node3D:

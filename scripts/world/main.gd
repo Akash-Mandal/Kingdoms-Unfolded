@@ -95,6 +95,13 @@ func _hide_loading_cover() -> void:
 		_loading_cover.queue_free()
 		_loading_cover = null
 
+func _write_crash_log(msg: String) -> void:
+	DirAccess.make_dir_recursive_absolute("user://logs")
+	var f := FileAccess.open("user://logs/error.log", FileAccess.WRITE)
+	if f != null:
+		f.store_string("%s turn=%d msg=%s\n" % [Time.get_datetime_string_from_system(), Game.turn if Game != null else -1, msg])
+		f.close()
+
 func _on_game_over(result: Dictionary) -> void:
 	var won: bool = bool(result.get("won", false))
 	var title: String = "VICTORY" if won else "DEFEAT"
@@ -102,6 +109,7 @@ func _on_game_over(result: Dictionary) -> void:
 
 func _show_fatal_error(msg: String) -> void:
 	_hide_loading_cover()
+	_write_crash_log(msg)
 	var cover := CanvasLayer.new()
 	cover.name = "FatalError"
 	cover.layer = 200
